@@ -1,4 +1,4 @@
-from twython import Twython
+from twython import Twython,TwythonError
 from congress_members import govtrack_data
 import os
 
@@ -57,7 +57,6 @@ def twitter_search(twitter_id, index = 0):
 		d['screenname'] = r['user']['screen_name']
 		d['date'] = r['created_at']
 		L.append(d)
-	print L
 	return L
 
 #print (twitter_search("SenatorBurr"),2)
@@ -83,59 +82,62 @@ def findAllPosition (index =0, i = 0):
 				index += 1
 			print "i = " + str(i)
 			findAllPosition(index,i)
-		print masterL
-		print (e)
-	print masterL
+		#print masterL
+		#print (e)
+	#print masterL
 	return masterL
 
-def findAllPositions_DivideByParty (target_folder,limit, index =0, i = 0, labels=["republican", "democrat", "independent"]):
+def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i = 0, labels=["republican", "democrat", "independent"]):
 	masterL = []
-	if i >= limit:
+	if i >= len(politician_data) :
 		print i
-		return "done"
+		return "Done" + " " + target_folder
+	if index >= 3:
+		print "OUR i = " + str(i)
+		print "OUR index = " + str(index) + " " + target_folder
+		print "Exited because rate of all apps exceeded"
+		return "something happened... :( "
+	print i
+	n = politician_data[i]
 	try:
-		n = govtrack_data[i]
-		if n["party"].lower() == labels[1]:
-			os.chdir("{0}/{1}".format(target_folder, labels[1]))					
-		elif n["party"].lower() == labels[2]:
-			os.chdir("{0}/{1}".format(target_folder, labels[2])	)				
+		if n["party"].lower() == labels[0]:
+			os.chdir("{0}/{1}".format(target_folder, labels[0]))					
+		elif n["party"].lower() == labels[1]:
+			os.chdir("{0}/{1}".format(target_folder, labels[1])	)				
 		else: # things that arent categorized as republican or democrate
 			#Independent
 			os.chdir("{0}/{1}".format(target_folder, labels[2]))
-	
+
 		if n["twitterID"] != None and n["twitterID"] != "None":
 			#masterL.append(twitter_search(n["twitterID"], index))
 
 			#create file to contain comments of each politician
-			
-
 			twitter_comments = twitter_search(n["twitterID"], index)
 
+			file_data =""
 			#create string with all the comments grabbed per person
 			for comment in twitter_comments:
-				file_data += comment+ " \n"
-			txt_name = n["name"]+ ".txt"
-			f = open(txt_name, "w")
-			f.write(file_data)
-			f.close
+				file_data += comment["text"].encode("utf-8") + " \n"
+				txt_name = comment["screenname"].encode("utf-8") +  ".txt"
+				f = open(txt_name, "w")
+				f.write(file_data)
 
-			
-		findAllPositions_DivideByParty(index,i+1, labels, target_folder)
-	except Exception as e:
-		print e
-		if "429 (Too Many Requests)" in str(e):
-			if (index == len(APP_KEYS)-1):
-				print masterL
-				print "OUR i = " + str(i)
-				print "Exited because rate of all apps exceeded"
-				return "something happened... :( "
+				f.close()
+		
+		os.chdir("../..")
+		return findAllPositions_DivideByParty( target_folder, politician_data, index, i+1, labels)
+	except TwythonError as e:
+		#     print "429 (Too Many Requests)" in str(e)
+		if "429 (Too Many Requests)" in str(e) or "400 (Bad Request)," in str(e):
+			if index > 3:
+				print "exception caught with {0}".format(index)
 			else:
 				index += 1
-			print "i = " + str(i)
-			findAllPosition(index,i)
-		print masterL
-		print (e)
-	return "all have been reached"
+		else:
+			print str(e) + "____"
+		os.chdir("../..")
+		return findAllPositions_DivideByParty( target_folder, politician_data, index, i, labels)
+	
 
 def setup_folder(foldername, labels = []):
 	# each label is a folder for each label
@@ -143,8 +145,19 @@ def setup_folder(foldername, labels = []):
 		if not os.path.exists("{0}/{1}".format(foldername, label)):
 			os.makedirs("{0}/{1}".format(foldername, label))
 	return
+
+
+
 setup_folder("twitter_training", ["republican", "democrat", "independent"])
-print findAllPositions_DivideByParty("twitter_training",1)
+setup_folder("twitter_testing", ["republican", "democrat", "independent"])
+#govtrack_data
+
+training_data = govtrack_data[:int(len(govtrack_data)*0.8)]
+testing_data = govtrack_data[int(len(govtrack_data)*0.8):]
+
+
+print findAllPositions_DivideByParty("twitter_training",training_data)
+#print findAllPositions_DivideByParty("twitter_testing",testing_data)
 '''
 x = []
 i = 0

@@ -6,9 +6,6 @@ def congress_members():
 	r = c.json()
 	members = r['objects']
 
-	print len(members)
-
-
 	arr = []
 	d = {}
 	member_party = ""
@@ -36,5 +33,18 @@ def congress_members():
 	return arr
 
 govtrack_data = congress_members()
+
+
+#get statistics of congress_members with twitterID
+def getNumTwitter ():
+	i = 0
+	for x in govtrack_data:
+		if x["twitterID"] != None and x["twitterID"] != "None" and len("twitterID") != 0:
+			i+=1
+	return i
+#getNumTwitter()
+#542
+#521 with twitter 
+#we will use 80% for training data and 20% for testing 
 
 #print govtrack_data
