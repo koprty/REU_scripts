@@ -1,5 +1,5 @@
 from twython import Twython,TwythonError
-from congress_members import govtrack_data
+from congress_members import govtrack_data, govtrack_twitterID
 import os
 
 
@@ -87,7 +87,7 @@ def findAllPosition (index =0, i = 0):
 	#print masterL
 	return masterL
 
-def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i = 0, labels=["republican", "democrat", "independent"]):
+def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i = 0, labels=["republican", "democrat"]):
 	masterL = []
 	if i >= len(politician_data) :
 		print i
@@ -106,7 +106,11 @@ def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i 
 			os.chdir("{0}/{1}".format(target_folder, labels[1])	)				
 		else: # things that arent categorized as republican or democrate
 			#Independent
-			os.chdir("{0}/{1}".format(target_folder, labels[2]))
+			
+			#os.chdir("{0}/{1}".format(target_folder, labels[2]))
+
+			#SKIP TO NEXT PERSON on the list
+			return findAllPositions_DivideByParty( target_folder, politician_data, index, i+1, labels)
 
 		if n["twitterID"] != None and n["twitterID"] != "None":
 			#masterL.append(twitter_search(n["twitterID"], index))
@@ -148,16 +152,16 @@ def setup_folder(foldername, labels = []):
 
 
 
-setup_folder("twitter_training", ["republican", "democrat", "independent"])
-setup_folder("twitter_testing", ["republican", "democrat", "independent"])
+setup_folder("twitter_training", ["republican", "democrat"])
+setup_folder("twitter_testing", ["republican", "democrat"])
 #govtrack_data
+nn = int(len(govtrack_twitterID)*.8)
+training_data = govtrack_twitterID[:nn]
+testing_data = govtrack_twitterID[nn:]
 
-training_data = govtrack_data[:int(len(govtrack_data)*0.8)]
-testing_data = govtrack_data[int(len(govtrack_data)*0.8):]
 
-
-print findAllPositions_DivideByParty("twitter_training",training_data)
-#print findAllPositions_DivideByParty("twitter_testing",testing_data)
+#print findAllPositions_DivideByParty("twitter_training",training_data)
+print findAllPositions_DivideByParty("twitter_testing",testing_data)
 '''
 x = []
 i = 0

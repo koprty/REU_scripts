@@ -48,3 +48,21 @@ def getNumTwitter ():
 #we will use 80% for training data and 20% for testing 
 
 #print govtrack_data
+
+govtrack_twitterID= []
+for x in govtrack_data:
+	if x["twitterID"] != None and x["twitterID"] != "None" and len("twitterID") != 0:
+		govtrack_twitterID.append(x)
+
+'''
+x = govtrack_data[416:434]
+for y in x:
+	print y["twitterID"] + " " + y["party"]
+
+
+for y in govtrack_data: 
+	if y["party"].lower() =="independent":
+		print y["twitterID"]
+'''
+
+
