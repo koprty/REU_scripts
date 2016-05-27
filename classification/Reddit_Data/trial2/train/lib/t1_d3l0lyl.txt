@@ -1,0 +1,1 @@
+That's fair, but instead of a simple average, it should probably be a weighted average, where the weights are determined by percentage of the workforce employed by that ceo. Unfortunately, I don't know where that data would come from.

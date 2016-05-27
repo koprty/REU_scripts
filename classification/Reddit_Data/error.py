@@ -17,8 +17,6 @@ def error(file_name):
 					incorrect +=1
 		total += 1
 	error = incorrect*1.0/total
-	print incorrect
-	print total
 	results.close()
 	print error
 error(sys.argv[1])
