@@ -1,25 +1,25 @@
 import re
+import sys
 
 def error(file_name):
 	results = open(file_name, "r")
-	correct= 0
 	incorrect= 0
 	total= 0
 	for line in results:
 		words = line.split('\t')
 		if re.search("_Conservative.txt", words[0]):
-			if words[2] > words[4]:
-				correct += 1
-			else:
-				incorrect += 1
+			if words[2] < words[4]:
+				if not re.search("E-", words[4]):
+					incorrect += 1
 		if re.search("_Liberal.txt", words[0]):
-			if words[2] < words [4]:
-				correct += 1
-			else:
-				incorrect +=1
+			if words[2] > words [4]:
+				if not re.search("E-", words[2]):
+					incorrect +=1
 		total += 1
 	error = incorrect*1.0/total
+	print incorrect
+	print total
 	results.close()
 	print error
-error("reddit_results.txt")
+error(sys.argv[1])
 
