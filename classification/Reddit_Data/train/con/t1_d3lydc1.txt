@@ -1,0 +1,7 @@
+Sex: Male or Female.
+
+Identity: Male, Female, or both.
+
+Orientation: Straight, Gay, Bi, or A.
+
+The rest seems superfluous.
