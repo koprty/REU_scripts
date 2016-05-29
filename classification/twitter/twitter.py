@@ -1,6 +1,7 @@
 from twython import Twython,TwythonError
 from congress_members import govtrack_data, govtrack_twitterID
 import os
+import time
 
 
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','nkcpJtiZwqrcdEYVBYy7TvHm9']
@@ -87,19 +88,24 @@ def findAllPosition (index =0, i = 0):
 	#print masterL
 	return masterL
 
-def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i = 0, labels=["republican", "democrat"]):
+def findAllPositions_DivideByParty (training_folder, testing_folder, politician_data, index =0, i = 0, labels=["republican", "democrat"]):
 	masterL = []
+	target_folder = training_folder
+	if i%5 ==0:
+		target_folder = testing_folder
 	if i >= len(politician_data) :
 		print i
-		return "Done" + " " + target_folder
+		return "Done" + " " + str(i)
 	if index >= 3:
 		print "OUR i = " + str(i)
 		print "OUR index = " + str(index) + " " + target_folder
 		print "Exited because rate of all apps exceeded"
-		return "something happened... :( "
-	print i
+		print "waiting 15 minutes for next app windows"
+		time.sleep(900)
+		index = 0
 	n = politician_data[i]
 	try:
+
 		if n["party"].lower() == labels[0]:
 			os.chdir("{0}/{1}".format(target_folder, labels[0]))					
 		elif n["party"].lower() == labels[1]:
@@ -117,7 +123,11 @@ def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i 
 
 			#create file to contain comments of each politician
 			twitter_comments = twitter_search(n["twitterID"], index)
-
+			if len(twitter_comments) <= 0:
+				os.chdir("../..")
+				politician_data.remove(n)
+				return findAllPositions_DivideByParty( training_folder, testing_folder, politician_data, index, i, labels)
+	
 			file_data =""
 			#create string with all the comments grabbed per person
 			for comment in twitter_comments:
@@ -129,7 +139,7 @@ def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i 
 				f.close()
 		
 		os.chdir("../..")
-		return findAllPositions_DivideByParty( target_folder, politician_data, index, i+1, labels)
+		return findAllPositions_DivideByParty( training_folder, testing_folder, politician_data, index, i+1, labels)
 	except TwythonError as e:
 		#     print "429 (Too Many Requests)" in str(e)
 		if "429 (Too Many Requests)" in str(e) or "400 (Bad Request)," in str(e):
@@ -140,7 +150,7 @@ def findAllPositions_DivideByParty (target_folder, politician_data, index =0, i 
 		else:
 			print str(e) + "____"
 		os.chdir("../..")
-		return findAllPositions_DivideByParty( target_folder, politician_data, index, i, labels)
+		return findAllPositions_DivideByParty( training_folder, testing_folder, politician_data, index, i, labels)
 	
 
 def setup_folder(foldername, labels = []):
@@ -150,18 +160,17 @@ def setup_folder(foldername, labels = []):
 			os.makedirs("{0}/{1}".format(foldername, label))
 	return
 
-
-
 setup_folder("twitter_training", ["republican", "democrat"])
 setup_folder("twitter_testing", ["republican", "democrat"])
 #govtrack_data
 nn = int(len(govtrack_twitterID)*.8)
-training_data = govtrack_twitterID[:nn]
+
+training_data = govtrack_twitterID[360:nn]
 testing_data = govtrack_twitterID[nn:]
 
 
-#print findAllPositions_DivideByParty("twitter_training",training_data)
-print findAllPositions_DivideByParty("twitter_testing",testing_data)
+#findAllPositions_DivideByParty("twitter_training",training_data)
+findAllPositions_DivideByParty("twitter_training","twitter_testing",govtrack_twitterID)
 '''
 x = []
 i = 0
