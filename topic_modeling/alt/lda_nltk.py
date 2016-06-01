@@ -6,14 +6,15 @@ from gensim import corpora, models
 import gensim
 import os
 
+# this script is adapted from the sample script by Jordan Barber on the following web page
+# https://rstudio-pubs-static.s3.amazonaws.com/79360_850b2a69980c4488b1db95987a24867a.html
+
 tokenizer = RegexpTokenizer(r'\w+')
 
-#stopwords.words('english')
-# create English stop words list
-#print "\n".join(stopwords.words('english'))
-en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh']
-print en_stop
-exit(0)
+# create English stop words list <- we will join the default list provided by NLTK and another list from a github repo
+# we will add other filler words/ abbreviates used in various twitter tweets
+en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh', 'im' ]
+
 #print "\n".join(en_stop)
 #exit(0)
 # Create p_stemmer of class PorterStemmer
@@ -51,11 +52,11 @@ corpus = [dictionary.doc2bow(text) for text in texts]
 
 # WIP (WORK IN PROGRESS)
 # TRYING TO FIND OPTIMAL number of topics to use
-x = range(10,20)
-os.chdir("lda_results")
-#for num in [c for c in x if c%2==0]:
+x = range(10,101)
+os.chdir("lda_resultsUM")
 
-for num in x:
+for num in [c for c in x if c%10==0]:
+#for num in x:
 	# generate LDA model
 	ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=num, id2word = dictionary, passes=20)
 
@@ -68,4 +69,3 @@ for num in x:
 	f.write(s)
 	f.close
 	print str(num)+".txt"
-
