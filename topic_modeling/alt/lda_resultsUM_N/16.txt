@@ -1,0 +1,16 @@
+Topic 0:	dab: 0.123	smoke: 0.062	take: 0.049	weed: 0.047	like: 0.024	blunt: 0.021	joint: 0.018	hit: 0.017	bowl: 0.016	roll: 0.014	
+Topic 1:	dab: 0.122	weed: 0.081	smoke: 0.025	danc: 0.017	like: 0.013	lol: 0.012	peopl: 0.012	cam: 0.011	mean: 0.011	hit: 0.009	
+Topic 2:	dab: 0.051	via: 0.029	piec: 0.019	ok: 0.014	price: 0.013	oil: 0.012	perfect: 0.012	acn: 0.012	gave: 0.011	polic: 0.011	
+Topic 3:	weed: 0.054	look: 0.052	dab: 0.052	like: 0.037	night: 0.034	social: 0.029	insid: 0.027	club: 0.027	la: 0.026	here: 0.024	
+Topic 4:	dab: 0.129	weed: 0.035	wax: 0.031	shatter: 0.025	oil: 0.021	concentr: 0.017	high: 0.017	710: 0.014	bho: 0.013	thc: 0.012	
+Topic 5:	dab: 0.071	periscop: 0.069	live: 0.061	weed: 0.023	dabbin: 0.018	b: 0.015	chill: 0.012	kush: 0.011	420: 0.011	happi: 0.010	
+Topic 6:	dab: 0.134	weed: 0.080	smoke: 0.070	get: 0.030	drug: 0.027	high: 0.027	yeah: 0.025	one: 0.020	like: 0.017	time: 0.010	
+Topic 7:	dab: 0.128	weed: 0.071	smoke: 0.041	hash: 0.031	addict: 0.028	dip: 0.018	bitch: 0.010	got: 0.009	marijuana: 0.009	play: 0.009	
+Topic 8:	dab: 0.074	smoke: 0.023	weed: 0.016	edibl: 0.016	w: 0.016	time: 0.015	dabrig: 0.012	beer: 0.011	marijuana: 0.011	doubl: 0.009	
+Topic 9:	dab: 0.101	last: 0.028	morn: 0.026	high: 0.022	night: 0.021	alway: 0.019	like: 0.019	video: 0.016	good: 0.016	took: 0.016	
+Topic 10:	dab: 0.071	vape: 0.056	vapelif: 0.022	oil: 0.021	vapor: 0.021	free: 0.019	stay: 0.018	pen: 0.017	cannabi: 0.016	giveaway: 0.015	
+Topic 11:	dab: 0.097	fuck: 0.036	got: 0.028	weed: 0.026	extract: 0.021	marijuana: 0.018	best: 0.016	waxerz: 0.011	weeddab: 0.011	see: 0.011	
+Topic 12:	dab: 0.064	feel: 0.037	new: 0.024	bout: 0.023	two: 0.022	oil: 0.022	4: 0.016	help: 0.012	let: 0.012	kid: 0.010	
+Topic 13:	dab: 0.105	weed: 0.087	marijuana: 0.075	high: 0.058	420: 0.046	cannabi: 0.041	smokewe: 0.031	retailmarijuana: 0.029	dank: 0.025	weedporn: 0.020	
+Topic 14:	dab: 0.090	oil: 0.061	rig: 0.056	glass: 0.030	bong: 0.027	pipe: 0.026	water: 0.017	smoke: 0.014	use: 0.014	tree: 0.014	
+Topic 15:	dab: 0.090	weedfe: 0.036	weed: 0.033	marijuana: 0.021	medicalmarijuana: 0.020	medicalmarijuama: 0.019	high: 0.014	medic: 0.014	cannabi: 0.013	dope: 0.012	

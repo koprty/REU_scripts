@@ -1,0 +1,17 @@
+Topic 0:	dab: 0.094	weed: 0.029	extract: 0.019	new: 0.018	bout: 0.017	good: 0.016	lol: 0.016	smoke: 0.015	see: 0.014	what: 0.014	
+Topic 1:	dab: 0.092	weed: 0.086	dank: 0.030	weedporn: 0.029	weedstagram: 0.028	seen: 0.026	cannabi: 0.026	thought: 0.023	feed: 0.023	instawe: 0.022	
+Topic 2:	dab: 0.084	pipe: 0.031	vape: 0.023	glass: 0.020	oil: 0.020	nigga: 0.018	water: 0.017	free: 0.017	vapelif: 0.016	bong: 0.015	
+Topic 3:	dab: 0.070	oil: 0.025	well: 0.018	watch: 0.018	head: 0.017	rn: 0.014	high: 0.014	put: 0.013	leav: 0.012	around: 0.009	
+Topic 4:	dab: 0.112	weed: 0.031	need: 0.029	gram: 0.018	vapor: 0.018	home: 0.017	pen: 0.016	wax: 0.014	via: 0.014	vape: 0.013	
+Topic 5:	dab: 0.088	oil: 0.054	rig: 0.043	marijuana: 0.018	lot: 0.017	nail: 0.017	medic: 0.012	cam: 0.012	use: 0.010	glass: 0.010	
+Topic 6:	dab: 0.058	like: 0.054	look: 0.042	weed: 0.042	night: 0.036	here: 0.026	insid: 0.023	social: 0.022	la: 0.022	club: 0.022	
+Topic 7:	dab: 0.079	weed: 0.044	stoner: 0.038	smoke: 0.026	cannabi: 0.026	marijuana: 0.021	girl: 0.017	time: 0.015	fun: 0.013	check: 0.012	
+Topic 8:	dab: 0.129	high: 0.095	marijuana: 0.066	weed: 0.059	420: 0.049	smokewe: 0.039	retailmarijuana: 0.037	take: 0.017	anoth: 0.014	morn: 0.012	
+Topic 9:	dab: 0.091	wax: 0.033	bowl: 0.027	weed: 0.026	shatter: 0.026	super: 0.016	way: 0.013	play: 0.013	like: 0.012	da: 0.011	
+Topic 10:	dab: 0.133	weed: 0.081	smoke: 0.066	hash: 0.032	know: 0.028	addict: 0.023	peopl: 0.022	get: 0.020	danc: 0.018	mean: 0.018	
+Topic 11:	dab: 0.101	weed: 0.054	blunt: 0.043	smoke: 0.038	fuck: 0.033	love: 0.023	roll: 0.018	high: 0.016	today: 0.014	wax: 0.014	
+Topic 12:	dab: 0.111	smoke: 0.045	like: 0.038	weed: 0.035	one: 0.031	time: 0.027	take: 0.025	high: 0.022	wanna: 0.021	first: 0.018	
+Topic 13:	dab: 0.128	weed: 0.107	smoke: 0.066	drug: 0.049	yeah: 0.044	marijuana: 0.022	joint: 0.016	cannabi: 0.015	pot: 0.014	ganja: 0.012	
+Topic 14:	dab: 0.082	weed: 0.058	b: 0.020	periscop: 0.018	waxerz: 0.017	dabart: 0.017	dabartist: 0.016	waxartist: 0.016	weedart: 0.015	dabbin: 0.012	
+Topic 15:	dab: 0.133	weed: 0.066	smoke: 0.033	marijuana: 0.013	get: 0.012	life: 0.011	best: 0.008	yall: 0.008	bed: 0.007	time: 0.007	
+Topic 16:	dab: 0.120	periscop: 0.038	live: 0.036	weedfe: 0.026	weed: 0.025	420: 0.024	oil: 0.022	710: 0.021	bho: 0.015	concentr: 0.014	
