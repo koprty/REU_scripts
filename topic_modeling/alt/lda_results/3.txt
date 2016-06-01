@@ -1,0 +1,3 @@
+(0, u'0.108*dab + 0.073*weed + 0.035*smoke + 0.021*high + 0.016*just + 0.016*dont + 0.014*marijuana')
+(1, u'0.086*dab + 0.030*oil + 0.025*weed + 0.018*wax + 0.013*like + 0.012*marijuana + 0.012*rig')
+(2, u'0.102*dab + 0.028*weed + 0.016*take + 0.012*smoke + 0.011*periscop + 0.009*live + 0.009*im')

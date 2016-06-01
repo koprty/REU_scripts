@@ -1,0 +1,4 @@
+(0, u'0.112*dab + 0.047*weed + 0.037*smoke + 0.017*like + 0.015*take + 0.014*im + 0.012*high + 0.012*just + 0.011*get + 0.008*fuck')
+(1, u'0.091*dab + 0.024*oil + 0.023*weed + 0.019*wax + 0.013*vape + 0.013*bong + 0.012*rig + 0.011*shatter + 0.009*cannabi + 0.009*concentr')
+(2, u'0.108*dab + 0.082*weed + 0.032*marijuana + 0.027*smoke + 0.018*high + 0.017*420 + 0.017*dont + 0.013*just + 0.013*cannabi + 0.012*drug')
+(3, u'0.067*dab + 0.023*periscop + 0.021*live + 0.012*weed + 0.011*oil + 0.008*home + 0.008*video + 0.007*dabber + 0.007*high + 0.006*make')
