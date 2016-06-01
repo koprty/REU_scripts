@@ -13,7 +13,7 @@ tokenizer = RegexpTokenizer(r'\w+')
 
 # create English stop words list <- we will join the default list provided by NLTK and another list from a github repo
 # we will add other filler words/ abbreviates used in various twitter tweets
-en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh', 'im' ]
+en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh', 'im', 'n', 'dont', 'ur']
 
 #print "\n".join(en_stop)
 #exit(0)
@@ -50,21 +50,34 @@ dictionary = corpora.Dictionary(texts)
 # convert tokenized documents into a document-term matrix
 corpus = [dictionary.doc2bow(text) for text in texts]
 
+
+def string_topics(topic_list):
+	s = ""
+	for topic in topic_list:
+		topic_num = topic[0]
+		words_probs = topic[1]
+		wp = words_probs.split(" + ")
+		s += "Topic " + str(topic_num) + ":\t"
+		for w in wp:
+			word = w.split("*")
+			s+= str(word[1]) + ": " + str(word[0]) + "\t"
+		s += "\n"
+	return s
+
 # WIP (WORK IN PROGRESS)
 # TRYING TO FIND OPTIMAL number of topics to use
-x = range(10,101)
-os.chdir("lda_resultsUM")
+x = range(10,20)
+os.chdir("lda_resultsUM_N")
 
-for num in [c for c in x if c%10==0]:
+for num in [c for c in x]:
 #for num in x:
 	# generate LDA model
 	ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=num, id2word = dictionary, passes=20)
 
 	result_model = ldamodel.print_topics(num_topics=num, num_words=10)	
-
-	s = ""
-	for topic in result_model:
-		s += str(topic) + "\n"
+	
+	s = string_topics(result_model)
+	
 	f= open (str(num)+".txt", 'w')
 	f.write(s)
 	f.close

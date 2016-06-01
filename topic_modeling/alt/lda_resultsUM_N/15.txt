@@ -1,0 +1,15 @@
+Topic 0:	dab: 0.142	smoke: 0.089	weed: 0.085	drug: 0.027	yeah: 0.024	fuck: 0.018	know: 0.013	take: 0.013	got: 0.013	like: 0.013	
+Topic 1:	dab: 0.096	weed: 0.068	cannabi: 0.041	dank: 0.035	weedporn: 0.028	weedstagram: 0.027	420: 0.025	weedfe: 0.022	feed: 0.021	seen: 0.020	
+Topic 2:	dab: 0.088	weed: 0.044	smoke: 0.029	like: 0.018	much: 0.018	roll: 0.016	gonna: 0.015	dabart: 0.013	waxartist: 0.013	dabartist: 0.013	
+Topic 3:	dab: 0.100	oil: 0.066	wax: 0.059	rig: 0.046	bong: 0.033	shatter: 0.029	glass: 0.024	pipe: 0.023	concentr: 0.018	vape: 0.017	
+Topic 4:	dab: 0.046	oil: 0.025	bout: 0.021	watch: 0.010	edibl: 0.009	marijuana: 0.009	real: 0.009	prayer: 0.008	polic: 0.008	rock: 0.008	
+Topic 5:	dab: 0.087	weed: 0.021	one: 0.019	enail: 0.018	stop: 0.014	arent: 0.014	day: 0.013	gram: 0.012	1: 0.012	work: 0.011	
+Topic 6:	dab: 0.083	periscop: 0.071	live: 0.063	weed: 0.023	b: 0.018	dabbin: 0.014	4: 0.011	dabs4lif: 0.011	kleetu: 0.011	let: 0.010	
+Topic 7:	dab: 0.093	weed: 0.055	smoke: 0.023	high: 0.018	bitch: 0.015	everi: 0.013	aint: 0.011	cant: 0.011	took: 0.010	sale: 0.010	
+Topic 8:	dab: 0.125	weed: 0.072	hash: 0.031	smoke: 0.028	addict: 0.022	dip: 0.015	see: 0.014	marijuana: 0.013	extract: 0.013	oil: 0.012	
+Topic 9:	dab: 0.106	weed: 0.054	smoke: 0.031	hit: 0.019	use: 0.016	girl: 0.012	realli: 0.011	come: 0.010	take: 0.009	refer: 0.009	
+Topic 10:	dab: 0.121	weed: 0.064	high: 0.026	get: 0.024	think: 0.017	bowl: 0.016	best: 0.012	smoke: 0.012	way: 0.010	cannabi: 0.010	
+Topic 11:	dab: 0.082	like: 0.048	night: 0.047	look: 0.045	weed: 0.034	take: 0.033	social: 0.027	insid: 0.025	club: 0.025	last: 0.025	
+Topic 12:	dab: 0.097	weed: 0.035	lol: 0.030	like: 0.028	talk: 0.016	video: 0.014	smoke: 0.014	first: 0.013	danc: 0.012	make: 0.011	
+Topic 13:	dab: 0.114	high: 0.085	marijuana: 0.071	weed: 0.064	420: 0.043	smokewe: 0.033	retailmarijuana: 0.031	cannabi: 0.017	pot: 0.013	stonerfam: 0.010	
+Topic 14:	dab: 0.078	2: 0.026	blunt: 0.022	oil: 0.022	take: 0.019	beer: 0.016	home: 0.016	two: 0.013	marijuana: 0.012	full: 0.011	

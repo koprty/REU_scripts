@@ -1,0 +1,12 @@
+Topic 0:	dab: 0.101	weed: 0.045	shatter: 0.029	marijuana: 0.021	weedfe: 0.020	wax: 0.020	oil: 0.015	cannabi: 0.013	420: 0.012	medicalmarijuana: 0.012	
+Topic 1:	dab: 0.092	weed: 0.037	smoke: 0.021	get: 0.014	nigga: 0.013	way: 0.012	high: 0.011	make: 0.010	realli: 0.009	concentr: 0.009	
+Topic 2:	dab: 0.091	oil: 0.073	rig: 0.046	glass: 0.021	pipe: 0.019	bong: 0.014	water: 0.014	tree: 0.010	day: 0.009	got: 0.009	
+Topic 3:	dab: 0.093	periscop: 0.045	live: 0.037	first: 0.017	like: 0.013	took: 0.011	video: 0.010	chill: 0.010	post: 0.009	watch: 0.009	
+Topic 4:	dab: 0.096	weed: 0.037	vape: 0.028	need: 0.016	smoke: 0.015	vapelif: 0.013	wax: 0.013	stay: 0.012	smokeshop: 0.012	vapor: 0.012	
+Topic 5:	dab: 0.097	weed: 0.071	cannabi: 0.030	dank: 0.024	weedporn: 0.019	weedstagram: 0.019	seen: 0.018	feed: 0.015	bowl: 0.015	vapeporn: 0.014	
+Topic 6:	dab: 0.123	weed: 0.099	smoke: 0.056	like: 0.026	drug: 0.025	yeah: 0.022	danc: 0.018	fuck: 0.018	look: 0.018	night: 0.011	
+Topic 7:	dab: 0.107	weed: 0.076	smoke: 0.047	hash: 0.036	time: 0.024	addict: 0.023	roll: 0.015	dip: 0.015	blunt: 0.013	know: 0.010	
+Topic 8:	dab: 0.106	weed: 0.038	smoke: 0.031	got: 0.019	high: 0.016	like: 0.015	good: 0.013	lol: 0.011	shit: 0.011	get: 0.011	
+Topic 9:	dab: 0.128	take: 0.068	smoke: 0.048	weed: 0.025	like: 0.017	see: 0.016	hit: 0.016	wanna: 0.016	fat: 0.012	waxerz: 0.012	
+Topic 10:	dab: 0.084	weed: 0.030	oil: 0.021	710: 0.017	cannabi: 0.015	ganja: 0.015	bho: 0.015	marijuana: 0.014	joint: 0.014	wax: 0.013	
+Topic 11:	dab: 0.108	high: 0.084	marijuana: 0.071	420: 0.060	weed: 0.060	smokewe: 0.039	retailmarijuana: 0.037	pot: 0.012	dabbin: 0.012	brianreese5: 0.010	
