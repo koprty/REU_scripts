@@ -1,0 +1,4 @@
+ 501  bin/mallet import-dir --input ../twitter/twitter_training/* --output trial1.mallet
+  502  bin/mallet train-classifier --input trial1.mallet --ouput-classifier trial1.classifier
+  503  bin/mallet train-classifier --input trial1.mallet --output-classifier trial1.classifier
+  504  bin/mallet classify-dir --input ../twitter/twitter_testing/* --output results.txt --classifier trial1.classifier

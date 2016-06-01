@@ -1,5 +1,8 @@
 import requests
 
+## We use the GovTrack API in order to categorize twitter_id's with their respective parties <- and thus their respective whether liberal or conservative
+# https://www.govtrack.us/developers/api
+
 # sends a request to the GovTrack API in order to find CURRENT Congress members that 
 def congress_members():
 	c = requests.get("https://www.govtrack.us/api/v2/role?current=true&limit=600")
@@ -42,27 +45,21 @@ def getNumTwitter ():
 		if x["twitterID"] != None and x["twitterID"] != "None" and len("twitterID") != 0:
 			i+=1
 	return i
-#getNumTwitter()
-#542
-#521 with twitter 
-#we will use 80% for training data and 20% for testing 
-
-#print govtrack_data
 
 govtrack_twitterID= []
+r = []
+d=[]
+
 for x in govtrack_data:
-	if x["twitterID"] != None and x["twitterID"] != "None" and len("twitterID") != 0:
+	if x["twitterID"] != None and x["twitterID"] != "None" and len("twitterID") != 0 and x["party"].lower() not in "independent":
 		govtrack_twitterID.append(x)
+		'''
+		if x["party"].lower() in "republican":
+			r.append(x)
+		elif x["party"].lower() in "democrat":
+			d.append(x)
+		'''
 
-'''
-x = govtrack_data[416:434]
-for y in x:
-	print y["twitterID"] + " " + y["party"]
-
-
-for y in govtrack_data: 
-	if y["party"].lower() =="independent":
-		print y["twitterID"]
-'''
-
+# r and d are just separate arrays with republicans and democrat politican data 
+# in twitter.py, we will still defaultly use govtrack_twitterID
 
