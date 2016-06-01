@@ -1,0 +1,11 @@
+**[Cistrans isomerism](https://en.wikipedia.org/wiki/Cis%E2%80%93trans_isomerism)** 
+
+ ---  
+
+&gt;Cis/trans isomerism, also known as geometric isomerism or configurational isomerism, is a term used in organic chemistry to refer to the stereoisomerism engendered in the relative orientation of functional groups within a molecule. It is not to be confused with E/Z isomerism, which is an absolute stereochemical description, and only to be used with alkenes. In general, such isomers contain double bonds that cannot rotate, or they may contain ring structures, where the rotation of bonds is restricted or eliminated. Cis and trans isomers occur both in organic molecules and in inorganic coordination complexes. Cis and trans descriptors are not used for cases of conformational isomerism where the two geometric forms easily interconvert, such as most open-chain single-bonded structures; instead, the terms syn and anti would be used.
+
+ &gt;The terms cis and trans are from Latin, in which cis means "on this side" and trans means "on the other side" or "across". The term "geometric isomerism" is considered an obsolete synonym of "cis/trans isomerism" by IUPAC. 
+
+ --- 
+
+ ^I ^am ^a ^bot. ^Please ^contact ^[/u/GregMartinez](https://www.reddit.com/user/GregMartinez) ^with ^any ^questions ^or ^feedback.
