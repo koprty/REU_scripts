@@ -52,6 +52,9 @@ def setup():
     if (os.path.exists(folder_name)):
         print "Folder already exists"
         exit(0)
+    if (folder_name == ""):
+        print "Please run program with desired file name as argument"
+        exit(0)
     os.makedirs(folder_name)
     os.makedirs(folder_name + "/train")
     os.makedirs(folder_name + "/train/con")
