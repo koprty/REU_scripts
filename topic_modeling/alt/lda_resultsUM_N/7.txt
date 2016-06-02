@@ -1,0 +1,7 @@
+Topic 0:	dab: 0.108	weed: 0.070	smoke: 0.061	drug: 0.026	yeah: 0.023	like: 0.016	marijuana: 0.015	look: 0.014	night: 0.012	social: 0.010	
+Topic 1:	dab: 0.114	weed: 0.074	smoke: 0.030	hash: 0.014	danc: 0.013	wax: 0.011	oil: 0.011	cannabi: 0.011	addict: 0.010	marijuana: 0.010	
+Topic 2:	dab: 0.121	weed: 0.046	high: 0.041	smoke: 0.033	like: 0.030	take: 0.026	marijuana: 0.019	420: 0.014	smokewe: 0.013	retailmarijuana: 0.013	
+Topic 3:	dab: 0.040	oil: 0.017	valentin: 0.007	drop: 0.006	day: 0.006	x: 0.006	marijuana: 0.005	danagog: 0.005	price: 0.005	torch: 0.005	
+Topic 4:	dab: 0.094	weed: 0.057	cannabi: 0.022	420: 0.021	dank: 0.019	vape: 0.015	weedporn: 0.015	weedstagram: 0.014	marijuana: 0.013	seen: 0.013	
+Topic 5:	dab: 0.092	oil: 0.046	rig: 0.035	periscop: 0.030	live: 0.023	glass: 0.016	pipe: 0.016	bong: 0.011	3: 0.011	water: 0.010	
+Topic 6:	dab: 0.108	weed: 0.044	got: 0.018	high: 0.014	get: 0.012	bowl: 0.010	smoke: 0.008	see: 0.008	wax: 0.007	think: 0.007	

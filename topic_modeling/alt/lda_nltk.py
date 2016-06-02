@@ -66,7 +66,7 @@ def string_topics(topic_list):
 
 # WIP (WORK IN PROGRESS)
 # TRYING TO FIND OPTIMAL number of topics to use
-x = range(10,20)
+x = range(5,10)
 os.chdir("lda_resultsUM_N")
 
 for num in [c for c in x]:
