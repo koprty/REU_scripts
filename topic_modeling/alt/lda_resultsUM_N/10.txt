@@ -1,10 +1,20 @@
-Topic 0:	dab: 0.084	free: 0.022	vape: 0.022	oil: 0.022	vapelif: 0.014	stay: 0.013	medic: 0.013	3: 0.012	glass: 0.011	smokeshop: 0.011	
+Vaping and Smokeshop Tweets?
+Topic 0:	dab: 0.084	free: 0.022	vape: 0.022	oil: 0.022	vapelif: 0.014	stay: 0.013	medic: 0.013	3: 0.012	glass: 0.011	smokeshop: 0.011
+Smoking/getting high
 Topic 1:	dab: 0.126	weed: 0.058	high: 0.049	smoke: 0.027	hash: 0.016	addict: 0.015	get: 0.012	time: 0.012	shit: 0.011	got: 0.011	
+General marijuana Discussion
 Topic 2:	dab: 0.088	marijuana: 0.063	420: 0.059	weed: 0.056	high: 0.037	smokewe: 0.029	retailmarijuana: 0.028	weedfe: 0.015	pot: 0.014	710: 0.013	
+Being high?
 Topic 3:	dab: 0.099	weed: 0.031	smoke: 0.030	get: 0.024	take: 0.016	high: 0.015	think: 0.014	day: 0.013	last: 0.011	one: 0.011	
+Sharing pictures of marijuana
 Topic 4:	weed: 0.067	dab: 0.057	cannabi: 0.052	look: 0.035	like: 0.033	dank: 0.029	weedporn: 0.027	weedstagram: 0.026	marijuana: 0.024	seen: 0.023	
+Paraphernalia/oil
 Topic 5:	dab: 0.115	weed: 0.045	oil: 0.036	wax: 0.019	rig: 0.018	shatter: 0.016	pipe: 0.016	bong: 0.015	concentr: 0.013	joint: 0.010	
+Taking hits
 Topic 6:	dab: 0.110	weed: 0.055	take: 0.035	smoke: 0.032	like: 0.030	hit: 0.014	wax: 0.012	got: 0.011	anoth: 0.009	roll: 0.008	
+Periscope- live streaming
 Topic 7:	dab: 0.082	periscop: 0.042	live: 0.032	stonern: 0.013	watch: 0.009	everyon: 0.009	weed: 0.009	follow: 0.009	let: 0.008	teamkush: 0.008	
-Topic 8:	dab: 0.114	weed: 0.031	smoke: 0.021	blunt: 0.015	like: 0.013	nigga: 0.012	need: 0.012	marijuana: 0.011	fuck: 0.008	yall: 0.008	
+Smoking blunts
+Topic 8:	dab: 0.114	weed: 0.031	smoke: 0.021	blunt: 0.015	like: 0.013	nigga: 0.012	need: 0.012	marijuana: 0.011	fuck: 0.008	yall: 0.008
+idk	
 Topic 9:	dab: 0.129	weed: 0.090	smoke: 0.065	drug: 0.024	yeah: 0.021	cam: 0.010	like: 0.010	best: 0.009	know: 0.009	bowl: 0.009	

@@ -1,9 +1,18 @@
+Paraphernalia/Smokeshops/vaping
 Topic 0:	dab: 0.060	oil: 0.040	vape: 0.038	rig: 0.028	glass: 0.017	free: 0.016	vapelif: 0.016	stay: 0.015	smokeshop: 0.014	giveaway: 0.011	
-Topic 1:	dab: 0.123	weed: 0.068	smoke: 0.044	like: 0.032	take: 0.021	danc: 0.010	hit: 0.010	look: 0.009	get: 0.008	lol: 0.008	
-Topic 2:	dab: 0.085	wax: 0.049	weed: 0.024	shatter: 0.023	smoke: 0.019	extract: 0.018	710: 0.015	new: 0.013	see: 0.012	oil: 0.011	
+Smoking/taking a hit
+Topic 1:	dab: 0.123	weed: 0.068	smoke: 0.044	like: 0.032	take: 0.021	danc: 0.010	hit: 0.010	look: 0.009	get: 0.008	lol: 0.008
+Forms of marijuana - shatter, extract, oil
+Topic 2:	dab: 0.085	wax: 0.049	weed: 0.024	shatter: 0.023	smoke: 0.019	extract: 0.018	710: 0.015	new: 0.013	see: 0.012	oil: 0.011
+Smoking/marijuana discussion
 Topic 3:	dab: 0.106	weed: 0.090	marijuana: 0.047	smoke: 0.043	420: 0.029	high: 0.024	drug: 0.023	yeah: 0.021	smokewe: 0.020	retailmarijuana: 0.019	
-Topic 4:	dab: 0.101	weed: 0.034	smoke: 0.025	bowl: 0.010	think: 0.010	blunt: 0.009	wax: 0.009	play: 0.009	let: 0.008	got: 0.008	
-Topic 5:	dab: 0.075	weed: 0.030	mean: 0.023	bho: 0.013	oil: 0.011	concentr: 0.011	talk: 0.011	smoke: 0.009	bed: 0.009	mani: 0.009	
-Topic 6:	dab: 0.115	high: 0.072	time: 0.037	get: 0.022	fuck: 0.017	way: 0.015	weed: 0.014	first: 0.013	last: 0.011	got: 0.011	
+Different methods - bowls, blunts, wax
+Topic 4:	dab: 0.101	weed: 0.034	smoke: 0.025	bowl: 0.010	think: 0.010	blunt: 0.009	wax: 0.009	play: 0.009	let: 0.008	got: 0.008
+Oil discussion	
+Topic 5:	dab: 0.075	weed: 0.030	mean: 0.023	bho: 0.013	oil: 0.011	concentr: 0.011	talk: 0.011	smoke: 0.009	bed: 0.009	mani: 0.009
+Being/getting high
+Topic 6:	dab: 0.115	high: 0.072	time: 0.037	get: 0.022	fuck: 0.017	way: 0.015	weed: 0.014	first: 0.013	last: 0.011	got: 0.011
+Periscope- live streaming	
 Topic 7:	dab: 0.124	weed: 0.044	periscop: 0.022	live: 0.021	marijuana: 0.015	high: 0.015	420: 0.009	dabbin: 0.008	weedfe: 0.008	get: 0.008	
+Sharing pictures of marijuana
 Topic 8:	dab: 0.080	weed: 0.050	dank: 0.030	cannabi: 0.030	weedporn: 0.024	bong: 0.024	weedstagram: 0.022	seen: 0.021	oil: 0.018	feed: 0.018	
