@@ -60,5 +60,5 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-
-.DS_Store
+#Get rid of DS_Stores in the git repositories
+*.DS_Store
