@@ -1,17 +1,17 @@
-
 """
 Written by Lise Ho
 This script is created to match elements in the A-F excel sets to their database counterparts to get the correct screenname for further analysis.
-Due to the unavailability of the pre-processing scripts, there is a degress of error in this script in that ~23 'positive' elements were not matched from the
-      tsv file to the database.
-      Thus to supplement this script, use the "findunmatched.py" that does direct text cross validation to determine these matches.
-            The unmatched strings were manually found so it may be necessary to edit the findunmatched.py file
+Uses the preprocessing implemented on database tweets to get the text of the tweets in the provided excel and text files
+
 """
 
 import tweepy
 import sqlite3
 import json
-import pprint
+import re
+import string
+import time
+
 
 ######## taken <- AND Edited from parse_text.py python file #########
 # parses all lines with a positive result to it
@@ -19,6 +19,7 @@ def parsePosText(fname):
       #text = ""
       text = []
       f = open (fname, 'r')
+      i = 0
       for line in f:
             content = line.split('\t')
             try:
@@ -31,27 +32,80 @@ def parsePosText(fname):
                                     phrase.append(y)
                         phrase = " ".join(phrase)
                         
-                        text.append(phrase)
+                        if len(content) > 4:
+                              i= 4
+                              while i < len(content):
+                                    phrase += "\t"+content[i]
+                                    i+=1
+                       
+                        phrase =  phrase.split("\n")[0]
+                        text.append(phrase.replace("\r", " ").replace("\n", " ").replace("\t", " ").strip())
+                        #text.append(phrase.split("\n")[0].strip())
+
             except IndexError as e:
+                  #int("asdfads")
+                 
+                  print str(content[0]) + " ____ " + str(i)
+
+                  
+                  if len(text) > 0:
+                        '''
+                        for r in content:
+                              text[-1] = text[-1] + "\n" + str(r)
+                        '''
+                        pass
+                              #text[-1] = text[-1].replace("\n"," ")
+                  
+                  #print line
+                  
                   pass
+            i+=1
                   #print str(content)+ " <-- " + fname 
       f.close()
 
       return text
 ########### End adapted code from parse_text.py ##########
 
+##
+
+def clean_str(string, TREC=False):
+    """
+    Tokenization/string cleaning for all datasets except for SST.
+    Every dataset is lower cased except for TREC
+    """
+    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)     
+    string = re.sub(r"\'s", " \'s", string) 
+    string = re.sub(r"\'ve", " \'ve", string) 
+    string = re.sub(r"n\'t", " n\'t", string) 
+    string = re.sub(r"\'re", " \'re", string) 
+    string = re.sub(r"\'d", " \'d", string) 
+    string = re.sub(r"\'ll", " \'ll", string) 
+    string = re.sub(r",", " , ", string) 
+    string = re.sub(r"!", " ! ", string) 
+    string = re.sub(r"\(", " \( ", string) 
+    string = re.sub(r"\)", " \) ", string) 
+    string = re.sub(r"\?", " \? ", string) 
+    string = re.sub(r"\s{2,}", " ", string)    
+    return string.strip() if TREC else string.strip().lower()
+
+
+    ##
+
+
+#these will be used to cleanse the tweets
+removal_pattern1 = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+removal_pattern2 = re.compile('//t.co(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+removal_pattern3 = re.compile('\n')
+removal_pattern4 = re.compile(' amp ')
+removal_pattern5 = re.compile('@[\w]* ')
+
+#removal_pattern6 = re.compile(r'\\')
+
 ### Take out hashtags and all mentions from tweet text given a tweettext
 def formatSQLresults (obj):
-      tweettxt = obj["Tweet_Text"]
+      s = obj["Tweet_Text"]
       
-      words = []
-
-      if (tweettxt != None ):
-            spun = ["\n", "\t"]
-            for s in spun:
-                  tweettxt = tweettxt.replace (s, " ")
-            
-            words = tweettxt.split(" ") 
+      words = s.split(" ") 
 
      
       formated_words = []
@@ -62,61 +116,22 @@ def formatSQLresults (obj):
       for x in words:
             if "#" in x: 
                   hashtags.append(x)
-                  x = x.replace("#", "")
 
-            if ("https://" not in x and "http://" not in x):
-                  
-                  x = x.replace("&lt", "lt")
-                  x = x.replace("&gt", "gt")
+      s = s.encode('ascii','ignore')
+      s = s+" "
+      s = removal_pattern5.sub('', s)
+      s = removal_pattern1.sub('', s)
+      s = removal_pattern2.sub('', s)
+      s = removal_pattern3.sub(' ', s)
+      s = s.translate(None, string.punctuation)
+      s = s.lower()
+      s = removal_pattern4.sub('',s)
+     
+      formated_words = s.replace("\r", " ").replace("\n", " ").replace("\t", " ")
+      print formated_words
 
-                  pun = [ "\\", "/", "?",  "|", "$", "`", "*", "(", "-", "_", "[", "]", "{", "}", "+", "=", "!", "%", "^", ",", ";", "~"]
-                  
-                  for p in pun:
-                        x = x.replace (p, "")
-
-                  if len(x) > 0 and x[0] == ".":
-                        x = x[1:]
-                  #print x
-                  if "&" == x or "&amp" == x:
-                        pass
-                        #x = x.replace ("&amp", "")
-                        formated_words.append("?!_")
-                        #print x
-                        #print formated_words
-                  elif "&" in x:
-                        x = x.replace(".", "")
-                        x = x.replace('"', "")
-                        x = x.replace(')', "")
-                        x = x.replace("'", "")
-                        x = x.replace(":", "")
-                        x = x.replace("&", "")
-                        print x
-                        formated_words.append(x.lower())
-                        #print "hi"
-                  else:
-                        if len(x) > 0 and x[0] == "@" and "." not in x and not x.count("@") > 1  and ")" not in x and not ":" == x[-1] and not "," == x[-1]:
-                              pass
-                        else:
-                              x = x.replace(".", "")
-                              x = x.replace("@", "")
-                              x = x.replace('"', "")
-                              x = x.replace(')', "")
-                              x = x.replace("'", "")
-                              x = x.replace(":", "")
-                              x = x.replace(",", "")
-                              formated_words.append(x.lower())
-            else:
-                  formated_words.append("")
-            #print formated_words
-      if "smokecartel" in tweettxt.lower():
-            print tweettxt
-            print formated_words
-            #formated_words = " ".join(formated_words).replace (" ?!_ ", "")
-            #print formated_words
-            print "_"
-            #exit()
-      formated_words = " ".join(formated_words).replace (" ?!_ ", "")
-      return [formated_words, " ".join(hashtags)]
+      print [formated_words.strip(), " ".join(hashtags)]
+      return [formated_words.strip(), " ".join(hashtags)]
 
 
 
@@ -130,6 +145,8 @@ def dict_factory(cursor, row):
 tablenames = ["SET_A", "SET_B", "SET_C", "SET_D", "SET_E", "SET_F"]
 conn = sqlite3.connect('tweets.sqlite')
 masterlist = []
+unmatched = []
+negatives = []
 total = 0
 totalloss = 0
 inp = ""
@@ -149,19 +166,15 @@ for z in tablenames:
       twitterdata = cur.fetchall()
 
       excel_data = parsePosText(z + ".txt") 
-      # 4533 positivess
+      # 4533 positives
 
       i = 0
-      print "number of positives in excel_data"
-      print len(excel_data)
-      print len(twitterdata)
       data = []
       for u in twitterdata:
             formateed= formatSQLresults (u)
             htags = formateed[1]
             d = u
             d['Tweet_Text'] = formateed[0] 
-            #print d['Tweet_Text']
             d['hashtags'] = htags
             data.append(d)
             
@@ -169,19 +182,23 @@ for z in tablenames:
 
       datanah = []
       for x in data:
-            
-            if x['Tweet_Text'].strip().lower() in excel_data:
-                  #print
-                  #print x["Tweet_Text"]
-                  #print
+            if  x['Tweet_Text'].strip() in excel_data:
                   masterlist.append(x)
-                  excel_data.remove(x['Tweet_Text'].strip().lower())
+                  print x["Tweet_Text"] + ":) "
+                  excel_data.remove(x['Tweet_Text'])
                   i+=1
             else:
                   datanah.append(x)
+                  #print "boooo"
                   #print x
                   #print x["Tweet_Text"]
             #print x["Tweet_Text"]
+            if "followfor" in x['Tweet_Text'].strip():
+                  l = []
+                  l.append(x['Tweet_Text'].strip())
+                  print "mooooo"
+                  print l
+                  #exit()
 
       print i
 
@@ -189,22 +206,20 @@ for z in tablenames:
             if inp.strip() == "x":
                   db = not db
             if db:
-                  f = open ("output.txt", "w").close()
+                  f = open ("output_a.txt", "w").close()
             else:
-                  f2 = open ("output2.txt", "w").close()
+                  f2 = open ("output_b.txt", "w").close()
+      unmatched += excel_data
       if db:
             print "SQL DB DATA"
             print "length of all data not positive / errors in db parsing"
             print len(datanah)
             print "excel data length"
             print len(excel_data)
-
-
-            f = open ("output.txt", "a")
+            f = open ("output_a.txt", "a")
+            print unmatched
+            f.write(str(unmatched) + "\n" + str(len(unmatched)) + "\n" + z + "\n")
             
-
-            for o in datanah:
-                  f.write( o['Tweet_Text'] + "\n")
             f.close()
             
             #print twitterdata
@@ -215,24 +230,36 @@ for z in tablenames:
             print "excel data length"
             print len(excel_data)
             print z
-            f2 = open ("output2.txt", "a")
+            f2 = open ("output_b.txt", "a")
 
             f2.write(str(excel_data) + "\n" + str(len(excel_data)) + "\n")
             f2.close()
             #print excel_data
       totalloss += len(excel_data)
-
+      
+      negatives += datanah
+      print totalloss
+      print len(masterlist)
+      #time.sleep(60)
+#print datanah
+            #print y["Tweet_Text"].split("\t")[0]
 dbname = str(raw_input("Write stuff into database (type tablename if yes; 'n' if no \n"))
 if dbname == "n":
+      print "TOTAL LOSS"
+      print len(unmatched)
+      print unmatched
+      print totalloss
+      print len(masterlist)
       exit()
 else:
       dbname = dbname.strip()
 print "TOTAL LOSS"
+print len(unmatched)
 print totalloss
 print len(masterlist)
 g = 1
 for x in masterlist:
-      x['ImpureQuery'] = 77
+      x['ImpureQuery'] = 88
       x['element_id'] = g
       columns = ', '.join(x.keys())
       placeholders = ':'+', :'.join(x.keys())
