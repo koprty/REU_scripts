@@ -52,7 +52,10 @@ def topic_dist(doc_bow, category = ""):
 	result_model = lda.print_topics(num_topics=9, num_words=10)	
 	s = string_topics(result_model)
 	print s
-	doc_lda = lda[doc_bow]
+	t = open("topics.txt", "w")
+	t.write(s)
+	t.close()
+	doc_lda = lda.get_document_topics(doc_bow, minimum_probability = .001)
 	pp_doc = pretty_topic_print(doc_lda)
 	if (category != ""):
 		fout_name = category + "_topic_dist.txt"
