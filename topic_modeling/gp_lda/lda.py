@@ -32,7 +32,7 @@ def corpus_and_d():
 def lda():
 	corpus=corpora.MmCorpus("tweet_corpus.mm")
 	d = corpora.Dictionary.load("tweet_dict.dict")
-	lda = models.ldamodel.LdaModel(corpus, num_topics = 10, id2word=d)
+	lda = models.ldamodel.LdaModel(corpus, num_topics = 9, id2word=d)
 	lda.save("lda.ginsem")
 
 def print_topics(topic_list):

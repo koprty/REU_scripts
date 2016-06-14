@@ -46,6 +46,7 @@ for i in doc_set:
 
 # turn our tokenized documents into a id <-> term dictionary
 dictionary = corpora.Dictionary(texts)
+dictionary.save("tweet_dict.dict")
 
 # convert tokenized documents into a document-term matrix
 corpus = [dictionary.doc2bow(text) for text in texts]
@@ -67,18 +68,20 @@ def string_topics(topic_list):
 # WIP (WORK IN PROGRESS)
 # TRYING TO FIND OPTIMAL number of topics to use
 x = range(5,10)
-os.chdir("lda_resultsUM_N")
+#os.chdir("lda_resultsUM_N")
 
-for num in [c for c in x]:
+#for num in [c for c in x]:
 #for num in x:
 	# generate LDA model
-	ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=num, id2word = dictionary, passes=20)
+ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics=9, id2word = dictionary, passes=20)
 
-	result_model = ldamodel.print_topics(num_topics=num, num_words=10)	
-	
-	s = string_topics(result_model)
-	
-	f= open (str(num)+".txt", 'w')
-	f.write(s)
-	f.close
-	print str(num)+".txt"
+ldamodel.save("lda_9.ginsem")
+result_model = ldamodel.print_topics(num_topics=9, num_words=10)	
+
+s = string_topics(result_model)
+
+print s
+	#f= open (str(num)+".txt", 'w')
+	#f.write(s)
+	#f.close
+	#print str(num)+".txt"
