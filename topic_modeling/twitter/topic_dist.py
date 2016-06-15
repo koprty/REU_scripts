@@ -11,13 +11,13 @@ p_stemmer = PorterStemmer()
 
 categories = ["individuals", "shops", "commercial_growers", "service_providers", "non-profits", "news", "interest_groups"]
 
-
+#transforms text from a file to a bag of words type thing
 def doc_to_bow(filename):
 	en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh', 'im', 'n', 'dont', 'ur']
 	data = open(filename, "r")
 	text = data.read()
 	data.close()
-	#remove stopwords 
+	#remove stopwords, tokenize, and use stems of words
 	raw = text.lower()
 	tokens =tokenizer.tokenize(raw)
 	stopped_tokens = [j for j in tokens if not j in stopwords.words('english')]
@@ -26,6 +26,7 @@ def doc_to_bow(filename):
 	doc_bow = d.doc2bow(stemmed_tokens)
 	return doc_bow
 
+#makes a visually nice display of topics
 def string_topics(topic_list):
 	s = ""
 	for topic in topic_list:
@@ -39,6 +40,7 @@ def string_topics(topic_list):
 		s += "\n"
 	return s
 
+#makes a visually nice display of topic distribution for a document
 def pretty_topic_print(doc_dist = []):
 	s = ""
 	for topic in doc_dist:
@@ -47,14 +49,12 @@ def pretty_topic_print(doc_dist = []):
 		s += "Topic " + str(topic_num) + ":\t" + str(topic_dist) + "\n"
 	return s
 
+#gets the topic distribution of a bag of words document, writes it to a file, and prints it
 def topic_dist(doc_bow, category = ""):
 	lda = models.ldamodel.LdaModel.load("lda_9.ginsem")
 	result_model = lda.print_topics(num_topics=9, num_words=10)	
 	s = string_topics(result_model)
 	print s
-	t = open("topics.txt", "w")
-	t.write(s)
-	t.close()
 	doc_lda = lda.get_document_topics(doc_bow, minimum_probability = .001)
 	pp_doc = pretty_topic_print(doc_lda)
 	if (category != ""):
@@ -65,7 +65,7 @@ def topic_dist(doc_bow, category = ""):
 	print "\nTopic Distribution for " + category + ":\n"
 	print pp_doc
 
-
+#run for different categories
 for c in categories:
 	file = c + ".txt"
 	doc_bow = doc_to_bow(file)

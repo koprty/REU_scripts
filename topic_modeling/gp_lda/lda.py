@@ -4,6 +4,9 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.stem.porter import PorterStemmer
 from gensim import corpora, models
 
+
+#USE lda_nltk.py in alt file
+
 def corpus_and_d():
 
 	tokenizer = RegexpTokenizer(r'\w+')
