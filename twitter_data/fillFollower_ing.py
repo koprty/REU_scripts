@@ -14,6 +14,7 @@ def readFollowerstoD (fname):
 		#print twocolumns
 		if len(twocolumns) != 2:
 			print twocolumns
+			print "ender"
 			exit()
 		d[twocolumns[0]] = twocolumns[1]
 	f.close()
@@ -68,7 +69,8 @@ def parseOutIdsNotInDataSet (d, columntype="followers"):
 def insertFollower_ing():
 	pass
 
-
+# followers mergeing 
+'''
 filename = "followers.txt"
 
 dictF= readFollowerstoD(filename)
@@ -84,6 +86,24 @@ for d in x:
 	print i
 	i += 1
 	time.sleep(20)
+'''
+
+filename = "following.txt"
+
+dictF= readFollowerstoD(filename)
+
+chunks = [dictF.iteritems()]*40
+g = (dict(ifilter(None, v)) for v in izip_longest(*chunks))
+#print list(g)
+x = list(g)
+print len(x)
+i = 0
+for d in x:
+	result = parseOutIdsNotInDataSet (d, "following")
+	print i
+	i += 1
+	time.sleep(20)
+
 #print dictF
 print "hi we done :D "
 
