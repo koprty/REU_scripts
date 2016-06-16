@@ -48,7 +48,7 @@ def add_nodes (G, category ="", color="w"):
 	'''
 	G.add_nodes_from(sn)
 	pos=nx.spring_layout(G) 
-	nx.draw_networkx_nodes(G, pos, node_color= color, node_size=10, alpha =0.8 )
+	nx.draw_networkx_nodes(G, pos, node_color= color, node_size=6, alpha =0.8 )
 	conn.close()
 
 
@@ -82,19 +82,25 @@ for x in categories:
 
 print "nodes have all been added"
 j = 0
+y = categories[0]
+edges.append(add_edges (G, y[0], y[1]))
+'''
 for y in categories:
 	edges.append(add_edges (G, y[0], y[1]))
 	print str (y) + "   " + str(j) + "th set of edges have been added"
 	j+=1
-pos=nx.spring_layout(G) 
+'''
+pos=nx.spectral_layout(G) 
 
 i = 0
 while i < len(categories) and i < len(edges):
-	print edges[i]
-	print i
-	nx.draw_networkx_edges(G,pos,edgelist = edges[i], width=10.0,alpha=0.5,edge_color=categories[i][1])
+	#print edges[i]
+	#print i
+	nx.draw_networkx_edges(G,pos,edgelist = edges[i], width=1.0,alpha=0.5,edge_color=categories[i][1])
 
 	i +=1
+
+	
 '''
 G.add_nodes_from("qwertyasp")
 G.add_edge('a', 's')
@@ -121,9 +127,9 @@ nx.draw_networkx_edges(G,pos,edgelist = [('a', 's'), ('a','p')], width=10.0,alph
 nx.draw_networkx_edges(G,pos,edgelist = [('s', 'p'), ('p','q')],width=10.0,alpha=0.5,edge_color='r')
 
 '''
-
+print "rendering is complete"
 plt.axis('off')
-plt.savefig("path.png")
+plt.savefig("individuals_test_spectral.png")
 '''
 
 
