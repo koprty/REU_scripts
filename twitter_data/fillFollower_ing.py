@@ -104,13 +104,39 @@ for d in x:
 	i += 1
 	time.sleep(20)
 
-#print dictF
-print "hi we done :D "
 
-'''
-M = getDistinctAndAll(filename)
-#print  M[0]
-print len(M[0])
 
-print len(M[1])
-'''
+#tablenames = Followers or Following
+def insertScreenameswithOne (tablename, distinctd):
+	conn = sqlite3.connect("tweets.sqlite")
+	cursor = conn.cursor()
+	dbname = "users"
+	dbname = "users2"
+	i = 0
+	for x in distinctd:
+		userd = distinctd[x]
+		columns = ", ".join(["Usr_ID", "Screename", "Category", "AccountCreated", "Description", "user_mentions"])
+		columns += ", " + tablename[:-1]
+		v = [str(userd["Usr_ID"]), str(userd["Usr_Screename"]),  str(userd["Category"]), "null", "null", "null", str(userd["Usr_Description"].encode("utf-8")), "null"]
+		if userd["Usr_ID"] == 0 or len(str(userd['Usr_ID'])) <= 1:
+			print userd["Usr_ID"]
+
+		if len(v[-2]) == 0:
+			v[-2] = "null"
+		L = []
+		for x in v:
+			if len(x) == 0 or x == None or x == "":
+				x = "null"
+			x = "'%s'" % x.replace("'","")
+			L.append(x)
+		values = ", ".join(L).decode("utf-8").encode("ascii", "ignore")
+		query = 'INSERT INTO %s (%s) VALUES (%s)' % (dbname,columns, values)
+		
+		conn.execute(query)
+		#conn.commit()
+		i+=1
+
+	conn.close()
+	return
+
+

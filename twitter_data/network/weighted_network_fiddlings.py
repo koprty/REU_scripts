@@ -48,6 +48,8 @@ def calculate_counts (categories, types="following"):
 	conn.close()
 	return weights
 
+
+
 # returns the nodes weighted (size proportional to their following count )
 # haha not really that useful
 def weighted_nodes ():
@@ -73,6 +75,35 @@ def weighted_nodes ():
 	plt.axis('off')
 	plt.savefig("weighted_graph.png") # save as png
 	print "Saved image into weighted_graph.png"
+
+
+# calculate edge counts
+def calculate_edge_counts (category1, category2 types="following"):
+	conn = sqlite3.connect("tweets.sqlite")
+	cursor = conn.cursor()
+	weights = []
+	for category in categories:
+		query = "select %s from users where category = '%s'"%(types, category)
+		cursor.execute(query)
+		results = cursor.fetchall()
+		distinct_follow = []
+		for x in results:
+			try:
+				ids = x[0].split(" ")
+				for y in ids:
+					if y.strip() != "null" and int(y) not in distinct_follow:
+						query = "select * from users where Usr_ID = %d"%(int(y))
+						cursor.execute(query)
+						results = cursor.fetchall()	
+						if len(results) > 0:
+							distinct_follow.append(int(y))
+			except:
+				e = sys.exc_info()[0]
+				print e
+				exit()
+		weights.append(len(distinct_follow))
+	conn.close()
+	return weights
 
 	exit()
 
@@ -101,5 +132,6 @@ def weighted_nodes ():
 	# labels
 	nx.draw_networkx_labels(G,pos,font_size=20,font_family='sans-serif')
 
-
-weighted_nodes()
+def weighted_edges():
+	pass
+#weighted_nodes()
