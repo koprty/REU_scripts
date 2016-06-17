@@ -1,4 +1,4 @@
-# Network subdirectory of Twitter
+# Network subdirectory 
 * This directory containes the scripts used to parse the database table and create network visualizations via networkx
 
 ##Contents
