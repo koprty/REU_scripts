@@ -15,15 +15,20 @@ categories = ["individuals", "shops", "commercial_growers", "service_providers",
 def doc_to_bow(filename):
 	en_stop = list(set(get_stop_words('en')) | set(stopwords.words('english'))) + ['u','oh', 'uh', 'im', 'n', 'dont', 'ur']
 	data = open(filename, "r")
-	text = data.readLines()
+	text = data.read()
+	text = text.split("\n")
 	data.close()
-	#remove stopwords 
-	raw = text.lower()
-	tokens =tokenizer.tokenize(raw)
-	stopped_tokens = [j for j in tokens if not j in stopwords.words('english')]
-	stemmed_tokens = [p_stemmer.stem(j) for j in stopped_tokens]
+
+	c = []
+	for i in text:
+		#remove stopwords 
+		raw = i.lower()
+		tokens =tokenizer.tokenize(raw)
+		stopped_tokens = [j for j in tokens if not j in stopwords.words('english')]
+		stemmed_tokens = [p_stemmer.stem(j) for j in stopped_tokens]
+		c.append(stemmed_tokens)
 	d = corpora.Dictionary.load("tweet_dict.dict")
-	doc_bow = d.doc2bow(stemmed_tokens)
+	doc_bow = [d.doc2bow(i) for i in c]
 	return doc_bow
 
 def string_topics(topic_list):
@@ -47,26 +52,44 @@ def pretty_topic_print(doc_dist = []):
 		s += "Topic " + str(topic_num) + ":\t" + str(topic_dist) + "\n"
 	return s
 
-def topic_dist(doc_bow, category = ""):
+def topic_dist_2(doc_bow_arr, category = ""):
+	sum_prob = [0,0,0,0,0,0,0,0,0]
 	lda = models.ldamodel.LdaModel.load("lda_9.ginsem")
 	result_model = lda.print_topics(num_topics=9, num_words=10)	
 	s = string_topics(result_model)
 	print s
-	doc_lda = lda[doc_bow]
-	pp_doc = pretty_topic_print(doc_lda)
+	doc_lda = []
+	count = 0
+	for doc_bow in doc_bow_arr:
+		tweet_lda = lda.get_document_topics(doc_bow, minimum_probability=.001)
+		doc_lda.append(tweet_lda)
+		for topic in tweet_lda:
+			topic_num = topic[0]
+			topic_dist = topic[1]
+			sum_prob[topic_num] += topic_dist
+		count +=1
+	cat_dist = []
+
+	index = 0
+	for value in sum_prob:
+		sum_prob[index] = value / count
+		cat_dist.append((index,sum_prob[index]))
+		index += 1
+
+	pp_doc = pretty_topic_print(cat_dist)
+
 	if (category != ""):
-		fout_name = category + "_topic_dist.txt"
-		#fout = open(fout_name, "w")
-		#fout.write(pp_doc)
-		#fout.close()
+		fout_name = category + "_topic_dist_2.txt"
+		fout = open(fout_name, "w")
+		fout.write(pp_doc)
+		fout.close()
 	print "\nTopic Distribution for " + category + ":\n"
 	print pp_doc
 
-#doc_bow=doc_to_bow("some_shops.txt")
-#topic_dist(doc_bow, "some_shops")
+#doc_bow_arr=doc_to_bow("commercial_growers.txt")
+#topic_dist_2(doc_bow_arr, "commercial_growers")
 
-#for c in categories:
-	#file = c + ".txt"
-	#doc_bow = doc_to_bow(file)
-	#topic_dist(doc_bow, c)
-
+for c in categories:
+	file = c + ".txt"
+	doc_bow = doc_to_bow(file)
+	topic_dist_2(doc_bow, c)
