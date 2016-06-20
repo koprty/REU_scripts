@@ -111,7 +111,7 @@ def weighted_edges(weight_tuples, table_type, categories = categories):
 	G=nx.MultiDiGraph()
 	el = {}
 	for x in categories:
-		G.add_node(    x , label = x + " ("+ str(users_count(x, table_type))  + ")"   )
+		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]"   )
 	for w in weight_tuples:
 		G.add_edge(w[0], w[1], label=str(w[2]))
 		el[(w[0], w[1])] = int(w[2])
