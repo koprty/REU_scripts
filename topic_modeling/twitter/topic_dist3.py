@@ -78,7 +78,7 @@ def topic_dist_3(doc_bow_arr, category = ""):
 	pp_doc = pretty_topic_print(cat_dist)
 
 	if (category != ""):
-		fout_name = category + "_topic_dist_3.txt"
+		fout_name = category + "_topic_dist_3_retry.txt"
 		fout = open(fout_name, "w")
 		fout.write(pp_doc)
 		fout.close()
