@@ -80,8 +80,11 @@ def users_count (category, table_type="followings"):
 	conn2 = sqlite3.connect("../tweets.sqlite")
 	cursor = conn2.cursor()
 	weights = []
+
 	query = "select count(distinct %s.screename) from %s inner join users on users.Usr_ID = %s.Usr_ID where users.category= '%s'"%(table_type,table_type, table_type,category)
+	print query
 	cursor.execute(query)
+
 	results = cursor.fetchall()
 	weight = results[0][0]
 	conn2.close()
@@ -96,7 +99,7 @@ def calculate_edge_counts ( table_type="followings"):
 		for category2 in categories:
 			#query = "select %s from users where category = '%s'"%(types, category)
 			query = "select count(*) from %s where %s_id in (select Usr_ID from users where category ='%s') and Usr_id in (select Usr_ID from users where category = '%s');"% (table_type, table_type[:-1], category, category2)
-
+			print query
 			cursor.execute(query)
 			results = cursor.fetchall()
 			
@@ -106,14 +109,12 @@ def calculate_edge_counts ( table_type="followings"):
 
 def weighted_edges(weight_tuples, table_type, categories = categories):
 	G=nx.MultiDiGraph()
-	node_count = calculate_counts (categories, types="following")
 	el = {}
 	for x in categories:
 		G.add_node(    x , label = x + " ("+ str(users_count(x, table_type))  + ")"   )
 	for w in weight_tuples:
 		G.add_edge(w[0], w[1], label=str(w[2]))
 		el[(w[0], w[1])] = int(w[2])
-	print el
 	pos = nx.circular_layout(G) # positions for all nodes
 	pos = nx.spectral_layout(G)
 	pos = nx.shell_layout(G)
@@ -129,10 +130,9 @@ def weighted_edges(weight_tuples, table_type, categories = categories):
 	nx.draw_networkx_edge_labels(G,pos, edge_labels = el, font_size=8, alpha=0.8)
 	#plt.axis('off')
 	#plt.savefig("edges.png")
-	nx.write_dot(G,'graph.dot')
+	nx.write_dot(G,table_type+'.dot')
 	print "done :D "
-	print G.edges()
-	print G.nodes_with_selfloops()
+	print "dot file in " + table_type+".dot :D :D :D"
 
 
 categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'non-profits', 'news', 'interest_groups']
@@ -140,5 +140,6 @@ categories = ['individuals', 'shops', 'commercial_growers', 'service_providers',
 followingweights = calculate_edge_counts()
 weighted_edges (followingweights, "followings")
 
-#print followingweights
+followingweights = calculate_edge_counts("followers")
+weighted_edges (followingweights, "followers")
 
