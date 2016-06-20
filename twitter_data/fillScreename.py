@@ -50,6 +50,7 @@ def exceltodictionary(dataf, dic = {}):
 		y = line.split("")
 		'''
 # takes a dictionary of dictionaries where the upper level key is the screenname matching the value of it to a corresponding dictionary 
+#inserts to users database where follower and following key is the space separated list of ids
 def insertScreenname ( distinctd ):
 	'''
 2
@@ -95,6 +96,8 @@ def insertScreenname ( distinctd ):
 	return
 
 
+
+
 filename = "all_tweets_dict_fully_checked"
 
 dp = getDistinctUserProfiles(filename)
@@ -102,7 +105,7 @@ dp = exceltodictionary("data.xlsx", dp)
 dp = exceltodictionary("part2.xlsx", dp)
 #for x in dp.keys():
 #	print dp[x]["Usr_Screename"] if len(dp[x]["Usr_Screename"]) > 0 else exit()
-insertScreenname(dp)
+#insertScreenname(dp)
 
 '''
 M = getDistinctAndAll(filename)

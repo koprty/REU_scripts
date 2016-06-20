@@ -4,6 +4,7 @@ Written by Lise Ho
 This script is created to match elements in the A-F excel sets to their database counterparts to get the correct screenname for further analysis.
 Due to the unavailability of the pre-processing scripts, there is a degress of error in this script in that ~23 'positive' elements were not matched from the
       tsv file to the database.
+      In the data used in the report, find unmatched is not used, read below for contxt
       Thus to supplement this script, use the "findunmatched.py" that does direct text cross validation to determine these matches.
             The unmatched strings were manually found so it may be necessary to edit the findunmatched.py file
 """
