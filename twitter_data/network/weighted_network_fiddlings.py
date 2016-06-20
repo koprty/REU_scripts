@@ -22,7 +22,7 @@ cm = {"individuals":"c", # cyan
 
 
 def calculate_counts (categories, types="following"):
-	conn = sqlite3.connect("tweets.sqlite")
+	conn = sqlite3.connect("../tweets.sqlite")
 	cursor = conn.cursor()
 	weights = []
 	for category in categories:
@@ -47,11 +47,9 @@ def calculate_counts (categories, types="following"):
 		weights.append(len(distinct_follow))
 	conn.close()
 	return weights
-
-
-
 # returns the nodes weighted (size proportional to their following count )
 # haha not really that useful
+# gets weights by distinct users with connections to another twitter database
 def weighted_nodes ():
 
 	weights = calculate_counts(categories)
@@ -77,61 +75,70 @@ def weighted_nodes ():
 	print "Saved image into weighted_graph.png"
 
 
+
+def users_count (category, table_type="followings"):
+	conn2 = sqlite3.connect("../tweets.sqlite")
+	cursor = conn2.cursor()
+	weights = []
+	query = "select count(distinct %s.screename) from %s inner join users on users.Usr_ID = %s.Usr_ID where users.category= '%s'"%(table_type,table_type, table_type,category)
+	cursor.execute(query)
+	results = cursor.fetchall()
+	weight = results[0][0]
+	conn2.close()
+	return weight
+
 # calculate edge counts
-def calculate_edge_counts (category1, category2 types="following"):
-	conn = sqlite3.connect("tweets.sqlite")
+def calculate_edge_counts ( table_type="followings"):
+	conn = sqlite3.connect("../tweets.sqlite")
 	cursor = conn.cursor()
 	weights = []
 	for category in categories:
-		query = "select %s from users where category = '%s'"%(types, category)
-		cursor.execute(query)
-		results = cursor.fetchall()
-		distinct_follow = []
-		for x in results:
-			try:
-				ids = x[0].split(" ")
-				for y in ids:
-					if y.strip() != "null" and int(y) not in distinct_follow:
-						query = "select * from users where Usr_ID = %d"%(int(y))
-						cursor.execute(query)
-						results = cursor.fetchall()	
-						if len(results) > 0:
-							distinct_follow.append(int(y))
-			except:
-				e = sys.exc_info()[0]
-				print e
-				exit()
-		weights.append(len(distinct_follow))
+		for category2 in categories:
+			#query = "select %s from users where category = '%s'"%(types, category)
+			query = "select count(*) from %s where %s_id in (select Usr_ID from users where category ='%s') and Usr_id in (select Usr_ID from users where category = '%s');"% (table_type, table_type[:-1], category, category2)
+
+			cursor.execute(query)
+			results = cursor.fetchall()
+			
+			weights.append((category, category2, results[0][0], table_type))
 	conn.close()
 	return weights
 
-	exit()
-
-
-	G.add_edge('a','b',weight=0.6)
-	G.add_edge('a','c',weight=0.2)
-	G.add_edge('c','d',weight=0.1)
-	G.add_edge('c','e',weight=0.7)
-	G.add_edge('c','f',weight=0.9)
-	G.add_edge('a','d',weight=0.3)
-
-	elarge=[(u,v) for (u,v,d) in G.edges(data=True) if d['weight'] >0.5]
-	esmall=[(u,v) for (u,v,d) in G.edges(data=True) if d['weight'] <=0.5]
-
-	pos=nx.spring_layout(G) # positions for all nodes
-
+def weighted_edges(weight_tuples, table_type, categories = categories):
+	G=nx.MultiDiGraph()
+	node_count = calculate_counts (categories, types="following")
+	el = {}
+	for x in categories:
+		G.add_node(    x , label = x + " ("+ str(users_count(x, table_type))  + ")"   )
+	for w in weight_tuples:
+		G.add_edge(w[0], w[1], label=str(w[2]))
+		el[(w[0], w[1])] = int(w[2])
+	print el
+	pos = nx.circular_layout(G) # positions for all nodes
+	pos = nx.spectral_layout(G)
+	pos = nx.shell_layout(G)
+	pos = nx.fruchterman_reingold_layout(G)
+	#pos = nx.circular_layout(G)
 	# nodes
-	nx.draw_networkx_nodes(G,pos,node_size=700)
-
+	nx.draw_networkx_nodes(G,pos,node_list=categories, node_size=700)
+	nx.draw_networkx_labels(G,pos,font_size=7,font_family='sans-serif')
+	
 	# edges
-	nx.draw_networkx_edges(G,pos,edgelist=elarge,
-	                    width=6)
-	nx.draw_networkx_edges(G,pos,edgelist=esmall,
-	                    width=6,alpha=0.5,edge_color='b',style='dashed')
+	nx.draw_networkx_edges(G,pos,
+	                    width=1)
+	nx.draw_networkx_edge_labels(G,pos, edge_labels = el, font_size=8, alpha=0.8)
+	#plt.axis('off')
+	#plt.savefig("edges.png")
+	nx.write_dot(G,'graph.dot')
+	print "done :D "
+	print G.edges()
+	print G.nodes_with_selfloops()
 
-	# labels
-	nx.draw_networkx_labels(G,pos,font_size=20,font_family='sans-serif')
 
-def weighted_edges():
-	pass
-#weighted_nodes()
+categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'non-profits', 'news', 'interest_groups']
+
+followingweights = calculate_edge_counts()
+weighted_edges (followingweights, "followings")
+
+#print followingweights
+
