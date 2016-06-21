@@ -136,18 +136,22 @@ def weighted_edges(weight_tuples, table_type, categories = categories, colors = 
 	G=nx.MultiDiGraph()
 	el = {}
 	for x in categories:
-		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]",  style='filled' , fillcolor=colors[x])
+		G.add_node( x , label = x + " ["+ str(users_count(x, table_type))  + "]",  style='filled' , fillcolor=colors[x])
+	max_weight = max(weight_tuples,key=lambda item:item[2])[2]
 	for w in weight_tuples:
 
 		weight = w[2]
-		edge_weight = 1
+		edge_weight = 9.0*weight/max_weight + 1
+		
+		
+		'''
 		if weight > 1000:
 			edge_weight = 10
 		elif weight > 100:
 			edge_weight = 7
 		elif weight > 50:
 			edge_weight = 3
-
+		'''
 		G.add_edge(w[0], w[1], label=str(weight), fontcolor = l_colors[w[0]], style="bold", color= e_colors[w[0]], fontsize=13, fontweight=10, penwidth=edge_weight)
 		el[(w[0], w[1])] = int(weight)
 	pos = nx.circular_layout(G) # positions for all nodes
