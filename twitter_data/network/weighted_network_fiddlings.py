@@ -82,7 +82,6 @@ def users_count (category, table_type="followings"):
 	weights = []
 
 	query = "select count(distinct %s.screename) from %s inner join users on users.Usr_ID = %s.Usr_ID where users.category= '%s'"%(table_type,table_type, table_type,category)
-	print query
 	cursor.execute(query)
 
 	results = cursor.fetchall()
@@ -99,14 +98,13 @@ def calculate_edge_counts ( table_type="followings"):
 		for category2 in categories:
 			#query = "select %s from users where category = '%s'"%(types, category)
 			query = "select count(*) from %s where %s_id in (select Usr_ID from users where category ='%s') and Usr_id in (select Usr_ID from users where category = '%s');"% (table_type, table_type[:-1], category, category2)
-			print query
 			cursor.execute(query)
 			results = cursor.fetchall()
 			
 			weights.append((category, category2, results[0][0], table_type))
 	conn.close()
 	return weights
-
+'''
 cat_colors = {"individuals":"#00FFFF", # aqua
 		"shops": "#e63900", # red
 		"commercial_growers":"#00cc44", # green
@@ -114,28 +112,61 @@ cat_colors = {"individuals":"#00FFFF", # aqua
 		"non-profits":"#ff00ff", #fuchsia
 		"news":"#e6e600", # dark yellow
 		"interest_groups":" #6666ff"} # light blue
+'''
+cat_colors = {"individuals":"#FCB86F", # light orange
+		"shops": "#ffcbc3", # light red
+		"commercial_growers":"#c3ffd5", # light green
+		"service_providers":"#eec5ff", # light purple
+		"non-profits":"#ff3ce5", # light pink
+		"news":"#fffac3", # light yellow
+		"interest_groups":" #c5f2ff"} # light blue
 
-def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors):
+edge_colors = {"individuals":"#CC6900", # orange
+		"shops": "#FF9180", # red
+		"commercial_growers":"#5EFF8F", # green
+		"service_providers":"#D266FF", # purple
+		"non-profits":"#FF82C9", # pink
+		"news":"#FCF172", # yellow
+		"interest_groups":" #69DDFF"} # blue
+
+label_colors = {"individuals":"#CC6900", # dark ORANGE
+		"shops": "#B51800", # dark red
+		"commercial_growers":"#008C2B", # dark green
+		"service_providers":"#690394", # dark purple
+		"non-profits":"#B80068", # dark fuchsia
+		"news":"#B8AC00", # dark yellow
+		"interest_groups":" #007496"} # dark blue
+
+def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors, e_colors = edge_colors, l_colors = label_colors):
 	G=nx.MultiDiGraph()
 	el = {}
 	for x in categories:
-		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]"  ,style='filled' , fillcolor=colors[x])
+		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]",  style='filled' , fillcolor=colors[x])
 	for w in weight_tuples:
-		G.add_edge(w[0], w[1], label=str(w[2]), color= colors[w[0]], weight=10)
-		el[(w[0], w[1])] = int(w[2])
+
+		weight = w[2]
+		edge_weight = 1
+		if weight > 1000:
+			edge_weight = 10
+		elif weight > 100:
+			edge_weight = 7
+		elif weight > 50:
+			edge_weight = 3
+
+		G.add_edge(w[0], w[1], label=str(weight), fontcolor = l_colors[w[0]], style="bold", color= e_colors[w[0]], fontsize=13, fontweight=10, penwidth=edge_weight)
+		el[(w[0], w[1])] = int(weight)
 	pos = nx.circular_layout(G) # positions for all nodes
 	pos = nx.spectral_layout(G)
 	pos = nx.shell_layout(G)
 	pos = nx.fruchterman_reingold_layout(G)
 	#pos = nx.circular_layout(G)
 	# nodes
-	nx.draw_networkx_nodes(G,pos,node_list=categories, node_size=700)
+	nx.draw_networkx_nodes(G,pos,node_list=categories)
 	nx.draw_networkx_labels(G,pos,font_size=7,font_family='sans-serif')
 	
 	# edges
-	nx.draw_networkx_edges(G,pos,
-	                    width=1)
-	nx.draw_networkx_edge_labels(G,pos, edge_labels = el, font_size=8, alpha=0.8)
+	nx.draw_networkx_edges(G,pos)
+	nx.draw_networkx_edge_labels(G,pos, edge_labels = el,)
 	#plt.axis('off')
 	#plt.savefig("edges.png")
 	nx.write_dot(G,table_type+'.dot')
