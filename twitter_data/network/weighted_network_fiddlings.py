@@ -107,13 +107,21 @@ def calculate_edge_counts ( table_type="followings"):
 	conn.close()
 	return weights
 
-def weighted_edges(weight_tuples, table_type, categories = categories):
+cat_colors = {"individuals":"#00FFFF", # aqua
+		"shops": "#e63900", # red
+		"commercial_growers":"#00cc44", # green
+		"service_providers":"#b366ff", # light purple
+		"non-profits":"#ff00ff", #fuchsia
+		"news":"#e6e600", # dark yellow
+		"interest_groups":" #6666ff"} # light blue
+
+def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors):
 	G=nx.MultiDiGraph()
 	el = {}
 	for x in categories:
-		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]"   )
+		G.add_node(    x , label = x + " ["+ str(users_count(x, table_type))  + "]"  ,style='filled' , fillcolor=colors[x])
 	for w in weight_tuples:
-		G.add_edge(w[0], w[1], label=str(w[2]))
+		G.add_edge(w[0], w[1], label=str(w[2]), color= colors[w[0]], weight=10)
 		el[(w[0], w[1])] = int(w[2])
 	pos = nx.circular_layout(G) # positions for all nodes
 	pos = nx.spectral_layout(G)
@@ -140,6 +148,6 @@ categories = ['individuals', 'shops', 'commercial_growers', 'service_providers',
 followingweights = calculate_edge_counts()
 weighted_edges (followingweights, "followings")
 
-followingweights = calculate_edge_counts("followers")
-weighted_edges (followingweights, "followers")
+#followingweights = calculate_edge_counts("followers")
+#weighted_edges (followingweights, "followers")
 
