@@ -11,7 +11,8 @@ In this script we will count how many people they follow
 """
 
 #categories = [("individuals", "c"), ("shops", "r"), ("commercial_growers", "g"), ("service_providers", "k"), ("non-profits", "m"), ("news", "y"), ("interest_groups", "b")]
-categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'non-profits', 'news', 'interest_groups']
+categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'news', 'interest_groups'] #'non-profits', 
+
 cm = {"individuals":"c", # cyan
 		"shops": "r", # red
 		"commercial_growers":"g", # greem
@@ -19,6 +20,31 @@ cm = {"individuals":"c", # cyan
 		"non-profits":"m", #magenta
 		"news":"y", # yellow
 		"interest_groups":"b"} # blue
+
+
+cat_colors = {"individuals":"#ff3ce5", # light orange
+		"shops": "#ffcbc3", # light red
+		"commercial_growers":"#c3ffd5", # light green
+		"service_providers":"#eec5ff", # light purple
+		"non-profits":"#ff3ce5", # light pink
+		"news":"#fffac3", # light yellow
+		"interest_groups":" #c5f2ff"} # light blue
+
+edge_colors = {"individuals":"#FF82C9", # orange
+		"shops": "#FF9180", # red
+		"commercial_growers":"#5EFF8F", # green
+		"service_providers":"#D266FF", # purple
+		"non-profits":"#FF82C9", # pink
+		"news":"#FCF172", # yellow
+		"interest_groups":" #69DDFF"} # blue
+
+label_colors = {"individuals":"#B80068", # dark ORANGE
+		"shops": "#B51800", # dark red
+		"commercial_growers":"#008C2B", # dark green
+		"service_providers":"#690394", # dark purple
+		"non-profits":"#B80068", # dark fuchsia
+		"news":"#B8AC00", # dark yellow
+		"interest_groups":" #007496"} # dark blue
 
 
 def calculate_counts (categories, types="following"):
@@ -104,38 +130,7 @@ def calculate_edge_counts ( table_type="followings"):
 			weights.append((category, category2, results[0][0], table_type))
 	conn.close()
 	return weights
-'''
-cat_colors = {"individuals":"#00FFFF", # aqua
-		"shops": "#e63900", # red
-		"commercial_growers":"#00cc44", # green
-		"service_providers":"#b366ff", # light purple
-		"non-profits":"#ff00ff", #fuchsia
-		"news":"#e6e600", # dark yellow
-		"interest_groups":" #6666ff"} # light blue
-'''
-cat_colors = {"individuals":"#FCB86F", # light orange
-		"shops": "#ffcbc3", # light red
-		"commercial_growers":"#c3ffd5", # light green
-		"service_providers":"#eec5ff", # light purple
-		"non-profits":"#ff3ce5", # light pink
-		"news":"#fffac3", # light yellow
-		"interest_groups":" #c5f2ff"} # light blue
 
-edge_colors = {"individuals":"#CC6900", # orange
-		"shops": "#FF9180", # red
-		"commercial_growers":"#5EFF8F", # green
-		"service_providers":"#D266FF", # purple
-		"non-profits":"#FF82C9", # pink
-		"news":"#FCF172", # yellow
-		"interest_groups":" #69DDFF"} # blue
-
-label_colors = {"individuals":"#CC6900", # dark ORANGE
-		"shops": "#B51800", # dark red
-		"commercial_growers":"#008C2B", # dark green
-		"service_providers":"#690394", # dark purple
-		"non-profits":"#B80068", # dark fuchsia
-		"news":"#B8AC00", # dark yellow
-		"interest_groups":" #007496"} # dark blue
 
 def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors, e_colors = edge_colors, l_colors = label_colors):
 	G=nx.MultiDiGraph()
@@ -172,9 +167,6 @@ def weighted_edges(weight_tuples, table_type, categories = categories, colors = 
 	nx.write_dot(G,table_type+'.dot')
 	print "done :D "
 	print "dot file in " + table_type+".dot :D :D :D"
-
-
-categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'non-profits', 'news', 'interest_groups']
 
 followingweights = calculate_edge_counts()
 weighted_edges (followingweights, "followings")
