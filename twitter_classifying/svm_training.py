@@ -38,6 +38,7 @@ print "PART 2"
 
 tf_transformer = TfidfTransformer(use_idf=False).fit(tweet_text_counts)
 tweet_train_tf = tf_transformer.transform(tweet_text_counts)
+print tweet_train_tf
 g = open ("new_tf2.pickle","wb")
 cPickle.dump(tf_transformer, g)
 g.close()

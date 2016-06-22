@@ -2,9 +2,9 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.svm import SVC
 import cPickle
 
-transformer = cPickle.load(open('new_tf.pickle','r'))
-SVC = cPickle.load(open('SVC.pickle','r'))
-vectorizer = cPickle.load(open('new_vect.pickle','r'))
+transformer = cPickle.load(open('new_tf2.pickle','rb'))
+SVC = cPickle.load(open('SVC2.pickle','rb'))
+vectorizer = cPickle.load(open('new_vect2.pickle','rb'))
 
 fname = "test_set_new_corrected.txt"
 t = open(fname, "r")
