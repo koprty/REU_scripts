@@ -48,7 +48,7 @@ print "PART 3"
 
 #this code is also adapted from another page on scikit-learn.org about using SVM classifiers
 #URL: http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
-clf = SVC(kernel='linear')
+clf = SVC(kernel='linear', probability = True)
 clf.fit(tweet_train_tf,tweet_class)
 
 h = open("SVC2.pickle", "wb")
