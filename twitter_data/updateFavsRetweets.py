@@ -30,7 +30,7 @@ def UpdateCounts(id_list):
 	rate_ex = 0
 	#for tweet_id in id_list:
 	i = 0
-	j = 0
+	j = 0 # 2155th
 	while i < len(id_list):
 		tweet_id = id_list[i]
 		if index >= 3:
