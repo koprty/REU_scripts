@@ -13,20 +13,22 @@ rand = np.random.permutation(tweets)
 tweet_text = []
 tweet_class = []
 print "PART 0"
-index = 0
 for tweet in rand:
 	parts = tweet.split("\t")
 	tweet_text.append(parts[1])
-	tweet_class.append(parts[0])
+	if(parts[0] == "positive"):
+		tweet_class.append(1)
+	else:
+		tweet_class.append(0)
 
 print "PART 1"
 
 #the following code is adapted from sample scripts given on scikit-learn.org on their page about working with text data
 #URL: http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+#if s == "SET_A":
 count_vect = CountVectorizer()
 tweet_text_counts = count_vect.fit_transform(tweet_text)
-#del tweet_text[:]
-f= open("new_vect.pickle", "w'")
+f= open("new_vect2.pickle", "w'")
 cPickle.dump(count_vect, f)
 f.close()
 #del(count_vect)
@@ -36,8 +38,7 @@ print "PART 2"
 
 tf_transformer = TfidfTransformer(use_idf=False).fit(tweet_text_counts)
 tweet_train_tf = tf_transformer.transform(tweet_text_counts)
-#del tweet_text_counts[:]
-g = open ("new_tf.pickle","w")
+g = open ("new_tf2.pickle","w")
 cPickle.dump(tf_transformer, g)
 g.close()
 #del(tf_transformer)
@@ -49,7 +50,7 @@ print "PART 3"
 clf = SVC()
 clf.fit(tweet_train_tf,tweet_class)
 
-h = open("SVC.pickle", "w")
+h = open("SVC2.pickle", "w")
 cPickle.dump(clf,h)
 h.close()
 
