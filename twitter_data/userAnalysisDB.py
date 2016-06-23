@@ -5,8 +5,10 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import time
 from random import shuffle
+import cPickle
+import time
+
 
 conn = sqlite3.connect("tweets.sqlite")
 cursor = conn.cursor()
@@ -41,6 +43,7 @@ for o in notindi_result:
 shuffle(individuals)
 shuffle(others)
 
+############# Vectorize the Training Data Set ###############
 #COUNT VECTORIZER has more accurate results
 vectorizer = CountVectorizer(stop_words="english",lowercase=True)
 #vectorizer = TfidfVectorizer(stop_words="english",lowercase=True)
@@ -48,31 +51,38 @@ corpus = individuals[-300:] + others[-300:]
 X_train = vectorizer.fit_transform(corpus)
 #Y_train = (len(individuals)-100) *["positive"] + (len(others)-100) *["negative"]
 Y_train = 300*["positive"] + 300*["negative"]
-'''
-vectorizer = HashingVectorizer(stop_words='english', non_negative=True,
-                                   n_features=opts.n_features)
-X_train = vectorizer.transform(data_train.data)
-'''
+f = open("count_users.pickle", "wb")
+#f = open("tfid_users.pickle", "wb")
+cPickle.dump(vectorizer, f)
+f.close()
+print "count_vectorizer was made :D"
+
+############### Make SVC pickle ################
 clf = SVC(probability = True)
 #clf = SVC ()
 #clf = LogisticRegression()
 clf.fit(X_train,Y_train)
+g = open("SVC_users.pickle", "wb")
+#g = open("SVC_tfid_users.pickle", "wb")
+cPickle.dump(clf, g)
+g.close()
+print clf.classes_
+print "SVC pickle was made :D "
 
 
+
+############# Testing the accuracy of pickle ##############
+'''
 test_descripts = individuals[:-300] + others[:-300]
-#test_descripts = np.random.permutation(test_descripts)
 X_test = vectorizer.transform(test_descripts)
 
 Y_test = (len(individuals)-300) *["positive"] + (len(others)-300) *["negative"]
-#Y_test = 300*["positive"] + 300*["negative"]
-
-
 
 np.set_printoptions(threshold='nan')
 
 #re =  clf.predict_log_proba(X_test)
-re =  clf.predict_proba(X_test)
 #re = clf.predict(X_test)
+re =  clf.predict_proba(X_test)
 sc = clf.score(X_test, Y_test)
 #re = clf.sparsify()
 print sc
@@ -110,14 +120,4 @@ print
 print clf.classes_
 #print re
 
-
-# Test 1:
 '''
-corpus = 300 individuals 300 non_negative
-
-test_descripts = rest of dataset
-
-score = 0..779126213592
-'''
-
-exit()
