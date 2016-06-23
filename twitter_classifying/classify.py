@@ -2,6 +2,7 @@ import cPickle
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.svm import SVC
+import numpy as np
 import sqlite3
 
 transformer = cPickle.load(open('transformer.pickle','rb'))
