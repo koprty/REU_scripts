@@ -80,10 +80,10 @@ for p in probs:
 tweet_probs.sort(key = lambda tup: tup[1])
 '''
 
-for tr in tweet_results:
-	print tr
+#for tr in tweet_results:
+	#print tr
 
-print SVC.score(v2,t_class_num)
+#print SVC.score(v2,t_class_num)
 
 
 
@@ -108,8 +108,8 @@ def find_threshold(tr = [], desired_perc = 0, threshold = .66743001280481029):
 		print "Threshold for " +str(int(desired_perc*100)) + "% m-dab tweets: " + str(th)
 		return th
 
-#find_threshold(tweet_results,.90)
-#find_threshold(tweet_results,.95)
+find_threshold(tweet_results,.90)
+find_threshold(tweet_results,.95)
 
 
 
@@ -126,7 +126,7 @@ for tr in tweet_results:
 	total += 1
 
 error = incorrect / total
-print 1 - error 
+#print 1 - error 
 #	fout.write(str(tr))
 #	fout.write("\n")
 ##fout.close()
