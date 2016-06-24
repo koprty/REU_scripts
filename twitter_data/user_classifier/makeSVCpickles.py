@@ -54,7 +54,7 @@ vectorizer = CountVectorizer(stop_words="english",lowercase=True)
 
 corpus = individuals[-300:] + others[-300:]
 X_train = vectorizer.fit_transform(corpus)
-Y_train = 300*["positive"] + 300*["negative"]
+Y_train = 300*[1] + 300*[]
 
 f = open("count_users.pickle", "wb")
 cPickle.dump(vectorizer, f)
@@ -62,7 +62,7 @@ f.close()
 print "count_vectorizer was made :D"
 
 ############### Make SVC pickle ################
-clf = SVC(probability = True)
+clf = SVC(kernel='linear',probability = True)
 #clf = SVC ()
 #clf = LogisticRegression()
 clf.fit(X_train,Y_train)
@@ -70,9 +70,6 @@ g = open("SVC_users.pickle", "wb")
 cPickle.dump(clf, g)
 g.close()
 print clf.classes_
-print "SVC pickle was made :D "
-
-
 
 ############# Testing the accuracy of pickle ##############
 
@@ -80,7 +77,7 @@ test_descripts = individuals[:-300] + others[:-300]
 #test_descripts = individuals[:] + others[:] 
 X_test = vectorizer.transform(test_descripts)
 
-Y_test = (len(individuals)-300) *["positive"] + (len(others)-300) *["negative"]
+Y_test = (len(individuals)-300) *[1] + (len(others)-300) *[0]
 #Y_test = (len(individuals) *["positive"]) + (len(others) *["negative"])
 np.set_printoptions(threshold='nan')
 
@@ -89,6 +86,7 @@ np.set_printoptions(threshold='nan')
 re =  clf.predict_proba(X_test)
 sc = clf.score(X_test, Y_test)
 #re = clf.sparsify()
+'''
 print sc
 print clf
 #print re
@@ -123,5 +121,5 @@ print "wrong = %d"%wrong
 print
 print clf.classes_
 #print re
-
+'''
 

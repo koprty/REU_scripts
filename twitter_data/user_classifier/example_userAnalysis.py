@@ -19,7 +19,7 @@ from sklearn.utils import shuffle
 conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
 #query = "select screename, Description from users where category = 'individuals';"
-query = "select Description from users where category = 'individuals';"
+query = "select Description, Screename from users where category = 'individuals';"
 cursor.execute(query)
 indi_result = cursor.fetchall()
 conn.close()
@@ -28,13 +28,16 @@ conn.close()
 conn2 = sqlite3.connect("../tweets.sqlite")
 cursor = conn2.cursor()
 #query = "select screename, Description from users where not category = 'individuals';"
-query = "select Description from users where not category = 'individuals';"
+query = "select Description, Screename from users where not category = 'individuals';"
 cursor.execute(query)
 notindi_result = cursor.fetchall()
 conn2.close()
 
 print len(indi_result) #2324
 print len(notindi_result) #336
+
+shuffie(indi_result)
+shuffie(notindi_result)
 
 #values = []
 individuals = [] 
@@ -46,8 +49,7 @@ for o in notindi_result:
 	others.append(o[0])
 #	values.append(0)
 
-shuffie(individuals)
-shuffie(others)
+
 
 #COUNT VECTORIZER has more accurate results
 vectorizer = CountVectorizer(stop_words="english",lowercase=True)
@@ -58,7 +60,7 @@ X_train = vectorizer.fit_transform(corpus)
 Y_train = 300*["positive"] + 300*["negative"]
 Y_train = 300*[1] + 300*[0]
 
-X_train, Y_train = shuffle(X_train, Y_train)
+#X_train, Y_train = shuffle(X_train, Y_train)
 
 '''
 vectorizer = HashingVectorizer(stop_words='english', non_negative=True,
@@ -91,14 +93,7 @@ y = clf.predict(X_test)
 
 
 ######### Just counting some numbers ########
-L = []
-i = 0
-while i < len(re):
-	#L.append ( (re[i], Y_test[i]))
-	L.append(    (list(re[i]), Y_test[i]))
-	i+=1
-L.sort(key = lambda tuple: tuple[1])
-#print L
+
 
 
 
@@ -114,40 +109,75 @@ roc_auc = auc(FPR, TPR)
 #print thresholds
 print roc_auc
 print roc_auc_score(Y_test, scores) 
-
+exit()
 print "neg " + str(roc_auc_score(Y_test, neg_scores))
 roc_aucN= auc(FFR, TFR)
 print roc_aucN
 #print FPR
 
+c=0
+ind = 0
+while ind < len(list(re)):
+	re = list(re)
+	if Y_test[ind] == 0 and float(re[ind][1] - re[ind][0]) <= 0.1651529601:
+		#0.38351529601
+		y[ind] = 0
+		print re[ind]
+		print re[ind][1] - re[ind][0], "__"
+	#if (re[ind][0] > re[ind][1] and (Y_test[ind] !=0) ):
+	if (y[ind] == 0 and (Y_test[ind] !=0) ):
+		print "false negative: ", str(re[ind]) + "   ", y[ind], "     ", Y_test[ind], "   " + str(test_descripts[ind])
+		print  list(re)[ind][0] - list(re)[ind][1]
+		print 
+		#c+=1
+	#elif (re[ind][0] <= re[ind][1] and (Y_test[ind] ==0) ):
+	elif (y[ind] == 1 and (Y_test[ind] ==0) ):
+		print "false positive: ",str(re[ind]) + "   ", y[ind], "     ", Y_test[ind], "   " + str(test_descripts[ind])
+		print  list(re)[ind][1] - list(re)[ind][0]
+		print
+		c+=1
+	ind+=1
 
 
 #############################
-'''
+
+print c
+print c*1.0/2060
+print (2060-c*1.0)/2060
+
+L = []
+i = 0
+while i < len(re):
+	#L.append ( (re[i], Y_test[i]))
+	L.append(    (list(re[i]), y[i],  Y_test[i]))
+	i+=1
 
 
 z=0
 p=0
 wrong = 0
-for x in L:
+index = 0
+while index < len(L):
+	x = L[index]
 	#expected = "positive"
 	expected = 1
-	if x[0][0] > x[0][1]:
+	if y[index] == 0:
 		#expected = "negative"
 		expected = 0
 		z+=1
+	#if x[0][0] >= x[0][1]:
 	else:
 		p += 1
 
-	if expected != x[1]:
+	if expected != int(x[1]) or expected != int(x[2]):
 		wrong+=1
+	index+=1
 
 
 print "negatives = %d"%z
 print "positives = %d"%p
 print "wrong = %d"%wrong
-print
-'''
+print len(re)
 #######################################
 
 sc = clf.score(X_test, Y_test)
@@ -170,4 +200,4 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Receiver operating characteristic example')
 plt.legend(loc="lower right")
-plt.show()
+#plt.show()
