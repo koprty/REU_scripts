@@ -9,8 +9,8 @@ from random import shuffle
 import cPickle
 import time
 
-
-conn = sqlite3.connect("tweets.sqlite")
+############## Retrieve data from DataSet ##############
+conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
 #query = "select screename, Description from users where category = 'individuals';"
 query = "select Description from users where category = 'individuals';"
@@ -19,7 +19,7 @@ indi_result = cursor.fetchall()
 conn.close()
 
 
-conn2 = sqlite3.connect("tweets.sqlite")
+conn2 = sqlite3.connect("../tweets.sqlite")
 cursor = conn2.cursor()
 #query = "select screename, Description from users where not category = 'individuals';"
 query = "select Description from users where not category = 'individuals';"
@@ -42,17 +42,21 @@ for o in notindi_result:
 
 shuffle(individuals)
 shuffle(others)
+########### Get data from DataSet
 
 ############# Vectorize the Training Data Set ###############
 #COUNT VECTORIZER has more accurate results
 vectorizer = CountVectorizer(stop_words="english",lowercase=True)
 #vectorizer = TfidfVectorizer(stop_words="english",lowercase=True)
+
+#corpus = individuals[-1*len(others):] + others[:]
+#Y_train = len(others)*["positive"] + len(others)*["negative"]
+
 corpus = individuals[-300:] + others[-300:]
 X_train = vectorizer.fit_transform(corpus)
-#Y_train = (len(individuals)-100) *["positive"] + (len(others)-100) *["negative"]
 Y_train = 300*["positive"] + 300*["negative"]
+
 f = open("count_users.pickle", "wb")
-#f = open("tfid_users.pickle", "wb")
 cPickle.dump(vectorizer, f)
 f.close()
 print "count_vectorizer was made :D"
@@ -63,7 +67,6 @@ clf = SVC(probability = True)
 #clf = LogisticRegression()
 clf.fit(X_train,Y_train)
 g = open("SVC_users.pickle", "wb")
-#g = open("SVC_tfid_users.pickle", "wb")
 cPickle.dump(clf, g)
 g.close()
 print clf.classes_
@@ -72,12 +75,13 @@ print "SVC pickle was made :D "
 
 
 ############# Testing the accuracy of pickle ##############
-'''
+
 test_descripts = individuals[:-300] + others[:-300]
+#test_descripts = individuals[:] + others[:] 
 X_test = vectorizer.transform(test_descripts)
 
 Y_test = (len(individuals)-300) *["positive"] + (len(others)-300) *["negative"]
-
+#Y_test = (len(individuals) *["positive"]) + (len(others) *["negative"])
 np.set_printoptions(threshold='nan')
 
 #re =  clf.predict_log_proba(X_test)
@@ -120,4 +124,4 @@ print
 print clf.classes_
 #print re
 
-'''
+
