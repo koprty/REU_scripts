@@ -3,6 +3,7 @@ from sklearn.svm import SVC
 import cPickle
 import numpy as np
 import scipy
+from sklearn.metrics import roc_curve, auc
 
 transformer = cPickle.load(open('new_tf2.pickle','rb'))
 SVC = cPickle.load(open('SVC2.pickle','rb'))
@@ -83,8 +84,20 @@ tweet_probs.sort(key = lambda tup: tup[1])
 #for tr in tweet_results:
 	#print tr
 
-#print SVC.score(v2,t_class_num)
+print SVC.score(v2,t_class_num)
+n_classes =  t_class.shape[1]
 
+
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+for i in range(n_classes):
+    fpr[i], tpr[i], _ = roc_curve(y_test[:, i], y_score[:, i])
+    roc_auc[i] = auc(fpr[i], tpr[i])
+
+# Compute micro-average ROC curve and ROC area
+fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
+roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
 
 
