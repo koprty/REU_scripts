@@ -3,7 +3,11 @@ from sklearn.svm import SVC
 import cPickle
 import numpy as np
 import scipy
+<<<<<<< HEAD
 from sklearn.metrics import roc_curve, auc
+=======
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+>>>>>>> 2adc7eaec182bde5f7847bb0e3f860d64ff50950
 
 transformer = cPickle.load(open('new_tf2.pickle','rb'))
 SVC = cPickle.load(open('SVC2.pickle','rb'))
@@ -36,8 +40,10 @@ v2 = transformer.transform(v1)
 rv1 = vect2.transform(t_txt)
 rv2 = t2.transform(rv1)
 
-results = SVC.predict(v2)
 svr_results = LSVR.predict(rv2)
+
+
+results = SVC.predict(v2)
 probs = SVC.predict_proba(v2)
 
 
@@ -84,9 +90,16 @@ tweet_probs.sort(key = lambda tup: tup[1])
 #for tr in tweet_results:
 	#print tr
 
+<<<<<<< HEAD
 print SVC.score(v2,t_class_num)
 n_classes =  t_class.shape[1]
+=======
+#probs
+scores = [x[1] for x in list(probs)]
+>>>>>>> 2adc7eaec182bde5f7847bb0e3f860d64ff50950
 
+print SVC.score(v2,t_class_num)
+print roc_auc_score ( t_class_num,scores)
 
 fpr = dict()
 tpr = dict()

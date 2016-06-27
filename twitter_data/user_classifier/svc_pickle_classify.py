@@ -14,7 +14,7 @@ SVC = cPickle.load(open('SVC_users.pickle','rb'))
 
 conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
-query = "select Usr_Description, Usr_ID, Usr_Screename from tweets9_streaming;"
+query = "select DISTINCT Usr_Description, Usr_ID, Usr_Screename from tweets9_streaming where Usr_ID not in (select Usr_ID from users);"
 cursor.execute(query)
 descripts = cursor.fetchall()
 conn.close()
@@ -27,16 +27,31 @@ results = [ x[0] if x[0] != None and x[0] != "None" else "null" for x in descrip
 data_vector = count_vectorizer.transform(results)
 
 predictions =  SVC.predict(data_vector)
+probs = SVC.predict_proba(data_vector)
 print len(predictions)
-print list(predictions).count("positive")
+print len(probs)
+print list(predictions).count(0)
 print SVC.classes_
 
-columns = ", ".join(["Usr_ID, Screename, Description, Category"])
 
+#### set threshold to limit false negatives ####
+ind = 0
+probs = list(probs)
+while ind < len(probs):
+	#print probs[ind][1], probs[ind][0]
+	#print probs[ind][1]- probs[ind][0]
+	if predictions[ind] == 1 and float(probs[ind][1] - probs[ind][0]) <= 0.1651529601:
+		predictions[ind] = 0
+		#print ind
+	ind += 1
+print list(predictions).count(0)
+print len(probs)
+exit()
+columns = ", ".join(["Usr_ID, Screename, Description, Category"])
 p = 0
 count = 0
 while p < len(predictions):
-	if predictions[p] == "positive":
+	if predictions[p] == 1:
 		category = "individuals"
 		conn2 = sqlite3.connect("../tweets.sqlite")
 		cursor = conn2.cursor()
@@ -53,7 +68,7 @@ while p < len(predictions):
 				"individuals"
 			    ]
 			dbname = "tweets9_users"
-			    
+
 			values = ", ".join(["\"\"\"" + str(x) + "\"\"\"" for x in values])
 
 			conn3 = sqlite3.connect("../tweets.sqlite")
