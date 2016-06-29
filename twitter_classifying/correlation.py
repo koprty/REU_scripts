@@ -74,9 +74,12 @@ def combine_and_rank(r=[],t=[]):
 
 ranked = combine_and_rank(svc_r,svr_results)
 
-rarr = range(1,2501)
-np.random.shuffle(rarr)
-rand_ranked = combine_and_rank(svc_r,rarr)
+rarr = []
+a = range(1,2501)
+for i in range(0,1000):
+	#r = range(1,2501)
+	a = np.random.permutation(a)
+	rarr.append(a)
 
 #sum of squares of difference in ranks
 def rank_correlation(r = []):
@@ -87,8 +90,8 @@ def rank_correlation(r = []):
 		s += sq 
 	return s
 
-print rank_correlation(ranked)
-print rank_correlation(rand_ranked)
+#print rank_correlation(ranked)
+#print rank_correlation(rand_ranked)
 
 #spearman's foot rule
 def spearman_corr(r = []):
@@ -100,8 +103,8 @@ def spearman_corr(r = []):
 	d = len(r)*(len(r)*len(r) - 1.0)
 	return (1. - n/d)
 
-print spearman_corr(ranked)
-print spearman_corr(rand_ranked)
+#print spearman_corr(ranked)
+#print spearman_corr(rand_ranked)
 
 #kendall's tau coefficient
 def kendall_tau(r = []):
@@ -137,9 +140,38 @@ for h in height:
 	tup = (0,h,0,weight[index])
 	index += 1
 	test.append(tup)
+print kendall_tau(test)
 '''
+
+print rank_correlation(ranked)
+print spearman_corr(ranked)
 print kendall_tau(ranked)
-print kendall_tau(rand_ranked)
+
+rank_range = []
+sp_range = []
+kt_range = []
+index = 0
+for r in rarr:
+	rand_ranked = combine_and_rank(svc_r,r)
+	rank_range.append(rank_correlation(rand_ranked))
+	sp_range.append(spearman_corr(rand_ranked))
+	if index < 100:
+		kt_range.append(kendall_tau(rand_ranked))
+	index += 1
+
+
+rank_min = min(rank_range)
+sp_min = min(sp_range)
+kt_min = min(kt_range)
+
+rank_max = max(rank_range)
+sp_max = max(sp_range)
+kt_max = max(kt_range)
+
+print "Sum of Squares: " + str(rank_min) + " - " + str(rank_max)
+print "Spearman's: " + str(sp_min) + " - " + str(sp_max)
+print "Kendall-Tau: " + str(kt_min) + " - " + str(kt_max)
+
 
 
 
