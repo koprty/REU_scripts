@@ -8,6 +8,9 @@ import sys
 install networkx
 (virtual environments may not be possible with this script)
 In this script we will count how many people they follow
+
+
+Creates a weighted graph using following relations
 """
 
 #categories = [("individuals", "c"), ("shops", "r"), ("commercial_growers", "g"), ("service_providers", "k"), ("non-profits", "m"), ("news", "y"), ("interest_groups", "b")]

@@ -6,7 +6,7 @@ Dependencies for this python script:
 pip install networkx
 
 The goal of this script is to contruct a dabbing user network (meaning who is following who)
-
+This is the messy version of the graph (unweighted)
 '''
 
 '''
