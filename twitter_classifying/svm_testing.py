@@ -3,11 +3,8 @@ from sklearn.svm import SVC
 import cPickle
 import numpy as np
 import scipy
-<<<<<<< HEAD
-from sklearn.metrics import roc_curve, auc
-=======
 from sklearn.metrics import roc_curve, auc, roc_auc_score
->>>>>>> 2adc7eaec182bde5f7847bb0e3f860d64ff50950
+import matplotlib.pyplot as plt
 
 transformer = cPickle.load(open('new_tf2.pickle','rb'))
 SVC = cPickle.load(open('SVC2.pickle','rb'))
@@ -90,13 +87,11 @@ tweet_probs.sort(key = lambda tup: tup[1])
 #for tr in tweet_results:
 	#print tr
 
-<<<<<<< HEAD
-print SVC.score(v2,t_class_num)
+
+#print SVC.score(v2,t_class_num)
 n_classes =  t_class.shape[1]
-=======
 #probs
 scores = [x[1] for x in list(probs)]
->>>>>>> 2adc7eaec182bde5f7847bb0e3f860d64ff50950
 
 print SVC.score(v2,t_class_num)
 print roc_auc_score ( t_class_num,scores)
@@ -105,12 +100,24 @@ fpr = dict()
 tpr = dict()
 roc_auc = dict()
 for i in range(n_classes):
-    fpr[i], tpr[i], _ = roc_curve(y_test[:, i], y_score[:, i])
+    fpr[i], tpr[i], _ = roc_curve(t_class_num[:,i], scores[:,i])
     roc_auc[i] = auc(fpr[i], tpr[i])
 
 # Compute micro-average ROC curve and ROC area
-fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
+fpr["micro"], tpr["micro"], _ = roc_curve(t_class_num.ravel(), scores.ravel())
 roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+
+
+plt.figure()
+plt.plot(fpr[2], tpr[2], label='ROC curve (area = %0.2f)' % roc_auc[2])
+plt.plot([0, 1], [0, 1], 'k--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic example')
+plt.legend(loc="lower right")
+plt.show()
 
 
 
@@ -134,8 +141,8 @@ def find_threshold(tr = [], desired_perc = 0, threshold = .66743001280481029):
 		print "Threshold for " +str(int(desired_perc*100)) + "% m-dab tweets: " + str(th)
 		return th
 
-find_threshold(tweet_results,.90)
-find_threshold(tweet_results,.95)
+#find_threshold(tweet_results,.90)
+#find_threshold(tweet_results,.95)
 
 
 
