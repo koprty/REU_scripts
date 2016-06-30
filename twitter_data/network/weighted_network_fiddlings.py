@@ -50,12 +50,12 @@ label_colors = {"individuals":"#B80068", # dark ORANGE
 		"interest_groups":" #007496"} # dark blue
 
 
-def calculate_counts (categories, types="following"):
+def calculate_counts (categories, types="following", users_table = "users"):
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor = conn.cursor()
 	weights = []
 	for category in categories:
-		query = "select %s from users where category = '%s'"%(types, category)
+		query = "select %s from %s where category = '%s'"%(types,users_table, category)
 		cursor.execute(query)
 		results = cursor.fetchall()
 		distinct_follow = []
@@ -64,7 +64,7 @@ def calculate_counts (categories, types="following"):
 				ids = x[0].split(" ")
 				for y in ids:
 					if y.strip() != "null" and int(y) not in distinct_follow:
-						query = "select * from users where Usr_ID = %d"%(int(y))
+						query = "select * from %s where Usr_ID = %d"%(users_table,int(y))
 						cursor.execute(query)
 						results = cursor.fetchall()	
 						if len(results) > 0:
@@ -105,12 +105,14 @@ def weighted_nodes ():
 
 
 
-def users_count (category, table_type="followings"):
+def users_count (category, table_type="followings", users_table = "users"):
 	conn2 = sqlite3.connect("../tweets.sqlite")
 	cursor = conn2.cursor()
 	weights = []
 
-	query = "select count(distinct %s.screename) from %s inner join users on users.Usr_ID = %s.Usr_ID where users.category= '%s'"%(table_type,table_type, table_type,category)
+	#query = "select count(distinct %s.Usr_ID) from %s inner join %s on %s.Usr_ID = %s.Usr_ID where %s.category= '%s'"%(table_type,table_type,users_table,users_table, table_type,users_table,category)
+	query = "select count(distinct Usr_ID) from %s where category= '%s'"%(users_table,category)
+	#print query
 	cursor.execute(query)
 
 	results = cursor.fetchall()
@@ -119,14 +121,17 @@ def users_count (category, table_type="followings"):
 	return weight
 
 # calculate edge counts
-def calculate_edge_counts ( table_type="followings"):
+def calculate_edge_counts ( users_table = "users", table_type="followings" ):
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor = conn.cursor()
 	weights = []
 	for category in categories:
 		for category2 in categories:
 			#query = "select %s from users where category = '%s'"%(types, category)
-			query = "select count(*) from %s where %s_id in (select Usr_ID from users where category ='%s') and Usr_id in (select Usr_ID from users where category = '%s');"% (table_type, table_type[:-1], category, category2)
+			query = "select count(*) from %s where %s_id in (select Usr_ID from %s where category ='%s') and Usr_id in (select Usr_ID from %s where category = '%s');"% (table_type, table_type[:-1], users_table,category,users_table, category2)
+			
+			print query
+			
 			cursor.execute(query)
 			results = cursor.fetchall()
 			
@@ -135,15 +140,19 @@ def calculate_edge_counts ( table_type="followings"):
 	return weights
 
 
-def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors, e_colors = edge_colors, l_colors = label_colors):
+def weighted_edges(weight_tuples, table_type, categories = categories, colors = cat_colors, e_colors = edge_colors, l_colors = label_colors, fname = "following", users_table = "users"):
+	fname = fname+ ".dot"
+
 	G=nx.MultiDiGraph()
 	el = {}
 	for x in categories:
-		G.add_node( x , label = x + " ["+ str(users_count(x, table_type))  + "]",  style='filled' , fillcolor=colors[x])
+		G.add_node( x , label = x + " ["+ str(users_count(x, table_type, users_table))  + "]",  style='filled' , fillcolor=colors[x])
 	max_weight = max(weight_tuples,key=lambda item:item[2])[2]
+	summ = 0
 	for w in weight_tuples:
 
 		weight = w[2]
+		summ +=int(weight)
 		edge_weight = 9.0*weight/max_weight + 1
 		
 		
@@ -163,6 +172,7 @@ def weighted_edges(weight_tuples, table_type, categories = categories, colors = 
 	pos = nx.fruchterman_reingold_layout(G)
 	#pos = nx.circular_layout(G)
 	# nodes
+	
 	nx.draw_networkx_nodes(G,pos,node_list=categories)
 	nx.draw_networkx_labels(G,pos,font_size=7,font_family='sans-serif')
 	
@@ -171,13 +181,23 @@ def weighted_edges(weight_tuples, table_type, categories = categories, colors = 
 	nx.draw_networkx_edge_labels(G,pos, edge_labels = el,)
 	#plt.axis('off')
 	#plt.savefig("edges.png")
-	nx.write_dot(G,table_type+'.dot')
+	nx.write_dot(G,fname)
+	#print summ  # still different which is weird
 	print "done :D "
-	print "dot file in " + table_type+".dot :D :D :D"
+	print "dot file in " + fname +" :D :D :D"
 
-followingweights = calculate_edge_counts()
-weighted_edges (followingweights, "followings")
+followingweights = calculate_edge_counts(table_type="followings")
+weighted_edges (followingweights, "followings", fname="followings")
+followingweights = calculate_edge_counts(table_type="followers")
+weighted_edges (followingweights, "followers", fname="followers")
 
-#followingweights = calculate_edge_counts("followers")
-#weighted_edges (followingweights, "followers")
 
+'''
+followingweights = calculate_edge_counts("tweets9_users","followings")
+weighted_edges (followingweights, "followings", users_table = "tweets9_users", fname="users_followings")
+#print followingweights
+followingweights = calculate_edge_counts("tweets9_users","followers")
+#print followingweights
+weighted_edges (followingweights, "followers", users_table = "tweets9_users", fname="users_followers")
+
+'''

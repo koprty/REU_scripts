@@ -44,7 +44,7 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 	index=0
 	num_checked = 0
 	rate_ex = 0
-	ind = 443
+	ind = 1574
 	already_checked = False
 	follower_cursor = -1
 	friend_cursor = -1
@@ -59,8 +59,6 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 		OAUTH_TOKEN = OAUTH_TOKENS[index]
 		OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
 
-
-		
 		try:
 			#twitter = Twython (APP_KEY, APP_SECRET)
 			#auth = twitter.get_authentication_tokens()
@@ -82,10 +80,8 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 			follow = ""
 			while (follower_cursor):
 				followers = twitter.get_followers_ids(id = i,cursor= follower_cursor)
-				
 				for ID in followers['ids']:
 					follow += str(ID) + " " 
-				
 				follower_cursor =  followers["next_cursor"]
 				num_checked += 1
 			follow= follow[:-1]
@@ -120,12 +116,12 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 					index = 0
 					print "sleepy time - 15 minutes"
 					print datetime.datetime.now()
-					time.sleep(900)
+					time.sleep(910)
 			elif "401 (Unauthorized)" in str(e):
 				print "401 error"
 				f = open("skipped.txt", "a")
 				f.write("skipped %dth element, ID: %d\n"%(ind, i))
-				f.write(str(datetime.datetime.now()))
+				f.write("__________________________________________"+str(datetime.datetime.now()) + "\n")
 				f.close()
 				print "skipped %d"%ind
 				ind+=1
@@ -133,8 +129,8 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 			elif "404 (Not Found)" in str(e):
 				print "404 error"
 				f = open("skipped.txt", "a")
-				f.write("404:skipped %dth element, ID: %d \n"%(ind, i))
-				f.write(str(datetime.datetime.now()))
+				f.write("404: skipped %dth element, ID: %d \n"%(ind, i))
+				f.write("__________________________________________"+str(datetime.datetime.now()) + "\n")
 				f.close()
 				print "404 skipped %d"%ind
 				ind+=1

@@ -9,11 +9,11 @@ OAUTH_TOKENS = ['701759705421639681-nutlNGruF7WZjq0kXZUTcKVbrnXs3vD','7017597054
 OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q23KVYx8AKS8tuWpCOAj8TMxQ3BYD1nb7sVF5s','NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw']
 
 
-# 
-def getAllTweetIds():
+# updates the Favorite and Retweet counts for each tweet
+def getAllTweetIds(table = "posdab_tweets"):
 	conn = sqlite3.connect("tweets.sqlite")
 	cursor = conn.cursor()
-	query = "select Tweet_ID from posdab_tweets;"
+	query = "select Tweet_ID from %s;"%table
 	cursor.execute(query)
 	r = cursor.fetchall()
 	d = []
@@ -21,10 +21,9 @@ def getAllTweetIds():
 		d.append(x[0])
 	return d
 
-alltweetids = getAllTweetIds()
 
 #update counts of retweet and favorites into tweet
-def UpdateCounts(id_list):
+def UpdateCounts(id_list, table = "posdab_tweets"):
 	index=0
 	num_checked = 0
 	rate_ex = 0
@@ -66,7 +65,7 @@ def UpdateCounts(id_list):
 					print tweet_id
 					conn = sqlite3.connect("tweets.sqlite")
 					cursor = conn.cursor()
-					query = "Update posdab_tweets set FavoriteCount = %d, RetweetCount = %d where Tweet_ID = '%s'" % (int(result['favorite_count']),int(result['retweet_count']), tweet_id)
+					query = "Update %s set FavoriteCount = %d, RetweetCount = %d where Tweet_ID = '%s'" % (table,int(result['favorite_count']),int(result['retweet_count']), tweet_id)
 					print query
 					cursor.execute(query)
 					conn.commit()
@@ -94,4 +93,6 @@ def UpdateCounts(id_list):
 	return j
 				
 
-UpdateCounts(alltweetids)
+alltweetids = getAllTweetIds("tweets9_posdab")
+#alltweetids = getAllTweetIds()
+UpdateCounts(alltweetids, "tweets9_posdab")
