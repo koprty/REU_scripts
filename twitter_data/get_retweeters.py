@@ -1,6 +1,7 @@
 from twython import Twython,TwythonError
 import sqlite3
 import time
+#import tweepy
 
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv','HEGsXHtuOLUlUNkUcBWMlLqaK',
 'OtspVKgnB2UhNJSIXhf8QYIQO','7nTuFIXq6QmanfVx20OGXsL6N', 'PxNDGaWD6hUWLFpYffl8a83ZD', 'Du77cjeL7Q7hIrg89S62R6scu']
@@ -17,15 +18,18 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q2
 conn = sqlite3.connect("../twitter_classifying/tweets.sqlite")
 cursor = conn.cursor()
 
-query = "select Tweet_ID from posdab_Tweets"
+query = "select Tweet_ID from posdab_Tweets where Tweet_ID not in (select Tweet_ID from retweets);"
 cursor.execute(query)
 ids = cursor.fetchall()
 
-#query = "create table retweets (Element_ID int, Tweet_ID int, Retweeter_ID int)"
-#cursor.execute(query)
+query = "drop table retweets;"
+cursor.execute(query)
+
+query = "create table retweets (Element_ID int, Tweet_ID int, Retweeter_ID int, Date text);"
+cursor.execute(query)
 
 
-def get_retweeters(tweet_id, cursor = -1, r = [], index = 0):
+def get_retweeters(tweet_id, index):
 	if index >= 7:
 		print "sleepy time"
 		time.sleep(860)
@@ -40,50 +44,50 @@ def get_retweeters(tweet_id, cursor = -1, r = [], index = 0):
 		twitter = Twython (APP_KEY, APP_SECRET)
 		auth = twitter.get_authentication_tokens()
 		twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+		#auth = tweepy.OAuthHandler(APP_KEY,APP_SECRET)
+		#auth.set_access_token(OAUTH_TOKEN,OAUTH_TOKEN_SECRET)
 
-		result = twitter.get_retweeters_ids(id=tweet_id, cursor = cursor)
+		#twitter = tweepy.API(auth)
 
-		print str(tweet_id) + " cursor: " + str(cursor)
+		result = twitter.get_retweets(id=tweet_id, count = 100, trim_user = 1)
 
-		rters = result['id']
-		if type(rters) is list:
-			r.extend(rters)
-			print type(r)
+		rters= []
+		for r in result:	
+			rtr = r['user']['id']
+			date = r['created_at']
+			tup = (rtr,date)
+			rters.append(tup)
 
-		next_cursor = result['next_cursor']
-
-		if next_cursor == 0:
-			return r
-
-		else:
-			get_retweeters(tweet_id,next_cursor, r, index)
+		return (rters, index)
 
 
 	except Exception as e:
 		if "429 (Too Many Requests)" in str(e):
 			print "\nchanging apps!\n"
-			index += 1
-			get_retweeters(tweet_id, cursor, r, index)
-		if "401 (Unauthorized)" in str(e):
+			new_index = index + 1
+			return get_retweeters(tweet_id, new_index)
+		elif "401 (Unauthorized)" in str(e):
 			print "401 error"
-			return [0]
-		if	"404 (Not Found)" in str(e):
+			return ([],index)
+		elif "404 (Not Found)" in str(e):
 			print "404 error"
-			return [0]
-		if "400 (Bad Request)" in str(e):
-			print "\nBad Request\n"
-			index += 1
-			get_retweeters(tweet_id, cursor, r, index)
+			return ([],index)
 		else:
 			print e
-			return [0]
+			return ([],index)
 
 element_id = 0
+last_index = 0
 for tweet in ids:
-	retweeters = get_retweeters(tweet)
+	print tweet[0]
+	rters_index = get_retweeters(tweet[0],last_index)
+	retweeters = rters_index[0]
+	last_index = rters_index[1]
 	for rter in retweeters:
-		query = "insert into retweets values (" + str(element_id) + ", "+ str(tweet)+ ", " + str(rter)+ ")"
+		query = "insert into retweets values (" + str(element_id) + ", "+ str(tweet[0])+ ", " + str(rter[0])+ ", '" + str(rter[1])+ "');"
+		print query
 		cursor.execute(query)
+		conn.commit()
 		element_id += 1
 
 conn.commit()
