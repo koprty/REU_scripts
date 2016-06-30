@@ -139,3 +139,62 @@ print G
 #plt.savefig("edge_colormap.png") # save as png
 #plt.show() # display
 '''
+
+
+
+def calculate_counts (categories, types="following", users_table = "users"):
+	conn = sqlite3.connect("../tweets.sqlite")
+	cursor = conn.cursor()
+	weights = []
+	for category in categories:
+		query = "select %s from %s where category = '%s'"%(types,users_table, category)
+		cursor.execute(query)
+		results = cursor.fetchall()
+		distinct_follow = []
+		for x in results:
+			try:
+				ids = x[0].split(" ")
+				for y in ids:
+					if y.strip() != "null" and int(y) not in distinct_follow:
+						query = "select * from %s where Usr_ID = %d"%(users_table,int(y))
+						cursor.execute(query)
+						results = cursor.fetchall()	
+						if len(results) > 0:
+							distinct_follow.append(int(y))
+			except:
+				e = sys.exc_info()[0]
+				print e
+				exit()
+		weights.append(len(distinct_follow))
+	conn.close()
+	return weights
+# returns the nodes weighted (size proportional to their following count )
+# haha not really that useful
+# gets weights by distinct users with connections to another twitter database
+def weighted_nodes ():
+
+	weights = calculate_counts(categories)
+	print weights # [1047, 369, 131, 250, 7, 206, 350]
+
+	G=nx.Graph()
+	i = 0
+	labels = {}
+	while i < len(weights) and i < len(categories):
+		G.add_node(categories[i], color = cm[categories[i]], size = int(weights[i]))
+		labels[categories[i]] = str(weights[i])
+		i+=1
+	pos=nx.spring_layout(G)
+	print cm
+	print G.node
+	maxweight = max(weights) 
+	
+	print
+	nx.draw(G,pos,node_color =[G.node[node]["color"] for node in G], node_size=[int(G.node[node]["size"])*1.0/maxweight*10000 + 100  for node in G ] )
+	nx.draw_networkx_labels(G,pos, labels)
+	plt.axis('off')
+	plt.savefig("weighted_graph.png") # save as png
+	print "Saved image into weighted_graph.png"
+
+
+
+	
