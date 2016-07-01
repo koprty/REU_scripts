@@ -88,8 +88,9 @@ def topic_dist_2(doc_bow_arr, category = ""):
 
 #doc_bow_arr=doc_to_bow("commercial_growers.txt")
 #topic_dist_2(doc_bow_arr, "commercial_growers")
-
+'''
 for c in categories:
 	file = c + ".txt"
 	doc_bow = doc_to_bow(file)
 	topic_dist_2(doc_bow, c)
+'''
