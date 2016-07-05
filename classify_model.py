@@ -47,14 +47,21 @@ def run_topic_model(tweet = ""):
 	tweet_lda = lda.get_document_topics(bow,minimum_probability = .001)
 	return tweet_lda
 
-def classify_user():
-	pass
+def classify_user(user_desc= []):
+	user_SVC = cPickle.load("twitter_date/user_classifier/SVC_users.pickle")
+	user_vect = cPickle.load("twitter_date/user_classifier/count_users.pickle")
+
+	v1 = user_vect.transform(user_desc)
+
+	result = user_SVC.predict_proba(v1)
+
+	return result[0][1] > .58257648005
 
 def get_followers_following():
 	pass
 
 def classify_and_model():
-	#assuming we've pulled Tweet_ID, Usr_ID, Screename, CreatedAt, hashtags, and Tweet_Text
+	#assuming we've pulled Tweet_ID, Usr_ID, Screename, CreatedAt, hashtags, Tweet_Text, and Usr_Description
 	#preprocess
 	#classify as positive or negative (MAKE SURE TWEET IS IN LIST, e.g. ["this is the tweet"])
 	if classify_mdab([tweet_text]):
@@ -79,11 +86,25 @@ def classify_and_model():
 				query += ", "
 			else:
 				query += ");"
-		cursor.execute()
+		cursor.execute(query)
 		conn.commit()
 
 		#see if user already in previous databases
+		query = "select Usr_ID from users"
+		cursor.execute(query)
+		old_users = cursor.fetchall()
+		old_users = [user[0] for user in old_users]
+		query = "select Usr_ID from tweets9_users"
+		cursor.execute(query)
+		t9_users = cursor.fetchall()
+		t9_users = [user[0] for user in t9_users]
+
+		if (usr_id not in old_users) and (usr_id not in t9_users):
 			#if not, run user classification
+			if classify_user(usr_desc):
+				#positive for individual, write to individuals table
+			else:
+				#negative for individual, write to non-individuals table
 			#get following and followers
 	pass
 
