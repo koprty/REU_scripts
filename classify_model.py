@@ -13,14 +13,9 @@ import re
 import sqlite3
 import string
 
-def preprocess(db = "twitter_data/tweets.sqlite", table = "tweets9_streaming"):
-	conn = sqlite3.connect(db)
-	cursor = conn.cursor()
-	query = "select Tweet_Text from %s"%(table)
-	cursor.execute(query)
-	twe = cursor.fetchall()
-	conn.close()
-
+# preprocess an array of tweets 
+# Returns a tuple (preprocessed tweets, space-separated hashtags)
+def preprocess(twe):
 	removal_pattern1 = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 	removal_pattern2 = re.compile('//t.co(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 	removal_pattern3 = re.compile('\n')
@@ -45,8 +40,6 @@ def preprocess(db = "twitter_data/tweets.sqlite", table = "tweets9_streaming"):
 			i+=1
 		s = " ".join(words)
 		hashtags = " ".join(hashtags)
-		
-		s = s+" "
 		s = removal_pattern5.sub('', s)
 		s = removal_pattern1.sub('', s)
 		s = removal_pattern2.sub('', s)
@@ -57,7 +50,6 @@ def preprocess(db = "twitter_data/tweets.sqlite", table = "tweets9_streaming"):
 	        #s = s.replace("'", "")
 		#s = s.replace('"', "")
 		
-
 		for h in htmlentities:
 			s = s.replace(h, "")
 		tweets.append((s.strip(), hashtags))
@@ -106,8 +98,33 @@ def get_followers_following():
 	pass
 
 def classify_and_model():
-	#assuming we've pulled Tweet_ID, Usr_ID, Screename, CreatedAt, hashtags, Tweet_Text, and Usr_Description
-	#preprocess
+	#Pulling Tweet_ID, Usr_ID, Screename, CreatedAt, Tweet_Text, and Usr_Description
+	# other script doesnt get hashtags... :/ 
+	# we will get hashtags from preprocess function
+	'''
+	conn = sqlite3.connect(db)
+	cursor = conn.cursor()
+	query = "select Tweet_ID, Usr_ID, Scrrename, CreatedAt, Tweet_Text, Usr_Description from %s"%(table)
+	cursor.execute(query)
+	twe = cursor.fetchall()
+	conn.close() 
+	'''
+
+        #preprocess	
+	preprocess =  preprocess()
+	tweet_text = [x[0] for x in preprocess]
+	htags = [h[1] for h in preprocess]
+
+	### while loop for tweets
+	'''
+	i = 0
+       	while i < len(preprocess):
+		
+		#classify one tweet and other stuff here 
+
+		i +=1
+	'''
+
 	#classify as positive or negative (MAKE SURE TWEET IS IN LIST, e.g. ["this is the tweet"])
 
 	if classify_mdab([tweet_text]):
@@ -150,14 +167,31 @@ def classify_and_model():
 			#if not, run user classification
 			if classify_user(usr_desc):
 				#positive for individual, write to individuals table
+				pass
 			else:
 				#negative for individual, write to non-individuals table
+				pass
 			#get following and followers
 	return	
+
+
 #sched = BlockingScheduler()
 #sched.add_job(classify_and_model, 'interval', minutes = 15)
 #sched.start()
 
-preprocess_streaming =  preprocess()
-print len(preprocess_streaming)
+
+####### Example of using preprocess function ####
+db = "twitter_data/tweets.sqlite"
+table = "tweets9_streaming"
+conn = sqlite3.connect(db)
+cursor = conn.cursor()
+query = "select Tweet_Text from %s"%(table)
+cursor.execute(query)
+twe = cursor.fetchall()
+conn.close()
+
+preprocess_streaming =  preprocess(twe)
+#print len(preprocess_streaming)
 print preprocess_streaming
+
+#################################################
