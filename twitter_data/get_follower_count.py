@@ -1,6 +1,7 @@
 import sqlite3
 from twython import Twython,TwythonError
 import time
+import datetime
 
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv','HEGsXHtuOLUlUNkUcBWMlLqaK',
 'OtspVKgnB2UhNJSIXhf8QYIQO','7nTuFIXq6QmanfVx20OGXsL6N', 'PxNDGaWD6hUWLFpYffl8a83ZD', 'Du77cjeL7Q7hIrg89S62R6scu']
@@ -22,7 +23,7 @@ target = open("followers.txt", "r")
 snames = target.read()
 snames = snames.split("\n")
 '''
-conn = sqlite3.connect("../tweets.sqlite")
+conn = sqlite3.connect("tweets.sqlite")
 cursor = conn.cursor()
 '''
 for sname in snames:
@@ -42,6 +43,7 @@ for sname in snames:
 def followers_friends(user, index = 0):
 	if index >= 7:
 		print "sleepy time"
+		print datetime.datetime.now()
 		time.sleep(860)
 		index = 0
 
@@ -77,10 +79,12 @@ def followers_friends(user, index = 0):
 			return ("NULL","NULL",index)
 
 
-query = "select Usr_ID from tweets9_users where NumFollowers is  null"
+#query = "select Usr_ID from tweets9_users where NumFollowers is  null"
+query = "select Usr_ID from tweets9_musers where NumFollowers is  null"
 cursor.execute(query)
 users = cursor.fetchall()
 last_index = 0
+print datetime.datetime.now()
 for user in users:
 	ffi = followers_friends(user[0], last_index)
 	print ffi
@@ -89,11 +93,14 @@ for user in users:
 	last_index = ffi[2]
 	if (fo_count!="NULL" and fr_count!="NULL"):
 
-		query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		#query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		query = "update tweets9_musers set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		print query
 		cursor.execute(query)
 		conn.commit()
 
 
 
-conn.commit()
+#conn.commit()
 conn.close()
+

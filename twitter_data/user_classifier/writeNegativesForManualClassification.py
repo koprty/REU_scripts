@@ -1,25 +1,51 @@
 import sqlite3
 
 
-
 '''
-	#UPDATE USERS alREADY CLASSIFIED from users and tweets9_users (without connection code)
+	#UPDATE USERS ALREADY CLASSIFIED from users and tweets9_users 
+'''
+def updateCategories_Descripts_fromDB():
+	conn = sqlite3.connect("../tweets.sqlite")
+	cursor  = conn.cursor()
 	o=0
-	query = "select Usr_ID, Screename, Description, Category from users where Usr_ID in (select Usr_ID from tweets9_musers);"
-	query = "select Usr_ID, Screename, Description, Category from tweets9_users where Usr_ID in (select Usr_ID from tweets9_musers);"
+	query = "select Usr_ID, Screename, Description,  Category, Followers, Following from users where Usr_ID in (select Usr_ID from tweets9_musers);"
+	query = "select Usr_ID, Screename, Description, Category, Followers, Following from tweets9_users where Usr_ID in (select Usr_ID from tweets9_musers);"
 	cursor.execute(query)
 	data = cursor.fetchall()
-	
+
 	for x in data: 
-		query = "UPDATE tweets9_musers set Screename = '%s', Description = \"\"\"%s\"\"\", category = '%s' where Usr_ID = '%s'"%(x[1], x[2], x[3], x[0])
+		query = "UPDATE tweets9_musers set Screename = '%s', Description = \"%s\", category = '%s', followers = '%s',following = '%s' where Usr_ID = '%s'"%(x[1], x[2], x[3],x[4], x[5], x[0])
 		print query
 		cursor.execute(query)
 		conn.commit()
 		o+=1
 	print o
+	conn.close()
 	exit()
+#updateCategories_Descripts_fromDB()
 
-'''
+# update descriptions with quotation marks
+def updateDescripts():
+	conn = sqlite3.connect("../tweets.sqlite")
+	cursor  = conn.cursor()
+	o=0
+	# extra quotes from new descriptions not from users or tweets9_users
+	#query = "select  Description, Usr_ID  from users where Usr_ID in (select Usr_ID from tweets9_musers);"
+	query = "select  Description, Usr_ID  from tweets9_musers ;"
+	cursor.execute(query)
+	data = cursor.fetchall()
+	for x in data:
+		if len(x[0]) > 0 and x[0][0] == '"' and x[0][-1] == '"':
+			print x
+			query = "UPDATE tweets9_musers set Description = \"%s\" where Usr_ID = '%s'"%(x[0][1:-1], x[1])
+			print query
+			cursor.execute(query)
+			conn.commit()
+			o+=1
+	print o
+	conn.close()
+	exit()
+updateDescripts()
 def writeToFile():
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor  = conn.cursor()
@@ -51,8 +77,8 @@ def writeToFile():
 	f.close()
 
 
-writeToFile()
-print "writing done"
+#writeToFile()
+#print "writing done"
 
 # Usr_ID is trimmed off due to xlsx format -__-
 # using screenames to relate
@@ -70,28 +96,28 @@ def importCategoriesDB(fname):
 	for line in lines:
 
 		l = line.split("\t")
+		'''
 		if len(l) != 4:
 			print l
 			exit()
+		'''
 		cate = l[1]
 		sn = l[2]
 		
-		query = "UPDATE tweets9_users set category = '%s' where Screename = '%s'"%(cate, sn)
-
+		query = "UPDATE tweets9_musers set category = '%s' where Screename = '%s'"%(cate, sn)
 		cursor.execute(query)
 		print query 
 		i+=1
 		conn.commit()
 	conn.close()
 
-	print i
 	return content.split("\r")
 
 
 #x =importCategoriesDB ("partA.txt")
 #print len(x)
 
-#x =importCategoriesDB ("dataA.txt")
+#x =importCategoriesDB ("data.txt")
 #print len(x)
 
 #print x

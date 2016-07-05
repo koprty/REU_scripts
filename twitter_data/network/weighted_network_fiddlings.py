@@ -186,10 +186,10 @@ def weighted_edges(weight_tuples, table_type, categories = categories, colors = 
 	print "done :D "
 	print "dot file in " + fname +" :D :D :D"
 
-followingweights = calculate_edge_counts(table_type="followings")
-weighted_edges (followingweights, "followings", fname="followings")
+#followingweights = calculate_edge_counts(table_type="followings")
+#weighted_edges (followingweights, "followings", fname="combined_followings")
 followingweights = calculate_edge_counts(table_type="followers")
-weighted_edges (followingweights, "followers", fname="followers")
+weighted_edges (followingweights, "followers", fname="combined_followers")
 
 
 '''

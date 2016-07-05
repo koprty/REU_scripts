@@ -32,26 +32,28 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q2
 def get_D_UsrID(dbpath, table):
 	conn = sqlite3.connect(dbpath)
 	cursor = conn.cursor()
-	query = "select Distinct Usr_ID from %s "% table
+	#query = "select Distinct Usr_ID from %s "% table
+	query = "select Distinct Usr_ID from %s where Following='null' or Followers = 'null'"% table
 	cursor.execute(query)
 	ids = cursor.fetchall()
 	conn.close()
+	print ids
 	return ids
 
-def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9_following"):
+def get_following_to_db(dbpath, sn_table = "tweets9_users"):
 	distinct = get_D_UsrID(dbpath,sn_table )
 
 	index=0
 	num_checked = 0
 	rate_ex = 0
-	ind = 1574
+	ind = 0
 	already_checked = False
 	follower_cursor = -1
 	friend_cursor = -1
 	print "Starting @ %d"%(ind)
 	print datetime.datetime.now() 
-	while ind < len(distinct):
 
+	while ind < len(distinct):
 	#for i in distinct:
 		i = distinct[ind][0]
 		APP_KEY = APP_KEYS[index]
@@ -152,6 +154,6 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users", des_table = "tweets9
 
 
 dbpath = "tweets.sqlite"
-get_following_to_db(dbpath)
+get_following_to_db(dbpath,sn_table = "tweets9_musers")
 
 

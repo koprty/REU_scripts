@@ -15,18 +15,20 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q2
 'NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw','jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
 '2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4']
 
-conn = sqlite3.connect("../twitter_classifying/tweets.sqlite")
+#conn = sqlite3.connect("../twitter_classifying/tweets.sqlite")
+conn = sqlite3.connect("tweets.sqlite")
 cursor = conn.cursor()
 
 query = "select Tweet_ID from posdab_Tweets where Tweet_ID not in (select Tweet_ID from retweets);"
+query = "select Tweet_ID from tweets9_mdab where Tweet_ID not in (select Tweet_ID from retweets);"
 cursor.execute(query)
 ids = cursor.fetchall()
 
-query = "drop table retweets;"
-cursor.execute(query)
+#query = "drop table retweets;"
+#cursor.execute(query)
 
-query = "create table retweets (Element_ID int, Tweet_ID int, Retweeter_ID int, Date text);"
-cursor.execute(query)
+#query = "create table retweets (Element_ID int, Tweet_ID int, Retweeter_ID int, Date text);"
+#cursor.execute(query)
 
 
 def get_retweeters(tweet_id, index):
