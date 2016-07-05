@@ -145,7 +145,7 @@ while index < len(alltweets):
 		for x in words:
 			if "#" in x: 
 				y = "#" + x.strip(",").strip().split("#")[-1]
-				hashtags.append(y)
+				hashtags.append(y.strip())
 		hashtags = " ".join(hashtags)
 		tt.append("'"+str(hashtags)+"'")
 		values = ", ".join(tt)
