@@ -12,7 +12,12 @@ coeff_i =  SVC.coef_.indices
 coeff_d = SVC.coef_.data
 vocab =  vectorizer.vocabulary_
 
-#index = vocab['high schoolers']
+index = vocab['tree oil']
+i=0
+for c in coeff_i:
+	if c == index:
+		print coeff_d[i]
+	i += 1
 '''
 i=0
 coeff = []
@@ -25,6 +30,7 @@ for c in coeff_i:
 
 for c in coeff: 
 '''
+'''
 for v in vocab:
 	if "high" in v or "oil" in v:
 		index = vocab[v]
@@ -35,4 +41,4 @@ for v in vocab:
 					print v + " "+ str(coeff_d[i])
 			i +=1
 
-
+'''
