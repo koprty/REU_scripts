@@ -55,9 +55,13 @@ while dd < numtweets:
 #t_txt = [x[0] for x in alltweets]
 t_txt = [x[0] for x in list_tweets]
 
-transformer = cPickle.load(open('new_tf2.pickle','rb'))
-SVC = cPickle.load(open('SVC2.pickle','rb'))
-vectorizer = cPickle.load(open('new_vect2.pickle','rb'))
+#transformer = cPickle.load(open('new_tf2.pickle','rb'))
+#SVC = cPickle.load(open('SVC2.pickle','rb'))
+#vectorizer = cPickle.load(open('new_vect2.pickle','rb'))
+
+transformer = cPickle.load(open('../../twitter_classifying/new_tf2.pickle','rb'))
+SVC = cPickle.load(open('../../twitter_classifying/SVC2.pickle','rb'))
+vectorizer = cPickle.load(open('../../twitter_classifying/new_vect2.pickle','rb'))
 
 v1 = vectorizer.transform(t_txt)
 v2 = transformer.transform(v1)
@@ -88,7 +92,7 @@ while ind < len(probabilities):
 		i += 1
 
 		#print x
-	if x[1] > 0.830430012805:
+	if x[1] > 0.980430012805:
 		#0.980430012805
 		#0.830430012805
 		L.append(1)
@@ -116,6 +120,7 @@ column_names = ", ".join(names[1:]+ ["hashtags"])
 print 
 count = 0
 index = 0
+z = 0
 while index < len(alltweets):
 	if L[index] == 1 and "dj dabs by on soundcloud" not in list_tweets[index][0]:
 		#push to db
@@ -145,7 +150,7 @@ while index < len(alltweets):
 		for x in words:
 			if "#" in x: 
 				y = "#" + x.strip(",").strip().split("#")[-1]
-				hashtags.append(y.strip())
+				hashtags.append(y.strip().replace("'","").replace('"',''))
 		hashtags = " ".join(hashtags)
 		tt.append("'"+str(hashtags)+"'")
 		values = ", ".join(tt)
@@ -163,33 +168,40 @@ while index < len(alltweets):
 		conn2.commit()
 		conn2.close()
 		count += 1
+	if "dj dabs by on soundcloud" in list_tweets[index][0]:
+		z +=1
 	index +=1
 
 print 
-print L.count(1), "with 'dj dabs by on soundcloud'"
-print count
+print L.count(1), "positives :D "
+print z, "with dj dabs by on soundcloud"
+print count, "was inserted"
 
 print datetime.datetime.now()
 
 
 conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
-query = "Select Tweet_ID from tweets9_mdab where Tweet_ID in (select Tweet_ID from oldtweets9_mdab)"
-cursor.execute(query)
-results = cursor.fetchall()
-print len(results)
-i = 0
-for y in results:
-	x = y[0]
-	query = "select FavoriteCount, RetweetCount from oldtweets9_mdab where Tweet_ID = '%d'"%(x)
+maintable = "tweets9_mdab"
+tables = ["oldtweets9_mdab"]
+for table in tables:
+	query = "Select Tweet_ID from %s where Tweet_ID in (select Tweet_ID from %s)"%(maintable,table)
 	cursor.execute(query)
-	r = cursor.fetchall()[0]
-	fc = r[0]
-	rc = r[1]
-	query = "Update %s set FavoriteCount = %d, RetweetCount = %d where Tweet_ID = '%s'" % ("tweets9_mdab", fc, rc, x)
-	print query
-	cursor.execute(query)
-	conn.commit()
-	i+=1
+	results = cursor.fetchall()
+	#print len(results)
+	i = 0
+	for y in results:
+		x = y[0]
+		query = "select FavoriteCount, RetweetCount from %s where Tweet_ID = '%d'"%(table, x)
+		cursor.execute(query)
+		r = cursor.fetchall()[0]
+		fc = r[0]
+		rc = r[1]
+		query = "Update %s set FavoriteCount = %d, RetweetCount = %d where Tweet_ID = '%s'" % (maintable, fc, rc, x)
+		#print query
+		cursor.execute(query)
+		conn.commit()
+		i+=1
 conn.close()
+
 exit()
