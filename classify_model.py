@@ -12,6 +12,35 @@ from gensim import corpora, models
 import re
 import sqlite3
 import string
+from twython import Twython,TwythonError
+
+
+APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv','HEGsXHtuOLUlUNkUcBWMlLqaK',
+'OtspVKgnB2UhNJSIXhf8QYIQO',
+'7nTuFIXq6QmanfVx20OGXsL6N', 
+'PxNDGaWD6hUWLFpYffl8a83ZD', 
+'Du77cjeL7Q7hIrg89S62R6scu', 'zssUc5yAchM6TTPs5nRbsMxsQ']
+
+APP_SECRETS = ['NNVeYdE9AICI1a4Ytkm4PHyY9KhwLehZItP0WiZUSLaZG9H2Ml','7Dz4eSTJumYpYnPWdgKitBN60OTFgREsp6OdiNY6C3ihT1OS2l',
+'wPwcpAlVTYBWEqzYFWG6vsVi8YRzbY4XMC2Fe8DkD4DkRnIviz','KeiDW2vmHIMUcUN9scHFYqYBlQg7K3LfOPinjtTA6cxbXyEve5', 'fv77emr7170r7uh4vSHLSfrnK4c8ZGmNZ88foysls3L15MRprZ',
+'wDL6lXHThz2GubZmFEogZE9ZcDDD6mJBTrSiaonjUZ6J1vGuPa', 
+
+'gwrVjhgXosdQcL5cSXXmlC8QsI29g4vs9bJj6iWmemNyeMcjQe',
+'e7cOLH4PDTf3bvgJuXg7xtLiW7M2oPimr2oP4wN8RANdXEP0gF','zealQwvvv5N0r0Olja053Wd19VK59qeyCvTA45dXtq5OLkSFkZ']
+
+OAUTH_TOKENS = ['701759705421639681-nutlNGruF7WZjq0kXZUTcKVbrnXs3vD','701759705421639681-KcNn0T4hdVjVSq2NhiGagdFV5pgUNHa',
+'258508177-BqAvmsMCK4vdfBVp5c0wIIyBB6nNrhtOWtbdM82O','258508177-uQDYR2XTlrMpxfjwKYEIAaxarHkhZygl3n44Jz8k', 
+'258508177-bHYLjetyZRNsulsFtI8oIBVJsrr3DxHdqhgxWzJ4',
+'258508177-KHviBY6zYX7PjVBzKjfCbsDWuXSyBHOcfuo7HzyQ',
+'701759705421639681-F84hDkTSfuG7KqJcqzk1rm88Izx1NUG',
+'701759705421639681-O9d1FGk2LfGZ5FdR4wwlJpWCqf914MM', '701759705421639681-xYAlZAI4x0dJhUEOe6hawOea1MbQc8o']
+
+OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q23KVYx8AKS8tuWpCOAj8TMxQ3BYD1nb7sVF5s',
+'NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw','jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
+'2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 
+'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4', 'vdsE88d7ptFvmH1yEZorLwnr7JQLvGz9dlAEETUJ4kdAH']
+
+index = 0
 
 # preprocess an array of tweets 
 # Returns a tuple (preprocessed tweets, space-separated hashtags)
@@ -56,9 +85,9 @@ def preprocess(twe):
 	return tweets
 	
 def classify_mdab(tweet = []):
-	tf = cPickle.load(open('../twitter_data/tweet_classifier/new_tf2.pickle','rb'))
-	SVC = cPickle.load(open('../twitter_data/tweet_classifier/SVC2.pickle','rb'))
-	vect = cPickle.load(open('../twitter_data/tweet_classifier/new_vect2.pickle','rb'))
+	tf = cPickle.load(open('twitter_data/tweet_classifier/new_tf2.pickle','rb'))
+	SVC = cPickle.load(open('twitter_data/tweet_classifier/SVC2.pickle','rb'))
+	vect = cPickle.load(open('twitter_data/tweet_classifier/new_vect2.pickle','rb'))
 
 	v1 = vect.transform(tweet)
 	v2 = tf.transform(v1)
@@ -85,8 +114,8 @@ def run_topic_model(tweet = ""):
 	return tweet_lda
 
 def classify_user(user_desc= []):
-	user_SVC = cPickle.load("twitter_date/user_classifier/SVC_users.pickle")
-	user_vect = cPickle.load("twitter_date/user_classifier/count_users.pickle")
+	user_SVC = cPickle.load(open("twitter_data/user_classifier/SVC_users.pickle", 'rb'))
+	user_vect = cPickle.load(open("twitter_data/user_classifier/count_users.pickle", 'rb'))
 
 	v1 = user_vect.transform(user_desc)
 
@@ -94,8 +123,62 @@ def classify_user(user_desc= []):
 
 	return result[0][1] > .58257648005
 
-def get_followers_following():
-	pass
+def get_followers_following(usr_id):
+	friend_cursor = -1
+	follower_cursor = -1
+
+	APP_KEY = APP_KEYS[index]
+	APP_SECRET = APP_SECRETS[index]
+	OAUTH_TOKEN = OAUTH_TOKENS[index]
+	OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
+
+	try:
+		twitter = Twython (APP_KEY, APP_SECRET)
+		auth = twitter.get_authentication_tokens()
+		twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+
+		friends = ""
+		while (friend_cursor != 0):
+			following = twitter.get_friends_ids(id = usr_id, cursor = friend_cursor)
+			for ID in following['ids']:
+				friends += str(ID) + " " 
+				friend_cursor =  following["next_cursor"]
+		friends = friends[:-1]
+		if len(friends) == 0:
+			friends = "null"
+
+		follow = ""
+		while (follower_cursor != 0):
+			followers = twitter.get_followers_ids(id = i,cursor= follower_cursor)
+			for ID in followers['ids']:
+				follow += str(ID) + " " 
+			follower_cursor =  followers["next_cursor"]
+		follow= follow[:-1]
+		if len(follow) == 0:
+			follow = "null"
+
+		return (friends,follow)
+
+	except Exception as e:
+		print e
+		if "429 (Too Many Requests)" in str(e):
+			global index
+			index += 1
+			if index == len(APP_KEYS):
+				index = 0
+				print "sleepy time - 15 minutes"
+				print datetime.datetime.now()
+				time.sleep(870)
+				return get_followers_following(usr_id)
+		elif "401 (Unauthorized)" in str(e):
+			print "401 error"
+			return ("null","null")
+		elif "404 (Not Found)" in str(e):
+			print "404 error"
+			return ("null","null")
+		else:
+			print e
+			return ("null","null")
 
 def classify_and_model():
 	#Pulling Tweet_ID, Usr_ID, Screename, CreatedAt, Tweet_Text, and Usr_Description
@@ -105,6 +188,7 @@ def classify_and_model():
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
 	query = "select Tweet_ID, Usr_ID, Scrrename, CreatedAt, Tweet_Text, Usr_Description from %s"%(table)
+	#should we add a where statement to check if datechecked is null??
 	cursor.execute(query)
 	twe = cursor.fetchall()
 	conn.close() 
@@ -138,7 +222,7 @@ def classify_and_model():
 			if (top[0]!=8):
 				space_topics += " "
 		#update database with new tweet
-		query = "insert into TABLE_NAME " + \
+		query = "INSERT INTO TABLE_NAME " + \
 				 "(Tweet_ID, Usr_ID, Screename, hashtags, Tweet_Text, CreatedAt, DateChecked, "  +\
 				 "TopTopic, SpaceTopic, Zero, One, Two, Three, Four, Five, Six, Seven, Eight) " +\
 				 "values (" + tweet_id + ", " + usr_id + ", '" + screename + "', '" + hashtags + "',"+ \
@@ -164,14 +248,34 @@ def classify_and_model():
 		t9_users = [user[0] for user in t9_users]
 
 		if (usr_id not in old_users) and (usr_id not in t9_users):
-			#if not, run user classification
-			if classify_user(usr_desc):
+			#if not, run user classification (like tweet classifier, put description in list, [])
+			if classify_user([usr_desc]):
 				#positive for individual, write to individuals table
-				pass
+				#get following and followers
+				friends_follow = get_followers_following(usr_id)
+				friends = friends_follow[0]
+				follow = friends_follow[1]
+				follow_count = len(follow.split(" "))
+				friend_count = len(friends.split(" "))
+
+				conn = sqlite3.connect(db)
+				cursor = conn.cursor()
+				query = "INSERT INTO individuals (Usr_ID, Screename, NumFollowers, NumFollowing, Followers, Following, Description) " +\
+						"values ('%s', '%s', %s, %s, '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
+
 			else:
 				#negative for individual, write to non-individuals table
-				pass
-			#get following and followers
+				#get following and followers
+				friends_follow = get_followers_following(usr_id)
+				friends = friends_follow[0]
+				follow = friends_follow[1]
+				follow_count = len(follow.split(" "))
+				friend_count = len(friends.split(" "))
+
+				conn = sqlite3.connect(db)
+				cursor = conn.cursor()
+				query = "INSERT INTO non_individuals (Usr_ID, Screename, NumFollowers, NumFollowing, Followers, Following, Description) " +\
+						"values ('%s', '%s', %s, %s, '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
 	return	
 
 
@@ -179,7 +283,7 @@ def classify_and_model():
 #sched.add_job(classify_and_model, 'interval', minutes = 15)
 #sched.start()
 
-
+'''
 ####### Example of using preprocess function ####
 db = "twitter_data/tweets.sqlite"
 table = "tweets9_streaming"
@@ -193,5 +297,30 @@ conn.close()
 preprocess_streaming =  preprocess(twe)
 #print len(preprocess_streaming)
 print preprocess_streaming
+'''
+#################################################
+
+sample_tweet = "im high dab bout to smoke some hash oil" # should be positive
+sample_shop_description = "smokeshop, we sell medical marijuana bongs glass rigs" #should be false for user classification
+sample_ind_description = "living in arizona loving life" # should be true for user classification
+
+#### Example of using classification function ####
+result = classify_mdab([sample_tweet])
+print result #TRUE
 
 #################################################
+
+#### Example of using topic model function ####
+tm = run_topic_model(sample_tweet)
+print tm 
+
+#################################################
+
+#### Example of user classification function ####
+suc = classify_user([sample_shop_description])
+print suc #FALSE 
+iuc = classify_user([sample_ind_description])
+print iuc #TRUE
+
+
+
