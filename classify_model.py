@@ -15,28 +15,27 @@ import string
 from twython import Twython,TwythonError
 
 
-APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv','HEGsXHtuOLUlUNkUcBWMlLqaK',
-'OtspVKgnB2UhNJSIXhf8QYIQO',
-'7nTuFIXq6QmanfVx20OGXsL6N', 
-'PxNDGaWD6hUWLFpYffl8a83ZD', 
+APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX',
+'SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv',
+'HEGsXHtuOLUlUNkUcBWMlLqaK','OtspVKgnB2UhNJSIXhf8QYIQO',
+'7nTuFIXq6QmanfVx20OGXsL6N', 'PxNDGaWD6hUWLFpYffl8a83ZD', 
 'Du77cjeL7Q7hIrg89S62R6scu', 'zssUc5yAchM6TTPs5nRbsMxsQ']
 
-APP_SECRETS = ['NNVeYdE9AICI1a4Ytkm4PHyY9KhwLehZItP0WiZUSLaZG9H2Ml','7Dz4eSTJumYpYnPWdgKitBN60OTFgREsp6OdiNY6C3ihT1OS2l',
-'wPwcpAlVTYBWEqzYFWG6vsVi8YRzbY4XMC2Fe8DkD4DkRnIviz','KeiDW2vmHIMUcUN9scHFYqYBlQg7K3LfOPinjtTA6cxbXyEve5', 'fv77emr7170r7uh4vSHLSfrnK4c8ZGmNZ88foysls3L15MRprZ',
-'wDL6lXHThz2GubZmFEogZE9ZcDDD6mJBTrSiaonjUZ6J1vGuPa', 
-
-'gwrVjhgXosdQcL5cSXXmlC8QsI29g4vs9bJj6iWmemNyeMcjQe',
+APP_SECRETS = ['NNVeYdE9AICI1a4Ytkm4PHyY9KhwLehZItP0WiZUSLaZG9H2Ml',
+'7Dz4eSTJumYpYnPWdgKitBN60OTFgREsp6OdiNY6C3ihT1OS2l','wPwcpAlVTYBWEqzYFWG6vsVi8YRzbY4XMC2Fe8DkD4DkRnIviz',
+'KeiDW2vmHIMUcUN9scHFYqYBlQg7K3LfOPinjtTA6cxbXyEve5', 'fv77emr7170r7uh4vSHLSfrnK4c8ZGmNZ88foysls3L15MRprZ',
+'wDL6lXHThz2GubZmFEogZE9ZcDDD6mJBTrSiaonjUZ6J1vGuPa', 'gwrVjhgXosdQcL5cSXXmlC8QsI29g4vs9bJj6iWmemNyeMcjQe',
 'e7cOLH4PDTf3bvgJuXg7xtLiW7M2oPimr2oP4wN8RANdXEP0gF','zealQwvvv5N0r0Olja053Wd19VK59qeyCvTA45dXtq5OLkSFkZ']
 
-OAUTH_TOKENS = ['701759705421639681-nutlNGruF7WZjq0kXZUTcKVbrnXs3vD','701759705421639681-KcNn0T4hdVjVSq2NhiGagdFV5pgUNHa',
-'258508177-BqAvmsMCK4vdfBVp5c0wIIyBB6nNrhtOWtbdM82O','258508177-uQDYR2XTlrMpxfjwKYEIAaxarHkhZygl3n44Jz8k', 
-'258508177-bHYLjetyZRNsulsFtI8oIBVJsrr3DxHdqhgxWzJ4',
-'258508177-KHviBY6zYX7PjVBzKjfCbsDWuXSyBHOcfuo7HzyQ',
-'701759705421639681-F84hDkTSfuG7KqJcqzk1rm88Izx1NUG',
+OAUTH_TOKENS = ['701759705421639681-nutlNGruF7WZjq0kXZUTcKVbrnXs3vD',
+'701759705421639681-KcNn0T4hdVjVSq2NhiGagdFV5pgUNHa','258508177-BqAvmsMCK4vdfBVp5c0wIIyBB6nNrhtOWtbdM82O',
+'258508177-uQDYR2XTlrMpxfjwKYEIAaxarHkhZygl3n44Jz8k','258508177-bHYLjetyZRNsulsFtI8oIBVJsrr3DxHdqhgxWzJ4',
+'258508177-KHviBY6zYX7PjVBzKjfCbsDWuXSyBHOcfuo7HzyQ','701759705421639681-F84hDkTSfuG7KqJcqzk1rm88Izx1NUG',
 '701759705421639681-O9d1FGk2LfGZ5FdR4wwlJpWCqf914MM', '701759705421639681-xYAlZAI4x0dJhUEOe6hawOea1MbQc8o']
 
-OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q23KVYx8AKS8tuWpCOAj8TMxQ3BYD1nb7sVF5s',
-'NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw','jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
+OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh',
+'HPmY0P8q23KVYx8AKS8tuWpCOAj8TMxQ3BYD1nb7sVF5s','NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw',
+'jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
 '2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 
 'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4', 'vdsE88d7ptFvmH1yEZorLwnr7JQLvGz9dlAEETUJ4kdAH']
 
@@ -84,6 +83,8 @@ def preprocess(twe):
 		tweets.append((s.strip(), hashtags))
 	return tweets
 	
+#returns true if first tweet in array has a high enough probability of being positive 
+#the passed in array is only meant to have one tweet in it
 def classify_mdab(tweet = []):
 	tf = cPickle.load(open('twitter_data/tweet_classifier/new_tf2.pickle','rb'))
 	SVC = cPickle.load(open('twitter_data/tweet_classifier/SVC2.pickle','rb'))
@@ -96,6 +97,9 @@ def classify_mdab(tweet = []):
 
 	return result[0][1]> 0.830430012805
 
+#returns topic distribution of a tweet passed in 
+#returns list of tuples, each tuple having the topic number as its first element 
+#and the probability of that topic as its second element
 def run_topic_model(tweet = ""):
 	tokenizer = RegexpTokenizer(r'\w+')
 	p_stemmer = PorterStemmer()
@@ -113,6 +117,9 @@ def run_topic_model(tweet = ""):
 	tweet_lda = lda.get_document_topics(bow,minimum_probability = .001)
 	return tweet_lda
 
+#runs user classifier on description passed in 
+#returns true if probability is high enough to be classified as individual
+#description should be passed in using a list with it as the only element
 def classify_user(user_desc= []):
 	user_SVC = cPickle.load(open("twitter_data/user_classifier/SVC_users.pickle", 'rb'))
 	user_vect = cPickle.load(open("twitter_data/user_classifier/count_users.pickle", 'rb'))
@@ -123,6 +130,9 @@ def classify_user(user_desc= []):
 
 	return result[0][1] > .58257648005
 
+#pulls followers and following ids from twitter
+#returns tuple, with string of friends' ids first and then followers' ids 
+#returns ("null","null") if there is an error
 def get_followers_following(usr_id):
 	friend_cursor = -1
 	follower_cursor = -1
@@ -149,7 +159,7 @@ def get_followers_following(usr_id):
 
 		follow = ""
 		while (follower_cursor != 0):
-			followers = twitter.get_followers_ids(id = i,cursor= follower_cursor)
+			followers = twitter.get_followers_ids(id = usr_id,cursor= follower_cursor)
 			for ID in followers['ids']:
 				follow += str(ID) + " " 
 			follower_cursor =  followers["next_cursor"]
@@ -215,12 +225,11 @@ def classify_and_model():
 		#run topic_model
 		tweet_topic_dist = run_topic_model(tweet_txt)
 		top_topic = sorted(tweet_topic_dist,key=lambda x: x[1], reverse = True)[0]
-		spaced_topics = ""
 
+		space_topics = ""
 		for top in tweet_topic_dist:
-			space_topics += top[1]
-			if (top[0]!=8):
-				space_topics += " "
+			space_topics += top[1] + " "
+		space_topics = space_topics[:-1]
 		#update database with new tweet
 		query = "INSERT INTO TABLE_NAME " + \
 				 "(Tweet_ID, Usr_ID, Screename, hashtags, Tweet_Text, CreatedAt, DateChecked, "  +\
