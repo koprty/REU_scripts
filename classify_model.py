@@ -1,5 +1,5 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
-import datetime
+import datetime # datetime, timedelta
 import cPickle
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.svm import SVC
@@ -13,6 +13,7 @@ import re
 import sqlite3
 import string
 from twython import Twython,TwythonError
+
 
 
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX',
@@ -310,6 +311,119 @@ def classify_and_model():
 		target.close()
 		i += 1
 	return	
+def getRetweetCount(twe_id):
+	index=0
+	while (index <len(APP_KEY)):
+		try:
+			twitter = Twython (APP_KEY, APP_SECRET)
+			auth = twitter.get_authentication_tokens()
+			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+			result = twitter.show_status(id=tweet_id)
+			'''
+			#print result['user']['screen_name'] + " " + result['user']['description']
+			tweet['Usr_Screename'] = result['user']['screen_name']
+			tweet['Usr_Description'] = result['user']['description']
+			
+			tweet['FavoriteCount'] = int(result['favorite_count'])
+			'''
+			return int(result['retweet_count'])
+		except Exception as e:
+			if "429 (Too Many Requests)" in str(e):
+				index += 0
+			elif "404 (Not Found)" in str(e):
+				return ''
+			elif "403 (Forbidden)" in str(e):
+				return ''
+			else:
+				print e
+
+		index +=1
+	return ''
+				
+
+	return
+def updateRetweetCountOnIntervals (conn, table):
+	# 15 minutes intervals for each category 
+	#RetweetCount_15min INT
+	now = datetime.datetime.now()
+	timedelta = datetime.timedelta(minutes = 15)
+	mark= now - timedelta
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(table, mark)
+	cursor.execute(query)
+	ids_in_time_interval = cursor.fetchall()
+	for x in ids_in_time_interval:
+		rc = getRetweetCount ( twe_id )
+		if len(str(rc)) > 0:
+			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(rc, twe_id)
+			cursor.execute(query)
+			cursor.fetchall()
+			#conn.commit()
+
+	# one hour -  RetweetCount_1hour INT,
+	now = datetime.datetime.now()
+	timedelta = datetime.timedelta(hours = 1)
+	mark= now - timedelta
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1hour is Null"%(table, mark)
+	cursor.execute(query)
+	ids_in_time_interval = cursor.fetchall()
+	for x in ids_in_time_interval:
+		rc = getRetweetCount ( twe_id )
+		if len(str(rc)) > 0:
+			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(rc, twe_id)
+			cursor.execute(query)
+			cursor.fetchall()
+			#conn.commit()
+
+	
+	# 5 hours - RetweetCount_1day INT,
+	now = datetime.datetime.now()
+	timedelta = datetime.timedelta(hours = 5)
+	mark= now - timedelta
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_5hour is Null"%(table, mark)
+	cursor.execute(query)
+	ids_in_time_interval = cursor.fetchall()
+	for x in ids_in_time_interval:
+		rc = getRetweetCount ( twe_id )
+		if len(str(rc)) > 0:
+			query = "update %s set RetweetCount_5hour = %d where tweet_id = %d"%(rc, twe_id)
+			cursor.execute(query)
+			cursor.fetchall()
+			#conn.commit()
+	
+	# a day - RetweetCount_5hours INT,
+	now = datetime.datetime.now()
+	timedelta = datetime.timedelta(days = 1)
+	mark= now - timedelta
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1day is Null"%(table, mark)
+	cursor.execute(query)
+	ids_in_time_interval = cursor.fetchall()
+	for x in ids_in_time_interval:
+		rc = getRetweetCount ( twe_id )
+		if len(str(rc)) > 0:
+			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(rc, twe_id)
+			cursor.execute(query)
+			cursor.fetchall()
+			#conn.commit()
+
+	# a week -  RetweetCount_1week INT,
+	now = datetime.datetime.now()
+	timedelta = datetime.timedelta(days = 7)
+	mark= now - timedelta
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1week is Null"%(table, mark)
+	cursor.execute(query)
+	ids_in_time_interval = cursor.fetchall()
+	for x in ids_in_time_interval:
+		rc = getRetweetCount ( twe_id )
+		if len(str(rc)) > 0:
+			query = "update %s set RetweetCount_1week = %d where tweet_id = %d"%(rc, twe_id)
+			cursor.execute(query)
+			cursor.fetchall()
+			#conn.commit()
+
+
+
+
+
 
 
 #sched = BlockingScheduler()
