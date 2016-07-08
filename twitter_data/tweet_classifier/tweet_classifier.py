@@ -55,9 +55,9 @@ while dd < numtweets:
 #t_txt = [x[0] for x in alltweets]
 t_txt = [x[0] for x in list_tweets]
 
-transformer = cPickle.load(open('new_tf2.pickle','rb'))
-SVC = cPickle.load(open('SVC2.pickle','rb'))
-vectorizer = cPickle.load(open('new_vect2.pickle','rb'))
+transformer = cPickle.load(open('../../twitter_classifying/new_tf2.pickle','rb'))
+SVC = cPickle.load(open('../../twitter_classifying/SVC2.pickle','rb'))
+vectorizer = cPickle.load(open('../../twitter_classifying/new_vect2.pickle','rb'))
 
 v1 = vectorizer.transform(t_txt)
 v2 = transformer.transform(v1)
@@ -88,7 +88,7 @@ while ind < len(probabilities):
 		i += 1
 
 		#print x
-	if x[1] > 0.830430012805:
+	if x[1] > 0.980430012805:
 		#0.980430012805
 		#0.830430012805
 		L.append(1)

@@ -26,6 +26,7 @@ print "PART 1"
 #the following code is adapted from sample scripts given on scikit-learn.org on their page about working with text data
 #URL: http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
 #if s == "SET_A":
+#count_vect = CountVectorizer(ngram_range=(1, 2),min_df = 1)
 count_vect = CountVectorizer(ngram_range=(1, 2))
 tweet_text_counts = count_vect.fit_transform(tweet_text)
 f= open("new_vect2.pickle", "wb")

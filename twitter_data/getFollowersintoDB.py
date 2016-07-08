@@ -33,7 +33,7 @@ def get_D_UsrID(dbpath, table):
 	conn = sqlite3.connect(dbpath)
 	cursor = conn.cursor()
 	#query = "select Distinct Usr_ID from %s "% table
-	query = "select Distinct Usr_ID from %s where Following='null' or Followers = 'null'"% table
+	query = "select Distinct Usr_ID from %s where Following='null' or Followers = 'null' or Following is Null or Followers is null"% table
 	cursor.execute(query)
 	ids = cursor.fetchall()
 	conn.close()
@@ -154,6 +154,7 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users"):
 
 
 dbpath = "tweets.sqlite"
-get_following_to_db(dbpath,sn_table = "tweets9_musers")
+print len(get_D_UsrID(dbpath, table = "users"))
+get_following_to_db(dbpath,sn_table = "users")
 
 

@@ -25,6 +25,7 @@ def updateCategories_Descripts_fromDB():
 #updateCategories_Descripts_fromDB()
 
 # update descriptions with quotation marks
+# update users descriptions 
 def updateDescripts():
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor  = conn.cursor()
@@ -32,26 +33,30 @@ def updateDescripts():
 	# extra quotes from new descriptions not from users or tweets9_users
 	#query = "select  Description, Usr_ID  from users where Usr_ID in (select Usr_ID from tweets9_musers);"
 	query = "select  Description, Usr_ID  from tweets9_musers ;"
+	query = "select  Usr_Description, Usr_ID  from posdab_tweets where Usr_ID in (select  Usr_ID from users where category is null);"
 	cursor.execute(query)
 	data = cursor.fetchall()
 	for x in data:
-		if len(x[0]) > 0 and x[0][0] == '"' and x[0][-1] == '"':
+
+		#if len(x[0]) > 0 and x[0][0] == '"' and x[0][-1] == '"':
+		if len(x) > 0 and x[0]!= None:
 			print x
-			query = "UPDATE tweets9_musers set Description = \"%s\" where Usr_ID = '%s'"%(x[0][1:-1], x[1])
+			query = "UPDATE users set Description = \"%s\" where Usr_ID = '%s'"%(x[0][1:-1], x[1])
 			print query
 			cursor.execute(query)
-			conn.commit()
+			#conn.commit()
 			o+=1
 	print o
 	conn.close()
 	exit()
-updateDescripts()
+#updateDescripts()
+
 def writeToFile():
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor  = conn.cursor()
 
 	query = "select Usr_ID, Screename, Description from tweets9_users where category = 'null';"
-	query = "select Usr_ID, Screename, Description from tweets9_musers where category = 'null';"
+	query = "select Usr_ID, Screename, Description, Numfollowing , numfollowers from users where category is null;"
 	cursor.execute(query)
 	
 
@@ -76,12 +81,13 @@ def writeToFile():
 	f.write(s)
 	f.close()
 
-
+#be careful here
 #writeToFile()
 #print "writing done"
 
 # Usr_ID is trimmed off due to xlsx format -__-
 # using screenames to relate
+### update categories and screenames
 def importCategoriesDB(fname):
 	f = open (fname, "r")
 	content = f.read()
@@ -101,14 +107,17 @@ def importCategoriesDB(fname):
 			print l
 			exit()
 		'''
+		###usr_id = l[0]
 		cate = l[1]
 		sn = l[2]
-		
-		query = "UPDATE tweets9_musers set category = '%s' where Screename = '%s'"%(cate, sn)
-		cursor.execute(query)
-		print query 
-		i+=1
-		conn.commit()
+		if sn != "None" and len(cate) > 0:
+			query = "UPDATE tweets9_musers set category = '%s' where Screename = '%s'"%(cate, sn)
+			###query = "UPDATE users set category = '%s', Screename='%s' where Usr_ID = '%s'"%(cate, sn, usr_id)
+			cursor.execute(query)
+			print query 
+			i+=1
+		#conn.commit()
+	print i
 	conn.close()
 
 	return content.split("\r")
@@ -117,8 +126,10 @@ def importCategoriesDB(fname):
 #x =importCategoriesDB ("partA.txt")
 #print len(x)
 
-#x =importCategoriesDB ("data.txt")
+
+x =importCategoriesDB ("dataB.txt")
 #print len(x)
+
 
 #print x
 

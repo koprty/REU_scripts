@@ -1,7 +1,7 @@
 from twython import Twython,TwythonError
 import json
 import time
-
+import sqlite3
 
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX','SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv']
 APP_SECRETS = ['NNVeYdE9AICI1a4Ytkm4PHyY9KhwLehZItP0WiZUSLaZG9H2Ml','7Dz4eSTJumYpYnPWdgKitBN60OTFgREsp6OdiNY6C3ihT1OS2l','wPwcpAlVTYBWEqzYFWG6vsVi8YRzbY4XMC2Fe8DkD4DkRnIviz']
@@ -65,5 +65,88 @@ def get_info():
 		time.sleep(900)
 		get_info()
 
-get_info()
+#get_info()
 
+
+#update description, screename, and other relavent info into db
+def get_userinfo_intoDB(table):
+	index = 0
+	#get users that need to be updated
+	conn = sqlite3.connect("tweets.sqlite")
+	cursor = conn.cursor()
+	#query = "select Usr_ID from tweets9_users where NumFollowers is  null"
+	query = "select Usr_ID from users where Description is null or Screename is null"
+	cursor.execute(query)
+	users = cursor.fetchall()
+
+	i = 0
+	for user in users:
+		try:
+			APP_KEY = APP_KEYS[index]
+			APP_SECRET = APP_SECRETS[index]
+			OAUTH_TOKEN = OAUTH_TOKENS[index]
+			OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
+			
+
+			twitter = Twython (APP_KEY, APP_SECRET)
+			auth = twitter.get_authentication_tokens()
+			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+
+			usr_id = int(user[0])
+
+			result = twitter.show_user(user_id = user[0])
+			
+			fo_count = int(result["followers_count"])
+			fr_count = int(result["friends_count"])
+			screename = str(result["screen_name"])
+			descript= str(result['description'])
+			
+			query = "update %s set NumFollowers=%d, NumFollowing=%d, Screename ='%s', Description=\"\"\"%s\"\"\" where Usr_ID=%d;"%(table, fo_count, fr_count, screename, descript, usr_id)
+			cursor.execute(query)
+			conn.commit()
+			print i
+			i+=1
+		except Exception as e:
+			if "429 (Too Many Requests)" in str(e):
+				print "\nchanging apps!\n"
+				if index >= 7:
+					print "sleepy time"
+					print datetime.datetime.now()
+					time.sleep(860)
+					index = 0
+				index = index + 1
+			elif "401 (Unauthorized)" in str(e):
+				print "401 error"
+			elif "404 (Not Found)" in str(e):
+				print "404 error"
+			else:
+				print e
+	return
+'''
+#query = "select Usr_ID from tweets9_users where NumFollowers is  null"
+query = "select Usr_ID from tweets9_musers where NumFollowers is  null"
+cursor.execute(query)
+users = cursor.fetchall()
+last_index = 0
+print datetime.datetime.now()
+for user in users:
+	ffi = followers_friends(user[0], last_index)
+	print ffi
+	fo_count = ffi[0]
+	fr_count = ffi[1]
+	last_index = ffi[2]
+	if (fo_count!="NULL" and fr_count!="NULL"):
+
+		#query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		query = "update tweets9_musers set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		print query
+		cursor.execute(query)
+		conn.commit()
+
+
+
+#conn.commit()
+conn.close()
+
+'''
+get_userinfo_intoDB("users")

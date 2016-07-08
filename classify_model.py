@@ -331,9 +331,9 @@ def getRetweetCount(twe_id):
 			if "429 (Too Many Requests)" in str(e):
 				index += 0
 			elif "404 (Not Found)" in str(e):
-				return ''
+				return -1
 			elif "403 (Forbidden)" in str(e):
-				return ''
+				return -1
 			else:
 				print e
 
@@ -342,9 +342,12 @@ def getRetweetCount(twe_id):
 				
 
 	return
+
+
 def updateRetweetCountOnIntervals (conn, table):
 	# 15 minutes intervals for each category 
 	#RetweetCount_15min INT
+
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(minutes = 15)
 	mark= now - timedelta
@@ -375,26 +378,26 @@ def updateRetweetCountOnIntervals (conn, table):
 			#conn.commit()
 
 	
-	# 5 hours - RetweetCount_1day INT,
+	# a day - RetweetCount_1day INT,
 	now = datetime.datetime.now()
-	timedelta = datetime.timedelta(hours = 5)
+	timedelta = datetime.timedelta(days = 1)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_5hour is Null"%(table, mark)
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1day is Null"%(table, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_5hour = %d where tweet_id = %d"%(rc, twe_id)
+			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
 			#conn.commit()
 	
-	# a day - RetweetCount_5hours INT,
+	# a day - RetweetCount_2days INT,
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(days = 1)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1day is Null"%(table, mark)
+	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_2day is Null"%(table, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
@@ -428,6 +431,8 @@ def updateRetweetCountOnIntervals (conn, table):
 
 #sched = BlockingScheduler()
 #sched.add_job(classify_and_model, 'interval', minutes = 15)
+sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("tweets.sqlite", "tweets") minutes = 15)
+
 #sched.start()
 '''
 ####### Example of using preprocess function ####
