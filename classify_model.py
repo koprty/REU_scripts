@@ -201,7 +201,7 @@ def classify_and_model():
 	# other script doesnt get hashtags... :/ 
 	# we will get hashtags from preprocess function
 	db = "tweets.sqlite"
-	table = "tweets9_streaming"
+	table = "tweets10_streaming"
 	
 	target = open("last_date.txt", "r")
 	last_acquired = target.read()
@@ -211,7 +211,7 @@ def classify_and_model():
 
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
-	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where TwtCreatedAt >= '%s' and Tweet_ID not in (select Tweet_ID from tweets9_test)"%(table, last_acquired)
+	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where not (ImpureQuery=0) and Tweet_ID not in (select Tweet_ID from tweets9_test)"%(table)
 	cursor.execute(query)
 	twe = cursor.fetchall()
 	conn.close() 
@@ -248,7 +248,7 @@ def classify_and_model():
 			#update database with new tweet
 			conn = sqlite3.connect(db)
 			cursor = conn.cursor()
-			query = "INSERT INTO tweets9_test " + \
+			query = "INSERT INTO tweets10_topics " + \
 					 "(Tweet_ID, Usr_ID, Screename, hashtags, Tweet_Text, CreatedAt, DateChecked, "  +\
 					 "TopTopic, SpaceTopic, Zero, One, Two, Three, Four, Five, Six, Seven, Eight) " +\
 					 "values (%s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', " %(tweet_id, usr_id, screename, hashtags,t_text, creationDate,datetime.datetime.now(),top_topic[0],space_topics)
@@ -289,6 +289,7 @@ def classify_and_model():
 					cursor = conn.cursor()
 					query = "INSERT INTO users (Usr_ID, Screename, NumFollowers, NumFollowing, Category, Followers, Following, Description) " +\
 							"values ('%s', '%s', %s, %s, 'individuals', '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
+					conn.commit()
 					conn.close()
 				else:
 					#negative for individual, write to non-individuals table
@@ -303,12 +304,17 @@ def classify_and_model():
 					cursor = conn.cursor()
 					query = "INSERT INTO users (Usr_ID, Screename, NumFollowers, NumFollowing, Category, Followers, Following, Description) " +\
 							"values ('%s', '%s', %s, %s, 'non-individuals', '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
+					conn.commit()
 					conn.close()
 			else:
 				print "User already in database"
-		target = open("last_date.txt", "w")
-		target.write(creationDate)
-		target.close()
+		#update ImpureQuery
+		conn = sqlite3.connect(db)
+		cursor = conn.cursor()
+		query = "UPDATE tweets10_topics SET ImpureQuery=0 WHERE Tweet_ID = %s" % (tweet_id)
+		cursor.execute(query)
+		conn.commit()
+		conn.close()
 		i += 1
 	return	
 def getRetweetCount(twe_id):
