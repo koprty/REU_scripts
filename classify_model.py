@@ -13,9 +13,10 @@ import re
 import sqlite3
 import string
 from twython import Twython,TwythonError
+import time
 
 
-
+'''
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX',
 'SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv',
 'HEGsXHtuOLUlUNkUcBWMlLqaK','OtspVKgnB2UhNJSIXhf8QYIQO',
@@ -39,6 +40,15 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh',
 'jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
 '2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 
 'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4', 'vdsE88d7ptFvmH1yEZorLwnr7JQLvGz9dlAEETUJ4kdAH']
+'''
+APP_KEYS = ['5BWpQrtbDfxqfTIiSdABeqUvZ']
+
+APP_SECRETS = ['dVJ0UhZWKQVOy99J3PUgpQV9fcDW4UuFq3ebv3N8nrmSWNfv1P']
+
+OAUTH_TOKENS = ['701759705421639681-Ha5pGWVH6cgqZmt1HQp6pTVq6OV6Kgd']
+
+OAUTH_TOKEN_SECRETS =['fuxTZlSDlpVE6Q4jAvt4H1jSv26djsqvV8CbU5t0WPg7k']
+
 
 index = 0
 
@@ -89,9 +99,9 @@ def preprocess(twe):
 #the passed in array is only meant to have one tweet in it
 def classify_mdab(tweet = []):
 	print "CLASSIFYING TWEET: " + tweet[0]
-	tf = cPickle.load(open('twitter_data/tweet_classifier/new_tf2.pickle','rb'))
-	SVC = cPickle.load(open('twitter_data/tweet_classifier/SVC2.pickle','rb'))
-	vect = cPickle.load(open('twitter_data/tweet_classifier/new_vect2.pickle','rb'))
+	tf = cPickle.load(open('new_tf2.pickle','rb'))
+	SVC = cPickle.load(open('SVC2.pickle','rb'))
+	vect = cPickle.load(open('new_vect2.pickle','rb'))
 
 	v1 = vect.transform(tweet)
 	v2 = tf.transform(v1)
@@ -114,10 +124,10 @@ def run_topic_model(tweet = ""):
 	stopped_tokens = [j for j in tokens if not j in stopwords.words('english')]
 	stemmed_tokens = [p_stemmer.stem(j) for j in stopped_tokens]
 
-	d = corpora.Dictionary.load("topic_modeling/twitter/tweet_dict.dict")
+	d = corpora.Dictionary.load("tweet_dict.dict")
 	bow = d.doc2bow(stemmed_tokens)
 
-	lda = models.ldamodel.LdaModel.load("topic_modeling/twitter/lda_9.ginsem")
+	lda = models.ldamodel.LdaModel.load("lda_9.ginsem")
 	tweet_lda = lda.get_document_topics(bow,minimum_probability = .001)
 	return tweet_lda
 
@@ -125,20 +135,23 @@ def run_topic_model(tweet = ""):
 #returns true if probability is high enough to be classified as individual
 #description should be passed in using a list with it as the only element
 def classify_user(user_desc= []):
-	print "CLASSIFYING USER: " + user_desc[0]
-	user_SVC = cPickle.load(open("twitter_data/user_classifier/SVC_users.pickle", 'rb'))
-	user_vect = cPickle.load(open("twitter_data/user_classifier/count_users.pickle", 'rb'))
+	if len(user_desc) > 0 and not user_desc[0] is  None:
+		print "CLASSIFYING USER: " + user_desc[0] # breaks when Nonetype
+		user_SVC = cPickle.load(open("SVC_users.pickle", 'rb'))
+		user_vect = cPickle.load(open("count_users.pickle", 'rb'))
 
-	v1 = user_vect.transform(user_desc)
+		v1 = user_vect.transform(user_desc)
 
-	result = user_SVC.predict_proba(v1)
+		result = user_SVC.predict_proba(v1)
 
-	return result[0][1] > .58257648005
+		return result[0][1] > .58257648005
+	return False
 
 #pulls followers and following ids from twitter
 #returns tuple, with string of friends' ids first and then followers' ids 
 #returns ("null","null") if there is an error
 def get_followers_following(usr_id):
+	index = 0
 	print "GETTING FOLLOWERS AND FOLLOWING: " + str(usr_id)
 	friend_cursor = -1
 	follower_cursor = -1
@@ -147,75 +160,76 @@ def get_followers_following(usr_id):
 	APP_SECRET = APP_SECRETS[index]
 	OAUTH_TOKEN = OAUTH_TOKENS[index]
 	OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
+	while (1==1):
+		try:
+			twitter = Twython (APP_KEY, APP_SECRET)
+			auth = twitter.get_authentication_tokens()
+			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
 
-	try:
-		twitter = Twython (APP_KEY, APP_SECRET)
-		auth = twitter.get_authentication_tokens()
-		twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+			friends = ""
+			while (friend_cursor != 0):
+				following = twitter.get_friends_ids(id = usr_id, cursor = friend_cursor)
+				for ID in following['ids']:
+					friends += str(ID) + " " 
+					friend_cursor =  following["next_cursor"]
+			friends = friends[:-1]
+			if len(friends) == 0:
+				friends = "null"
 
-		friends = ""
-		while (friend_cursor != 0):
-			following = twitter.get_friends_ids(id = usr_id, cursor = friend_cursor)
-			for ID in following['ids']:
-				friends += str(ID) + " " 
-				friend_cursor =  following["next_cursor"]
-		friends = friends[:-1]
-		if len(friends) == 0:
-			friends = "null"
+			follow = ""
+			while (follower_cursor != 0):
+				followers = twitter.get_followers_ids(id = usr_id,cursor= follower_cursor)
+				for ID in followers['ids']:
+					follow += str(ID) + " " 
+				follower_cursor =  followers["next_cursor"]
+			follow= follow[:-1]
+			if len(follow) == 0:
+				follow = "null"
 
-		follow = ""
-		while (follower_cursor != 0):
-			followers = twitter.get_followers_ids(id = usr_id,cursor= follower_cursor)
-			for ID in followers['ids']:
-				follow += str(ID) + " " 
-			follower_cursor =  followers["next_cursor"]
-		follow= follow[:-1]
-		if len(follow) == 0:
-			follow = "null"
+			return (friends,follow)
 
-		return (friends,follow)
-
-	except Exception as e:
-		print e
-		if "429 (Too Many Requests)" in str(e):
-			global index
-			index += 1
-			if index == len(APP_KEYS):
-				index = 0
-				print "sleepy time - 15 minutes"
-				print datetime.datetime.now()
-				time.sleep(870)
-				return get_followers_following(usr_id)
-		elif "401 (Unauthorized)" in str(e):
-			print "401 error"
-			return ("null","null")
-		elif "404 (Not Found)" in str(e):
-			print "404 error"
-			return ("null","null")
-		else:
+		except Exception as e:
 			print e
-			return ("null","null")
+			if "429 (Too Many Requests)" in str(e):
+				#global index
+				index += 1
+				if index == len(APP_KEYS):
+					index = 0
+					print "sleepy time - 15 minutes"
+					print datetime.datetime.now()
+					time.sleep(870)
+					return get_followers_following(usr_id)
+			elif "401 (Unauthorized)" in str(e):
+				print "401 error"
+				return ("null","null")
+			elif "404 (Not Found)" in str(e):
+				print "404 error"
+				return ("null","null")
+			else:
+				print e
+				return ("null","null")
 
-def classify_and_model():
+def classify_and_model(db, table):
 	#Pulling Tweet_ID, Usr_ID, Screename, CreatedAt, Tweet_Text, and Usr_Description
 	# other script doesnt get hashtags... :/ 
 	# we will get hashtags from preprocess function
-	db = "tweets.sqlite"
-	table = "tweets10_streaming"
+	#db = "tweets.sqlite"
+	#table = "tweets10_streaming"
 	
-	target = open("last_date.txt", "r")
-	last_acquired = target.read()
-	target.close()
+	#target = open("last_date.txt", "r")
+	#last_acquired = target.read()
+	#target.close()
 	
 	#last_acquired = "Wed Jun 15 16:13:17 +0000 2016"
 
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
-	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where not (ImpureQuery=0) and Tweet_ID not in (select Tweet_ID from tweets9_test)"%(table)
+	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where not (ImpureQuery=0) and Tweet_ID not in (select Tweet_ID from tweets10_topics)"%(table)
 	cursor.execute(query)
 	twe = cursor.fetchall()
 	conn.close() 
-
+	print len(twe)
+	print "Received Data_preparing to preprocess"
     #preprocess	
 	preprocessed =  preprocess(twe)
 	tweet_text = [x[0] for x in preprocessed]
@@ -280,6 +294,8 @@ def classify_and_model():
 					#positive for individual, write to individuals table
 					#get following and followers
 					friends_follow = get_followers_following(usr_id)
+					print friends_follow
+					#here
 					friends = friends_follow[0]
 					follow = friends_follow[1]
 					follow_count = len(follow.split(" "))
@@ -311,12 +327,14 @@ def classify_and_model():
 		#update ImpureQuery
 		conn = sqlite3.connect(db)
 		cursor = conn.cursor()
-		query = "UPDATE tweets10_topics SET ImpureQuery=0 WHERE Tweet_ID = %s" % (tweet_id)
+		query = "UPDATE tweets10_streaming SET ImpureQuery=0 WHERE Tweet_ID = %s" % (tweet_id)
 		cursor.execute(query)
 		conn.commit()
 		conn.close()
 		i += 1
 	return	
+
+
 def getRetweetCount(twe_id):
 	index=0
 	while (index <len(APP_KEY)):
@@ -350,75 +368,80 @@ def getRetweetCount(twe_id):
 	return
 
 
-def updateRetweetCountOnIntervals (conn, table):
+def updateRetweetCountOnIntervals (db, streamer, table ):
 	# 15 minutes intervals for each category 
 	#RetweetCount_15min INT
-
+	conn = sqlite3.connect(db)
+	print "Updating Retweet Count - 15 minutes _______________ "
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(minutes = 15)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(table, mark)
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(streamer,streamer, table, table, streamer, mark)
+	cursor = conn.cursor()
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(rc, twe_id)
+			query = "update %s set RetweetCount_15min = %d where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
-			#conn.commit()
+			conn.commit()
 
+	print "Updating Retweet Count - 1 hour _______________ "
 	# one hour -  RetweetCount_1hour INT,
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(hours = 1)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1hour is Null"%(table, mark)
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_1hour is Null"%(streamer,streamer, table, table, streamer, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(rc, twe_id)
+			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
-			#conn.commit()
+			conn.commit()
 
-	
 	# a day - RetweetCount_1day INT,
+	print "Updating Retweet Count - 1 day  _______________ "
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(days = 1)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1day is Null"%(table, mark)
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_1day is Null"%(streamer,streamer, table, table, streamer, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(rc, twe_id)
+			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
-			#conn.commit()
+			conn.commit()
 	
+	print "Updating Retweet Count - 2 days_______________ "
 	# a day - RetweetCount_2days INT,
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(days = 1)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_2day is Null"%(table, mark)
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_2day is Null"%(streamer,streamer, table, table, streamer, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(rc, twe_id)
+			query = "update %s set RetweetCount_2day = %d where tweet_id = %d"%(table, rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
-			#conn.commit()
+			conn.commit()
 
 	# a week -  RetweetCount_1week INT,
+	print "Updating Retweet Count - 1 week _______________ "
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(days = 7)
 	mark= now - timedelta
-	query = "select Tweet_ID from %s where TwtCreatedAt < '%s' and RetweetCount_1week is Null"%(table, mark)
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_1week is Null"%(streamer,streamer, table, table, streamer, mark)
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
 	for x in ids_in_time_interval:
@@ -427,19 +450,28 @@ def updateRetweetCountOnIntervals (conn, table):
 			query = "update %s set RetweetCount_1week = %d where tweet_id = %d"%(rc, twe_id)
 			cursor.execute(query)
 			cursor.fetchall()
-			#conn.commit()
+			conn.commit()
+	conn.close()
 
 
 
+#db = "tweets.sqlite"
+	#table = "tweets10_streaming"
+	
 
 
 
 
 #sched = BlockingScheduler()
-#sched.add_job(classify_and_model, 'interval', minutes = 15)
-sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("tweets.sqlite", "tweets") minutes = 15)
-
+#sched.add_job(classify_and_model, 'interval', args=("tweets.sqlite", "tweets10_streaming"), minutes = 15)
+#sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("tweets.sqlite", "tweets10_topics"), minutes = 15)
+#sched.add_job(classify_and_model, 'interval', args=("sql_db/tweetDB.sqlite", "tweets11_streaming"), minutes = 15)
+#sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("sql_db/tweetDB.sqlite", "tweets11_streaming","tweets11_topics"), minutes = 15)
 #sched.start()
+
+classify_and_model("sql_db/tweetDB.sqlite", "tweets10_streaming")
+updateRetweetCountOnIntervals("sql_db/tweetDB.sqlite", "tweets10_streaming","tweets10_topics")
+
 '''
 ####### Example of using preprocess function ####
 db = "tweets.sqlite"
@@ -480,7 +512,5 @@ print suc #FALSE
 iuc = classify_user([sample_ind_description])
 print iuc #TRUE
 '''
-
-classify_and_model()
 
 

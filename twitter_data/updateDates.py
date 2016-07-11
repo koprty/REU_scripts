@@ -3,13 +3,13 @@ from datetime import datetime
 
 conn = sqlite3.connect("tweets.sqlite")
 cursor = conn.cursor()
-def updateDates(table):
+def updateDates(table, streamer):
 	#query = "select TwtCreatedAt, Tweet_ID from %s"%(table)
 	#cursor.execute(query)
 	#time_results = cursor.fetchall()
 	#print time_results
 
-	query = "select tweets9_streaming.TwtCreatedAt, %s.Tweet_ID from %s inner join tweets9_streaming on %s.Tweet_ID = tweets9_streaming.Tweet_ID "%(table,table,table)
+	query = "select %s.TwtCreatedAt, %s.Tweet_ID from %s inner join %s on %s.Tweet_ID = %s.Tweet_ID "%(streamer, table,table,streamer,table,streamer)
 	cursor.execute(query)
 	#print query
 	time_results = cursor.fetchall()
@@ -19,15 +19,15 @@ def updateDates(table):
 	for (created, tid) in time_results:
 		
 		try:
-			print created
-			print datetime.strptime(created, '%Y-%m-%d %X')
+			#print created
+			#print datetime.strptime(created, '%Y-%m-%d %X')
 			created_time = datetime.strptime(created, '%Y-%m-%d %X')
 		except ValueError:
 			created_list = created.split(" ")
 			created_list = created_list[:4] + created_list[5:]
 			created = " ".join(created_list)
 			#Mon Feb 29 18:00:33 2016
-			print datetime.strptime(created, '%c')
+			#print datetime.strptime(created, '%c')
 			created_time = datetime.strptime(created, '%c')
 		query = "update %s set TwtCreatedAt = '%s' where Tweet_ID = '%d'"%(table, created_time, tid)
 		cursor.execute(query)
@@ -38,5 +38,5 @@ def updateDates(table):
 
 #updateDates("posdab_Tweets")
 
-updateDates("tweets9_mdab")
+updateDates("tweets9_mdab", "tweets9_streaming")
 conn.close()
