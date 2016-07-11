@@ -23,7 +23,7 @@ target = open("followers.txt", "r")
 snames = target.read()
 snames = snames.split("\n")
 '''
-conn = sqlite3.connect("tweets.sqlite")
+conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
 '''
 for sname in snames:
@@ -78,7 +78,7 @@ def followers_friends(user, index = 0):
 			print e
 			return ("NULL","NULL",index)
 
-
+'''
 #query = "select Usr_ID from tweets9_users where NumFollowers is  null"
 query = "select Usr_ID from tweets9_musers where NumFollowers is  null"
 cursor.execute(query)
@@ -98,7 +98,24 @@ for user in users:
 		print query
 		cursor.execute(query)
 		conn.commit()
+'''
 
+query = "select Usr_ID from users where NumFollowers=5001;"
+cursor.execute(query)
+users = cursor.fetchall()
+last_index = 1
+for user in users:
+	ffi = followers_friends(user[0], last_index)
+	print ffi
+	fo_count = ffi[0]
+	fr_count = ffi[1]
+	last_index = ffi[2]
+	if (fo_count!="NULL" and fr_count!="NULL"):
+		#query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		query = "update users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+		print query
+		cursor.execute(query)
+		conn.commit()
 
 
 #conn.commit()

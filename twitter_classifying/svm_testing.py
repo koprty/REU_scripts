@@ -4,7 +4,7 @@ import cPickle
 import numpy as np
 import scipy
 from sklearn.metrics import roc_curve, auc, roc_auc_score
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 transformer = cPickle.load(open('new_tf2.pickle','rb'))
 SVC = cPickle.load(open('SVC2.pickle','rb'))
@@ -87,7 +87,7 @@ tweet_probs.sort(key = lambda tup: tup[1])
 #for tr in tweet_results:
 	#print tr
 
-
+'''
 #print SVC.score(v2,t_class_num)
 n_classes =  t_class.shape[1]
 #probs
@@ -119,7 +119,7 @@ plt.title('Receiver operating characteristic example')
 plt.legend(loc="lower right")
 plt.show()
 
-
+'''
 
 
 def find_threshold(tr = [], desired_perc = 0, threshold = .66743001280481029):
@@ -141,8 +141,8 @@ def find_threshold(tr = [], desired_perc = 0, threshold = .66743001280481029):
 		print "Threshold for " +str(int(desired_perc*100)) + "% m-dab tweets: " + str(th)
 		return th
 
-#find_threshold(tweet_results,.90)
-#find_threshold(tweet_results,.95)
+find_threshold(tweet_results,.90)
+find_threshold(tweet_results,.95)
 
 
 
