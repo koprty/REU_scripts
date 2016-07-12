@@ -34,6 +34,7 @@ def get_D_UsrID(dbpath, table):
 	cursor = conn.cursor()
 	#query = "select Distinct Usr_ID from %s "% table
 	query = "select Distinct Usr_ID from %s where Following='null' or Followers = 'null' or Following is Null or Followers is null"% table
+	query = "select Distinct Usr_ID from %s where Following is Null or Followers is null"% table
 	cursor.execute(query)
 	ids = cursor.fetchall()
 	conn.close()
@@ -125,7 +126,13 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users"):
 				f.write("skipped %dth element, ID: %d\n"%(ind, i))
 				f.write("__________________________________________"+str(datetime.datetime.now()) + "\n")
 				f.close()
-				print "skipped %d"%ind
+				print "401 nulled %d"%ind
+				conn = sqlite3.connect(dbpath)
+				cursor = conn.cursor()
+				query = "UPDATE %s SET Following = 'null', Followers = 'null' where Usr_ID = '%s'"% (sn_table, i)
+				cursor.execute(query)
+				conn.commit()
+				conn.close()
 				ind+=1
 				time.sleep(1)
 			elif "404 (Not Found)" in str(e):
@@ -134,7 +141,13 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users"):
 				f.write("404: skipped %dth element, ID: %d \n"%(ind, i))
 				f.write("__________________________________________"+str(datetime.datetime.now()) + "\n")
 				f.close()
-				print "404 skipped %d"%ind
+				print "404 nulled %d"%ind
+				conn = sqlite3.connect(dbpath)
+				cursor = conn.cursor()
+				query = "UPDATE %s SET Following = 'null', Followers = 'null' where Usr_ID = '%s'"% (sn_table, i)
+				cursor.execute(query)
+				conn.commit()
+				conn.close()
 				ind+=1
 				time.sleep(1)
 			else:
@@ -154,7 +167,9 @@ def get_following_to_db(dbpath, sn_table = "tweets9_users"):
 
 
 dbpath = "tweets.sqlite"
-print len(get_D_UsrID(dbpath, table = "users"))
-get_following_to_db(dbpath,sn_table = "users")
+
+dbpath = "../rt_tweets.sqlite"
+print len(get_D_UsrID(dbpath, table = "totalusers"))
+get_following_to_db(dbpath,sn_table = "totalusers")
 
 
