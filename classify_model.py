@@ -308,7 +308,8 @@ def getRetweetCount(twe_id):
 			return int(result['retweet_count'])
 		except Exception as e:
 			if "429 (Too Many Requests)" in str(e):
-				index += 0
+				index = 0
+				time.sleep(900)
 			elif "404 (Not Found)" in str(e):
 				return -1
 			elif "403 (Forbidden)" in str(e):
@@ -327,18 +328,19 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(minutes = 15)
 	mark= now - timedelta
-	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(streamer,streamer, table, table, streamer, mark)
 	cursor = conn.cursor()
+	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(streamer,streamer, table, table, streamer, mark)
+	print query
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
+	print ids_in_time_interval
 	for x in ids_in_time_interval:
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_15min = %d where tweet_id = %d"%(table,rc, twe_id)
+			query = "update %s set RetweetCount_15min = %d, set RetweetCount_1hour = %d,set RetweetCount_1day = %d,set RetweetCount_2day = %d,set RetweetCount_1week = %d  where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
-
+	'''
 	print "Updating Retweet Count - 1 hour _______________ "
 	# one hour -  RetweetCount_1hour INT,
 	now = datetime.datetime.now()
@@ -352,9 +354,8 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		if len(str(rc)) > 0:
 			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
-
+	
 	# a day - RetweetCount_1day INT,
 	print "Updating Retweet Count - 1 day  _______________ "
 	now = datetime.datetime.now()
@@ -368,7 +369,6 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		if len(str(rc)) > 0:
 			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(table,rc, twe_id)
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 	
 	print "Updating Retweet Count - 2 days_______________ "
@@ -384,7 +384,6 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		if len(str(rc)) > 0:
 			query = "update %s set RetweetCount_2day = %d where tweet_id = %d"%(table, rc, twe_id)
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 
 	# a week -  RetweetCount_1week INT,
@@ -400,8 +399,8 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		if len(str(rc)) > 0:
 			query = "update %s set RetweetCount_1week = %d where tweet_id = %d"%(rc, twe_id)
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
+	'''
 	conn.close()
 ################################### Functions for Getting Retweet ##################################
 
@@ -412,9 +411,10 @@ def updateFollowerFollowings(dbpath, user_table = "users"):
 	distinct = get_D_UsrID(dbpath,sn_table )
 	conn = sqlite3.connect(dbpath)
 	cursor = conn.cursor()
-	query = "select Usr_ID from %s where Following is null or Followers is null"
+	query = "select Usr_ID from %s where Following is null or Followers is null"%(user_table)
 	cursor.execute(query)
 	distinct = cursor.fetchall()
+
 	follower_cursor = -1
 	friend_cursor = -1
 	print "Starting @ %d"%(ind)
@@ -571,11 +571,12 @@ def get_followers_following(usr_id):
 #sched.add_job(updateFollowerFollowings, 'interval', args=("sql_db/tweetDB.sqlite", "users"), minutes=15)
 #sched.start()
 
-classify_and_model("sql_db/tweetDB.sqlite", "tweets10_streaming", "tweets10_topics")
+#classify_and_model("sql_db/tweetDB.sqlite", "tweets10_streaming", "tweets10_topics")
 print "CLASSIFYING IS DONT"
-updateRetweetCountOnIntervals("sql_db/tweetDB.sqlite", "tweets10_streaming","tweets10_topics")
+#updateRetweetCountOnIntervals("sql_db/tweetDB.sqlite", "tweets10_streaming","tweets10_topics")
+updateRetweetCountOnIntervals("server_tweet.sqlite", "tweets10_streaming","tweets10_topics")
 print "UPDATING RETWEET COUNT "
-updateFollowerFollowings("sql_db/tweetDB.sqlite", "users")
+#updateFollowerFollowings("sql_db/tweetDB.sqlite", "users")
 
 '''
 ####### Example of using preprocess function ####

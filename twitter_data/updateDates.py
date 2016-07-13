@@ -1,9 +1,10 @@
 import sqlite3
 from datetime import datetime
 
-conn = sqlite3.connect("tweets.sqlite")
-cursor = conn.cursor()
+
 def updateDates(table, streamer):
+	conn = sqlite3.connect("tweets.sqlite")
+	cursor = conn.cursor()
 	#query = "select TwtCreatedAt, Tweet_ID from %s"%(table)
 	#cursor.execute(query)
 	#time_results = cursor.fetchall()
@@ -33,10 +34,48 @@ def updateDates(table, streamer):
 		cursor.execute(query)
 		#conn.commit()
 		print query
+	conn.close()
 	return 
 
 
+
+def updateStreamerDates(streamer):
+	#query = "select TwtCreatedAt, Tweet_ID from %s"%(table)
+	#cursor.execute(query)
+	#time_results = cursor.fetchall()2
+	#print time_results
+
+	query = "select TwtCreatedAt, Tweet_ID from %s  "%(streamer)
+	cursor.execute(query)
+	#print query
+	time_results = cursor.fetchall()
+	if len(time_results) == 0:
+		print time_results, "sucks"
+		exit()
+	for (created, tid) in time_results:
+		
+		try:
+			#print created
+			#print datetime.strptime(created, '%Y-%m-%d %X')
+			created_time = datetime.strptime(created, '%Y-%m-%d %X')
+		except ValueError:
+			created_list = created.split(" ")
+			created_list = created_list[:4] + created_list[5:]
+			created = " ".join(created_list)
+			#Mon Feb 29 18:00:33 2016
+			#print datetime.strptime(created, '%c')
+			created_time = datetime.strptime(created, '%c')
+		query = "update %s set TwtCreatedAt = '%s' where Tweet_ID = '%d'"%(streamer, created_time, tid)
+		cursor.execute(query)
+		#conn.commit()
+		print query
+	return 
+
+
+conn = sqlite3.connect("server_tweet.sqlite")
+cursor = conn.cursor()
 #updateDates("posdab_Tweets")
 
-updateDates("tweets9_mdab", "tweets9_streaming")
+#updateDates("tweets9_mdab", "tweets9_streaming")
+updateStreamerDates("tweets10_streaming")
 conn.close()
