@@ -15,7 +15,6 @@ import string
 from twython import Twython,TwythonError
 import time
 
-
 APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX',
 'SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv',
 'HEGsXHtuOLUlUNkUcBWMlLqaK','OtspVKgnB2UhNJSIXhf8QYIQO',
@@ -39,7 +38,6 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh',
 'jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
 '2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 
 'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4', 'vdsE88d7ptFvmH1yEZorLwnr7JQLvGz9dlAEETUJ4kdAH']
-
 index = 0
 
 # preprocess an array of tweets 
@@ -137,69 +135,8 @@ def classify_user(user_desc= []):
 		return result[0][1] > .58257648005
 	return False
 
-#pulls followers and following ids from twitter
-#returns tuple, with string of friends' ids first and then followers' ids 
-#returns ("null","null") if there is an error
-def get_followers_following(usr_id):
-	index = 0
-	print "GETTING FOLLOWERS AND FOLLOWING: " + str(usr_id)
-	friend_cursor = -1
-	follower_cursor = -1
 
-	APP_KEY = APP_KEYS[index]
-	APP_SECRET = APP_SECRETS[index]
-	OAUTH_TOKEN = OAUTH_TOKENS[index]
-	OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
-	while (1==1):
-		try:
-			twitter = Twython (APP_KEY, APP_SECRET)
-			auth = twitter.get_authentication_tokens()
-			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
-
-			friends = ""
-			while (friend_cursor != 0):
-				following = twitter.get_friends_ids(id = usr_id, cursor = friend_cursor)
-				for ID in following['ids']:
-					friends += str(ID) + " " 
-					friend_cursor =  following["next_cursor"]
-			friends = friends[:-1]
-			if len(friends) == 0:
-				friends = "null"
-
-			follow = ""
-			while (follower_cursor != 0):
-				followers = twitter.get_followers_ids(id = usr_id,cursor= follower_cursor)
-				for ID in followers['ids']:
-					follow += str(ID) + " " 
-				follower_cursor =  followers["next_cursor"]
-			follow= follow[:-1]
-			if len(follow) == 0:
-				follow = "null"
-
-			return (friends,follow)
-
-		except Exception as e:
-			print e
-			if "429 (Too Many Requests)" in str(e):
-				#global index
-				index += 1
-				if index == len(APP_KEYS):
-					index = 0
-					print "sleepy time - 15 minutes"
-					print datetime.datetime.now()
-					time.sleep(910)
-					return get_followers_following(usr_id)
-			elif "401 (Unauthorized)" in str(e):
-				print "401 error"
-				return ("null","null")
-			elif "404 (Not Found)" in str(e):
-				print "404 error"
-				return ("null","null")
-			else:
-				print e
-				return ("null","null")
-
-def classify_and_model(db, table):
+def classify_and_model(db, streamer, table ):
 	#Pulling Tweet_ID, Usr_ID, Screename, CreatedAt, Tweet_Text, and Usr_Description
 	# other script doesnt get hashtags... :/ 
 	# we will get hashtags from preprocess function
@@ -214,7 +151,7 @@ def classify_and_model(db, table):
 
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
-	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where not (ImpureQuery=0) and Tweet_ID not in (select Tweet_ID from tweets11_topics)"%(table)
+	query = "select Tweet_Text, Tweet_ID, Usr_ID, Usr_Screename, TwtCreatedAt, Usr_Description from %s where not (ImpureQuery=0) and Tweet_ID not in (select Tweet_ID from %s)"%(streamer,table)
 	cursor.execute(query)
 	twe = cursor.fetchall()
 	conn.close() 
@@ -252,10 +189,9 @@ def classify_and_model(db, table):
 			#update database with new tweet
 			conn = sqlite3.connect(db)
 			cursor = conn.cursor()
-			query = "INSERT INTO tweets11_topics " + \
-					 "(Tweet_ID, Usr_ID, Screename, hashtags, Tweet_Text, CreatedAt, DateChecked, "  +\
-					 "TopTopic, SpaceTopic, Zero, One, Two, Three, Four, Five, Six, Seven, Eight) " +\
-					 "values (%s, %s, '%s', '%s', '%s', '%s', '%s', %s, '%s', " %(tweet_id, usr_id, screename, hashtags,t_text, creationDate,datetime.datetime.now(),top_topic[0],space_topics)
+			query = " INSERT INTO %s (Tweet_ID, Usr_ID, Screename, hashtags, Tweet_Text, CreatedAt, DateChecked, TopTopic, SpaceTopic, Zero, One, Two, Three, Four, Five, Six, Seven, Eight) \
+					 values (%s, %s, '%s', \"\"\"%s\"\"\", '%s', '%s', '%s', %s, '%s', " %(table, tweet_id, usr_id, screename, hashtags,t_text, creationDate,datetime.datetime.now(),top_topic[0],space_topics)
+			print query
 			for top in tweet_topic_dist:
 				query += str(top[1])
 				if (top[0]!=8):
@@ -281,9 +217,13 @@ def classify_and_model(db, table):
 			if (usr_id not in old_users):
 				#if not, run user classification (like tweet classifier, put description in list, [])
 				if classify_user([usr_desc]):
-					
+
+
+					###### We will get followers and followings of users separately to avoid api overload during the streaming #######
+
 					#positive for individual, write to individuals table
 					#get following and followers
+					'''
 					friends_follow = get_followers_following(usr_id)
 					print friends_follow
 					#here
@@ -291,26 +231,39 @@ def classify_and_model(db, table):
 					follow = friends_follow[1]
 					follow_count = len(follow.split(" "))
 					friend_count = len(friends.split(" "))
-
+					'''
 					conn = sqlite3.connect(db)
 					cursor = conn.cursor()
-					query = "INSERT INTO users (Usr_ID, Screename, NumFollowers, NumFollowing, Category, Followers, Following, Description) " +\
+
+					'''
+					query = "INSERT INTO users (Usr_ID, Screename, Category, Followers, Following, Description) " +\
 							"values ('%s', '%s', %s, %s, 'individuals', '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
+					'''
+					query = "INSERT INTO users (Usr_ID, Screename,  Category,  Description) " +\
+							"values ('%s',  '%s', 'individuals', \"\"\"%s\"\"\");" % (usr_id, screename, usr_desc)
+					cursor.execute(query)
 					conn.commit()
 					conn.close()
 				else:
 					#negative for individual, write to non-individuals table
 					#get following and followers
+					'''
 					friends_follow = get_followers_following(usr_id)
 					friends = friends_follow[0]
 					follow = friends_follow[1]
 					follow_count = len(follow.split(" "))
 					friend_count = len(friends.split(" "))
-
+					'''
 					conn = sqlite3.connect(db)
 					cursor = conn.cursor()
+					'''
 					query = "INSERT INTO users (Usr_ID, Screename, NumFollowers, NumFollowing, Category, Followers, Following, Description) " +\
 							"values ('%s', '%s', %s, %s, 'non-individuals', '%s', '%s','%s');" % (usr_id, screename, follow_count, friend_count, follow, friends, usr_desc)
+					'''
+					query = "INSERT INTO users (Usr_ID, Screename, Category,  Description) " +\
+							"values ('%s', '%s', 'non-individuals', \"\"\"%s\"\"\");" % (usr_id, screename, usr_desc)
+					cursor.execute(query)
+
 					conn.commit()
 					conn.close()
 			else:
@@ -318,14 +271,15 @@ def classify_and_model(db, table):
 		#update ImpureQuery
 		conn = sqlite3.connect(db)
 		cursor = conn.cursor()
-		query = "UPDATE tweets11_streaming SET ImpureQuery=0 WHERE Tweet_ID = %s" % (tweet_id)
+		query = "UPDATE %s SET ImpureQuery=0 WHERE Tweet_ID = %s" % (streamer, tweet_id)
 		cursor.execute(query)
 		conn.commit()
 		conn.close()
 		i += 1
 	return	
 
-
+	
+################################### Functions for Getting Retweet Counts ##################################
 def getRetweetCount(twe_id):
 	index=0
 	while (index <len(APP_KEY)):
@@ -354,10 +308,6 @@ def getRetweetCount(twe_id):
 
 		index +=1
 	return ''
-				
-
-	return
-
 
 def updateRetweetCountOnIntervals (db, streamer, table ):
 	# 15 minutes intervals for each category 
@@ -443,21 +393,172 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 			cursor.fetchall()
 			conn.commit()
 	conn.close()
+################################### Functions for Getting Retweet ##################################
 
 
+
+#updates Followers and Followings for a User AND the respective counts (Followers, Following, NumFollowers, NumFollowing)
+def updateFollowerFollowings(dbpath, user_table = "users"):
+	distinct = get_D_UsrID(dbpath,sn_table )
+	conn = sqlite3.connect(dbpath)
+	cursor = conn.cursor()
+	query = "select Usr_ID from %s where Following is null or Followers is null"
+	cursor.execute(query)
+	distinct = cursor.fetchall()
+	follower_cursor = -1
+	friend_cursor = -1
+	print "Starting @ %d"%(ind)
+	print datetime.datetime.now() 
+
+	while ind < len(distinct):
+	#for i in distinct:
+		i = distinct[ind][0] # Usr_ID
+		APP_KEY = APP_KEYS[index]
+		APP_SECRET = APP_SECRETS[index]
+		OAUTH_TOKEN = OAUTH_TOKENS[index]
+		OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
+
+		try:
+			#twitter = Twython (APP_KEY, APP_SECRET)
+			#auth = twitter.get_authentication_tokens()
+			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+			friends = ""
+			while (friend_cursor):
+				following = twitter.get_friends_ids(id = i,cursor= friend_cursor)
+				for ID in following['ids']:
+					friends += str(ID) + " " 
+				friend_cursor =  following["next_cursor"]
+				num_checked += 1
+			friends = friends[:-1]
+			if len(friends) == 0:
+				friends = "null"
+			
+			follow = ""
+			while (follower_cursor):
+				followers = twitter.get_followers_ids(id = i,cursor= follower_cursor)
+				for ID in followers['ids']:
+					follow += str(ID) + " " 
+				follower_cursor =  followers["next_cursor"]
+				num_checked += 1
+			follow= follow[:-1]
+			if len(follow) == 0:
+				follow = "null"
+
+			conn = sqlite3.connect(dbpath)
+			cursor = conn.cursor()
+			query = "UPDATE %s SET Following = '%s', Followers = '%s', NumFollowing = '%d',  NumFollowers = '%d' where Usr_ID = '%s'"% (sn_table, friends,follow, len(friends.split(" ")), len(follow.split(" ")), i)
+			cursor.execute(query)
+			#print query
+			print "____________________ %dth following and friends and their corresponding counts updated ________ %d" % (ind, i)
+			follower_cursor = -1
+			friend_cursor = -1
+			ind+=1
+
+		except Exception as e:
+			print e
+			if "429 (Too Many Requests)" in str(e):
+				index += 1
+				if index == len(APP_KEYS):
+					index = 0
+					print "sleepy time; pausing for 15 minutes for APP Keys to renew"
+					print datetime.datetime.now()
+					#time.sleep(910)
+					print "App Rate Limits has been exceeded- we will wait for next runtime before running rest of followers and followings"
+					return 
+			elif "401 (Unauthorized)" in str(e):
+				print "401 Unauthorized Error nulling %d________________Usr_ID:%d"%(ind,i)
+				conn = sqlite3.connect(dbpath)
+				cursor = conn.cursor()
+				query = "UPDATE %s SET Following = 'null', Followers = 'null' where Usr_ID = '%s'"% (sn_table, i)
+				cursor.execute(query)
+				conn.commit()
+				conn.close()
+				ind+=1
+			elif "404 (Not Found)" in str(e):
+				print "404 Not Found Error nulling %d________________Usr_ID:%d"%(ind,i)
+				conn = sqlite3.connect(dbpath)
+				cursor = conn.cursor()
+				query = "UPDATE %s SET Following = 'null', Followers = 'null' where Usr_ID = '%s'"% (sn_table, i)
+				cursor.execute(query)
+				conn.commit()
+				conn.close()
+				ind+=1
+			else:
+				print e
+
+########## DEPRECATED FUNCTIONS ##########
+#pulls followers and following ids from twitter
+#returns tuple, with string of friends' ids first and then followers' ids 
+#returns ("null","null") if there is an error
+def get_followers_following(usr_id):
+	index = 0
+	print "GETTING FOLLOWERS AND FOLLOWING: " + str(usr_id)
+	friend_cursor = -1
+	follower_cursor = -1
+
+	APP_KEY = APP_KEYS[index]
+	APP_SECRET = APP_SECRETS[index]
+	OAUTH_TOKEN = OAUTH_TOKENS[index]
+	OAUTH_TOKEN_SECRET = OAUTH_TOKEN_SECRETS[index]
+	while (1==1):
+		try:
+			twitter = Twython (APP_KEY, APP_SECRET)
+			auth = twitter.get_authentication_tokens()
+			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
+
+			friends = ""
+			while (friend_cursor != 0):
+				following = twitter.get_friends_ids(id = usr_id, cursor = friend_cursor)
+				for ID in following['ids']:
+					friends += str(ID) + " " 
+					friend_cursor =  following["next_cursor"]
+			friends = friends[:-1]
+			if len(friends) == 0:
+				friends = "null"
+
+			follow = ""
+			while (follower_cursor != 0):
+				followers = twitter.get_followers_ids(id = usr_id,cursor= follower_cursor)
+				for ID in followers['ids']:
+					follow += str(ID) + " " 
+				follower_cursor =  followers["next_cursor"]
+			follow= follow[:-1]
+			if len(follow) == 0:
+				follow = "null"
+
+			return (friends,follow)
+
+		except Exception as e:
+			print e
+			if "429 (Too Many Requests)" in str(e):
+				#global index
+				index += 1
+				if index == len(APP_KEYS):
+					index = 0
+					print "sleepy time - 15 minutes"
+					print datetime.datetime.now()
+					time.sleep(910)
+					return get_followers_following(usr_id)
+			elif "401 (Unauthorized)" in str(e):
+				print "401 error"
+				return ("null","null")
+			elif "404 (Not Found)" in str(e):
+				print "404 error"
+				return ("null","null")
+			else:
+				print e
+				return ("null","null")
+############ END OF DEPRECATED FUNCTIONS ############
 
 #db = "tweets.sqlite"
-	#table = "tweets10_streaming"
-	
-
-
-
+#table = "tweets10_streaming"
 
 sched = BlockingScheduler()
 #sched.add_job(classify_and_model, 'interval', args=("tweets.sqlite", "tweets10_streaming"), minutes = 15)
 #sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("tweets.sqlite", "tweets10_topics"), minutes = 15)
-sched.add_job(classify_and_model, 'interval', args=("sql_db/tweetDB.sqlite", "tweets11_streaming"), minutes = 15)
+sched.add_job(classify_and_model, 'interval', args=("sql_db/tweetDB.sqlite", "tweets11_streaming", "tweets11_topics"), minutes = 15)
 sched.add_job(updateRetweetCountOnIntervals, 'interval', args=("sql_db/tweetDB.sqlite", "tweets11_streaming","tweets11_topics"), minutes = 15)
+sched.add_job(updateFollowerFollowings, 'interval', args=("sql_db/tweetDB.sqlite", "users"), minutes=15)
 sched.start()
 
 #classify_and_model("sql_db/tweetDB.sqlite", "tweets11_streaming")
