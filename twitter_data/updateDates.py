@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime
-
+import time
 
 def updateDates(table, streamer):
 	conn = sqlite3.connect("tweets.sqlite")
@@ -67,15 +67,32 @@ def updateStreamerDates(streamer):
 			created_time = datetime.strptime(created, '%c')
 		query = "update %s set TwtCreatedAt = '%s' where Tweet_ID = '%d'"%(streamer, created_time, tid)
 		cursor.execute(query)
-		#conn.commit()
+		conn.commit()
 		print query
 	return 
 
-
+'''
 conn = sqlite3.connect("server_tweet.sqlite")
 cursor = conn.cursor()
 #updateDates("posdab_Tweets")
 
 #updateDates("tweets9_mdab", "tweets9_streaming")
 updateStreamerDates("tweets10_streaming")
+'''
+
+conn = sqlite3.connect("rt_tweets.sqlite")
+cursor = conn.cursor()
+#updateDates("posdab_Tweets")
+
+#updateDates("tweets9_mdab", "tweets9_streaming")
+#updateStreamerDates("tweets10_streaming")
+updateStreamerDates("totalmdabs")
+print "Resting after updating totalmdabs"
+time.sleep(50)
+updateStreamerDates("tweets9_mdab")
+print "Resting after updating tweets9"
+time.sleep(50)
+updateStreamerDates("posdab_Tweets")
+print "Done"
+
 conn.close()

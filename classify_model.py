@@ -292,12 +292,12 @@ def classify_and_model(db, streamer, table ):
 ################################### Functions for Getting Retweet Counts ##################################
 def getRetweetCount(twe_id):
 	index=0
-	while (index <len(APP_KEY)):
+	while (index <len(APP_KEYS)):
 		try:
-			twitter = Twython (APP_KEY, APP_SECRET)
+			twitter = Twython (APP_KEYS[index], APP_SECRETS[index])
 			auth = twitter.get_authentication_tokens()
-			twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
-			result = twitter.show_status(id=tweet_id)
+			twitter = Twython(APP_KEYS[index], APP_SECRETS[index], OAUTH_TOKENS[index], OAUTH_TOKEN_SECRETS[index]) 
+			result = twitter.show_status(id=twe_id)
 			'''
 			#print result['user']['screen_name'] + " " + result['user']['description']
 			tweet['Usr_Screename'] = result['user']['screen_name']
@@ -333,11 +333,13 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 	print query
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
-	print ids_in_time_interval
-	for x in ids_in_time_interval:
+	for twe_id in ids_in_time_interval:
+		twe_id = twe_id[0]
 		rc = getRetweetCount ( twe_id )
+		print rc
 		if len(str(rc)) > 0:
-			query = "update %s set RetweetCount_15min = %d, set RetweetCount_1hour = %d,set RetweetCount_1day = %d,set RetweetCount_2day = %d,set RetweetCount_1week = %d  where tweet_id = %d"%(table,rc, twe_id)
+			query = "update %s set RetweetCount_15min = %d,  RetweetCount_1hour = %d, RetweetCount_1day = %d, RetweetCount_2day = %d, RetweetCount_1week = %d  where tweet_id = %d"%(table,rc,rc,rc,rc, rc,twe_id)
+			print query
 			cursor.execute(query)
 			conn.commit()
 	'''
