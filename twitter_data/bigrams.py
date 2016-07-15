@@ -4,12 +4,12 @@ from nltk.tokenize import TweetTokenizer
 import sqlite3
 
 
-def bigrams_trigrams(rt_num = 0, symbol = ">"):
-	print "Most Frequent Bi/Trigrams for Tweets with " + symbol + "=" + str(rt_num) + " Retweets"
+def bigrams_trigrams(rt_num = 0, symbol = ">="):
+	print "Most Frequent Bi/Trigrams for Tweets with " + symbol  + str(rt_num) + " Retweets"
 
 	conn = sqlite3.connect("../tweets.sqlite")
 	cursor = conn.cursor()
-	query = "select Tweet_Text from totalmdabs where RetweetCount" + symbol + "=%s" % rt_num
+	query = "select Tweet_Text from totalmdabs where RetweetCount" + symbol + "%s" % rt_num
 	cursor.execute(query)
 	tweets = cursor.fetchall()
 
@@ -31,7 +31,7 @@ def bigrams_trigrams(rt_num = 0, symbol = ">"):
 	for a in arr:
 		s = str(a[0]) + " " +str(a[1])
 		print s
-		query = "select count(*) from totalmdabs where Tweet_Text LIKE '%" +s + "%' and RetweetCount" + symbol + "=" + str(rt_num)+ ";"
+		query = "select count(*) from totalmdabs where Tweet_Text LIKE '%" +s + "%' and RetweetCount" + symbol + str(rt_num)+ ";"
 		cursor.execute(query)
 		num = cursor.fetchall()[0][0]
 		print num
@@ -44,9 +44,9 @@ def bigrams_trigrams(rt_num = 0, symbol = ">"):
 	for a in arr2:
 		s = str(a[0]) + " " +str(a[1]) + " " + str(a[2])
 		print s
-		query = "select count(*) from totalmdabs where Tweet_Text LIKE '%" +s + "%' and RetweetCount" + symbol + "=" + str(rt_num)+ ";"
+		query = "select count(*) from totalmdabs where Tweet_Text LIKE '%" +s + "%' and RetweetCount" + symbol + str(rt_num)+ ";"
 		cursor.execute(query)
 		num = cursor.fetchall()[0][0]
 		print num
 	conn.close()
-bigrams_trigrams(10, ">")
+bigrams_trigrams(-1, ">")
