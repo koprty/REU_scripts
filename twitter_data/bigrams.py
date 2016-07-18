@@ -49,4 +49,4 @@ def bigrams_trigrams(rt_num = 0, symbol = ">="):
 		num = cursor.fetchall()[0][0]
 		print num
 	conn.close()
-bigrams_trigrams(-1, ">")
+bigrams_trigrams(4, ">")

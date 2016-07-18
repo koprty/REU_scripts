@@ -1,16 +1,16 @@
 import xlsxwriter
 import sqlite3
 
-workbook = xlsxwriter.Workbook("retweeted_users.xlsx")
+workbook = xlsxwriter.Workbook("non_retweeted_users.xlsx")
 user_ws = workbook.add_worksheet("Retweeted User Info")
 
 conn = sqlite3.connect("../tweets.sqlite")
 cursor = conn.cursor()
-query = "select Usr_ID, Tweet_ID, Tweet_Text, RetweetCount from posdab_tweets where Usr_ID in (select Usr_ID from users) and RetweetCount>4"
+query = "select Usr_ID, Tweet_ID, Tweet_Text, RetweetCount from totalmdabs where Usr_ID in (select Usr_ID from totalusers) and RetweetCount<5"
 cursor.execute(query)
 tweets = cursor.fetchall()
 
-query = "select Usr_ID, Screename, Category, NumFollowers from users"
+query = "select Usr_ID, Screename, Category, NumFollowers from totalusers"
 cursor.execute(query)
 users = cursor.fetchall()
 
@@ -42,6 +42,7 @@ for x in tweets_w_user:
 		already_added.append(x[0])
 		for y in tweets_w_user:
 			if x[0] == y[0] and x[4] != y[4]:
+				user_ws.write(row,3,x[3])
 				for i in range(4,7):
 					user_ws.write(row,i,y[i])
 				row += 1
