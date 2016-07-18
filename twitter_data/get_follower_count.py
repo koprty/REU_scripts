@@ -23,7 +23,7 @@ target = open("followers.txt", "r")
 snames = target.read()
 snames = snames.split("\n")
 '''
-conn = sqlite3.connect("../tweets.sqlite")
+conn = sqlite3.connect("../rt_tweets.sqlite")
 cursor = conn.cursor()
 '''
 for sname in snames:
@@ -101,6 +101,7 @@ for user in users:
 '''
 
 query = "select Usr_ID from users where NumFollowers=5001;"
+query = "select Distinct Usr_ID from totalusers where NumFollowing is Null or NumFollowers is null;"
 cursor.execute(query)
 users = cursor.fetchall()
 last_index = 1
@@ -110,12 +111,15 @@ for user in users:
 	fo_count = ffi[0]
 	fr_count = ffi[1]
 	last_index = ffi[2]
-	if (fo_count!="NULL" and fr_count!="NULL"):
-		#query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
-		query = "update users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
-		print query
-		cursor.execute(query)
-		conn.commit()
+	if (fo_count=="NULL" or fr_count=="NULL"):
+		fo_count = -1
+		fr_count = -1	
+	#query = "update tweets9_users set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+	query = "update totalusers set NumFollowers=" + str(fo_count) + ", NumFollowing=" + str(fr_count) + " where Usr_ID ='"+str(user[0]) +"'"
+	print query
+	cursor.execute(query)
+	conn.commit()
+
 
 
 #conn.commit()

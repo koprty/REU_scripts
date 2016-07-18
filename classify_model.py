@@ -460,6 +460,7 @@ def updateFollowerFollowings(dbpath, user_table = "users"):
 			cursor = conn.cursor()
 			query = "UPDATE %s SET Following = '%s', Followers = '%s', NumFollowing = '%d',  NumFollowers = '%d' where Usr_ID = '%s'"% (sn_table, friends,follow, len(friends.split(" ")), len(follow.split(" ")), i)
 			cursor.execute(query)
+			conn.close
 			#print query
 			print "____________________ %dth following and friends and their corresponding counts updated ________ %d" % (ind, i)
 			follower_cursor = -1
