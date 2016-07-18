@@ -33,7 +33,7 @@ def UpdateRetweetCountsOldDb(db, top_table, table):
 ### THESE FUNCTIONS USE THE RETWEETCOUNT FROM 1HOUR.... FROM THE OLD DATASET, THIS DOESNT CHANGE ANYTHING SINCE ALL THE RC COUNTS WILL BE THE SAME (SCRIPT TO UPDATE THEM WAS RUN THE SAME)
 
 # get greater than or equal 5 retweet counts 
-def popHighThres(db, top_table, color="b", label="Higher than %d, 'Popular'",low_thres = 5):
+def popHighThres(db, top_table, color="b", label="Greater than or equal to %d, 'Popular'",low_thres = 5):
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor() 
 	query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, Usr_ID from %s where RetweetCount_1hour >= %d"%(top_table, low_thres)
@@ -62,7 +62,7 @@ def getAll(db, top_table, high_thres = 5, color="c",label="All Tweets"):
 	query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, Usr_ID from %s "%(top_table)
 	cursor.execute(query)
 	topicModels = cursor.fetchall()
-	getStatistics (topicModels,color = color, label = label, linewidth = 1.0)
+	getStatistics (topicModels,color = color, label = label, linewidth = .5)
 	conn.close()
 #getUnpop("rt_tweets.sqlite", "total_topics")
 
@@ -124,7 +124,8 @@ def getStatistics (topicModels,p= plt,  color = "b", label = "", marker = "", li
 	#shrink graph space to make room for legend
 	box = ax.get_position()
 	#ax.set_position([box.x0, box.y0, box.width * 0.95, box.height])
-	ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+	#ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.03))
 	#pl.hist(,normed=True) 
 
 #################### Lets look what percent of zero retweeted tweets have media (we will check this by looking and the corresponding streaming table) ######
@@ -146,8 +147,7 @@ def checkMedia (db, table, streamer, extension = "and total_topics.retweetCount_
 	print "Percentage Has Media", '\t\t\t', "%.5f"%(float(HasMedia*100.0/total))+" %"
 	conn.close()
 
-'''
-	
+
 
 
 #plot line of topic distributions for all tweets retweeted more than 5 times
@@ -173,7 +173,7 @@ print "_________________  =0 - red "
 analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers" )
 
 pl.title("Average Topic Distributions among Popular and Unpopular Tweets")
-#pl.show()
+pl.show()
 pl.clf()
 
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 100", color = 'r', extension = "and totalusers.NumFollowers > 100" )
@@ -195,7 +195,7 @@ print "Semi-Popular Retweeted Tweets (>0 RT)"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week > 0 ")
 print "Popular Retweeted Tweets (5+ RT)"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week >= 5 ")
-'''
+
 
 
 def printUserDataTopicZero(db, top_table, label = "Users", user_table = "totalusers", thres = 0,color = 'r', extension=""):
