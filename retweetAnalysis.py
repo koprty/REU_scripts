@@ -43,6 +43,9 @@ def printTweetsFromTopRetweets(thres):
 			Tweet_ID not in (select Tweet_ID from totalmdabs inner join totalusers on totalmdabs.Usr_ID = totalusers.Usr_ID where totalmdabs.RetweetCount > %d) 
 			and tu.Usr_ID in (select Usr_ID from totalmdabs where RetweetCount > 5)  Order By Screename, RetweetCount DESC, TwtCreatedAt"""%(thres)
 
+	query = """select totalmdabs.Tweet_Text, totalmdabs.TwtCreatedAt, totalmdabs.RetweetCount, tu.Usr_ID, tu.Screename, totalmdabs.Tweet_ID from totalmdabs inner join totalusers as tu on tu.Usr_ID = totalmdabs.USr_ID where 
+			 tu.Usr_ID in (select Usr_ID from totalmdabs where RetweetCount > 5)  Order By Screename, RetweetCount DESC, TwtCreatedAt"""
+
 	cursor.execute(query)
 	tweetsFromTopRetweetUsers  = cursor.fetchall()
 
