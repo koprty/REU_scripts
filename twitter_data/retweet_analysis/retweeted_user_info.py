@@ -15,6 +15,7 @@ query = "select Usr_ID, Screename, Category, NumFollowers from totalusers"
 cursor.execute(query)
 users = cursor.fetchall()
 
+#tweets.sort(key = lambda tup: tup[3], reverse = True)
 
 tweets_w_user = []
 
