@@ -3,6 +3,7 @@ import heapq
 
 categories = ['individuals', 'shops', 'commercial_growers', 'service_providers', 'non-profits', 'news', 'interest_groups']
 
+#return list of tweets with favorite count and retweet count created by users in given category
 def retweets_favs(category):
 	conn = sqlite3.connect("tweets.sqlite")
 	cursor = conn.cursor()
@@ -13,6 +14,7 @@ def retweets_favs(category):
 	conn.close()
 	return fav_rt_result
 
+#find average number of retweets and favorites
 def average(r = []):
 	tot = len(r) * 1.0
 	rt = totals(r)[1]
@@ -24,6 +26,7 @@ def average_favs(r = []):
 	s = total_favs(r)
 	return s/tot
 '''
+#find total number of retweets and favorites in a category
 def totals(r=[]):
 	rt = sum([tup[1] for tup in r]) * 1.0
 	f = sum([tup[0] for tup in r]) * 1.0
@@ -32,6 +35,7 @@ def totals(r=[]):
 def total_favs(r=[]):
 	return sum([tup[0] for tup in r]) * 1.0
 '''
+#return number of tweets above a certain favorite and retweet thresehold
 def above(count = 1, r= []):
 	num_r = 0
 	num_f = 0
@@ -42,6 +46,7 @@ def above(count = 1, r= []):
 			num_f += 1
 	return (num_f,num_r)
 
+#returns highest favorited tweets
 def highest_fav(num =1, r= []):
 	fav = sorted(r, key = lambda tup: tup[0], reverse = True)
 	i = 0
@@ -55,6 +60,7 @@ def highest_fav(num =1, r= []):
 	else:
 		return (fav[0][0], fav[0][2],fav[0][3])
 
+#returns highest retweeted tweets
 def highest_rt(num =1, r= []):
 	rt = sorted(r, key = lambda tup: tup[1], reverse = True)
 	i = 0
@@ -68,7 +74,7 @@ def highest_rt(num =1, r= []):
 	else:
 		return (rt[0][1], rt[0][2],rt[0][3])
 	
-
+#go through categories and print out their statistics on retweets and favs
 for c in categories:
 	results = retweets_favs(c)
 	avg = average(results)

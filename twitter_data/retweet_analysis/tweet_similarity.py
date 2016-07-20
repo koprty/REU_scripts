@@ -21,13 +21,14 @@ users = cursor.fetchall()
 conn.close()
 
 tweets = []
-
+#assemble tweets with respective users
 for tweet in tweets_wo_users:
 	for user in users:
 		if tweet[4] == user[0]:
 			tup = (tweet[0],tweet[1],tweet[2],tweet[3],user[0],user[1],user[2],user[3],user[4])
 			tweets.append(tup)
 
+#sort by retweet count
 tweets.sort(key = lambda tup: tup[2], reverse = True)
 
 i = 1

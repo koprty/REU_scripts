@@ -5,8 +5,14 @@
   * Takes the manually categorized screename from xlsx files and inserts them into the table in the database
 * finddb.py
   * populate the DB with the positive m-dab tweets from SETS A-F (from the tables in the same database) 
-* fillunmatched.py 
+* findunmatched.py 
   * fill in the missing 23 tweets into the database.
+* gather_favs.py
+  * has methods to find totals and averages of favorite and retweet counts of each category, as well as methods to find the number of tweets above a certain number of favorites or retweets, to return a list of the top favorited n tweets, and to return a list of the top retweeted n tweets
+* get FollowersintoDB.py
+  * 
+*getScreenname.py
+  * 
 * getTweetsInArrayOfDictionary.py
   * precisely what the name of the file says. Short script to write tweets in an array of dictionaries
 * keywords.py 
@@ -17,6 +23,8 @@
   * 2nd method in addition to the keywords.py script to separate smoke shops versus people (deprecated since there are more catgeories - see topic-modeling/twitter and transferCategoriesToTxt.py)
 * transferCategoriesToTxt.py
   * transfer categories from filled in db to 7 different text files which will then be sent to the topic modeling lda script in topic_modeling/twitter/topic_dist.py / 
+* updateDates.py
+  * 
 
 
 
