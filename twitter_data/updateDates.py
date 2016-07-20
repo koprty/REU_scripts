@@ -39,13 +39,16 @@ def updateDates(table, streamer):
 
 
 
-def updateStreamerDates(streamer):
+def updateStreamerDates(streamer, streaming = True):
 	#query = "select TwtCreatedAt, Tweet_ID from %s"%(table)
 	#cursor.execute(query)
 	#time_results = cursor.fetchall()2
 	#print time_results
-
-	query = "select TwtCreatedAt, Tweet_ID from %s  "%(streamer)
+	if streaming:
+		createdAt = "TwtCreatedAt"
+	else:
+		createdAt = "CreatedAt"
+	query = "select %s, Tweet_ID from %s  "%(createdAt,streamer)
 	cursor.execute(query)
 	#print query
 	time_results = cursor.fetchall()
@@ -65,7 +68,7 @@ def updateStreamerDates(streamer):
 			#Mon Feb 29 18:00:33 2016
 			#print datetime.strptime(created, '%c')
 			created_time = datetime.strptime(created, '%c')
-		query = "update %s set TwtCreatedAt = '%s' where Tweet_ID = '%d'"%(streamer, created_time, tid)
+		query = "update %s set %s = '%s' where Tweet_ID = '%d'"%(streamer,createdAt, created_time, tid)
 		cursor.execute(query)
 		conn.commit()
 		print query
@@ -80,9 +83,8 @@ cursor = conn.cursor()
 updateStreamerDates("tweets10_streaming")
 '''
 
-conn = sqlite3.connect("rt_tweets.sqlite")
+conn = sqlite3.connect("../rt_tweets.sqlite")
 cursor = conn.cursor()
-#updateDates("posdab_Tweets")
 
 #updateDates("tweets9_mdab", "tweets9_streaming")
 #updateStreamerDates("tweets10_streaming")
@@ -96,3 +98,10 @@ updateStreamerDates("posdab_Tweets")
 print "Done"
 
 conn.close()
+
+#updateDates("posdab_Tweets")
+### updating topic table dates... change TwtCreated to Created At in Streaming function
+'''
+updateStreamerDates("total_topics")
+conn.close()
+'''

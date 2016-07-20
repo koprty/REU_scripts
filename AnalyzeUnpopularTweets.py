@@ -139,11 +139,17 @@ def checkMedia (db, table, streamer, extension = "and total_topics.retweetCount_
 				where %s.Media is not null and not %s.Media = "None"
 			"""%(table, streamer, table, streamer, streamer,streamer) + extension
 	cursor.execute(query)
+	#print query
 	HasMedia = cursor.fetchall()[0][0]
-
+	'''
 	query = """select count(*) from %s inner join %s on %s.Tweet_ID = %s.Tweet_ID where %s.Tweet_ID is not null
 			"""%(table, streamer, table, streamer, streamer) + extension
+	'''
+	query = """select count(*) from %s where Tweet_ID is not null """%(table ) + extension
 	cursor.execute(query)
+
+	#print query
+
 	total = cursor.fetchall()[0][0]
 
 	print "Has Media: \t\t %d/%d" %(HasMedia, total)
@@ -178,7 +184,7 @@ analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers" )
 pl.title("Average Topic Distributions among Popular and Unpopular Tweets")
 #pl.show()
 pl.clf()
-exit()
+
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 100", color = 'r', extension = "and totalusers.NumFollowers > 100" )
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 500", color = 'g', extension = "and totalusers.NumFollowers > 500")
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 1000", color = 'b', extension = "and totalusers.NumFollowers > 1000")
@@ -189,13 +195,21 @@ pl.title("Average Topic Distributions Zero Retweeted Tweets ")
 
 
 print 
+print 
+print 
+print 
 print "Percentage of Medias ___________________________________________"
 print "ALL"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming") # >= 0 because we will exclude all retweet counts with negative values i.e. -1
 print "Zero Retweeted Tweets"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week = 0 ")
+print "UnPopular Retweeted Tweets (<5 but >=0 RT)"
+checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week < 5 and total_topics.retweetCount_1week >=0")
 print "Semi-Popular Retweeted Tweets (>0 RT)"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week > 0 ")
+
+
+
 print "Popular Retweeted Tweets (5+ RT)"
 checkMedia("rt_tweets.sqlite", "total_topics", "total_streaming" , "and total_topics.retweetCount_1week >= 5 ")
 
@@ -223,7 +237,179 @@ def printUserDataTopicZero(db, top_table, label = "Users", user_table = "totalus
 			i+=1
 		print
 	conn.close()
-printUserDataTopicZero("rt_tweets.sqlite", top_table = "total_topics", thres = 10000, extension = "Order By totalusers.Screename DESC, RetweetCount_1hour DESC")
+#printUserDataTopicZero("rt_tweets.sqlite", top_table = "total_topics", thres = 10000, extension = "Order By totalusers.Screename DESC, RetweetCount_1hour DESC")
+
+
+
+def TopicsDistForZero(db, top_table, label = "Users", user_table = "totalusers", thres = 0,color = 'r', extension=""):
+	conn = sqlite3.connect(db)
+	cursor = conn.cursor()
+	query = "select Distinct Tweet_ID, TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, %s.Screename, Category, NumFollowers, NumFollowing,Tweet_Text, RetweetCount_1hour,  Tweet_ID from %s inner join %s on %s.Usr_ID = %s.Usr_ID where NumFollowers > 10000 "%(user_table, top_table, user_table, top_table, user_table) + extension
+	#print query
+	print query
+
+	cursor.execute(query)
+	# getting tweets retweeted zero topicModels
+	# analyzing topic models of these tweets
+	topicModels = cursor.fetchall()
+	#print topicModels
+	#getStatistics (topicModels, color=color, label=label)
+
+	TopT = []
+	i = 0
+	for x in topicModels:
+		TopT.append(x[1])
+	Z = []
+	for y in range(9):
+		#AVERAGE
+		#Z.append( (y, TopT.count(y)*1.0/len(TopT)))
+		#JUST NUMBER OF TWEETS IN GENERAL
+		Z.append( (y, TopT.count(y)))
+
+	pl.clf()
+	ax = pl.subplot(111)
+	lines = ax.plot([h[0] for h in Z], [h[1] for h in Z])
+	pl.setp(lines, color="r",label="Greater than 10k followers")
+
+
+	####  > = 5k followers
+	query = "select Distinct Tweet_ID, TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, %s.Screename, Category, NumFollowers, NumFollowing,Tweet_Text, RetweetCount_1hour,  Tweet_ID from %s inner join %s on %s.Usr_ID = %s.Usr_ID where NumFollowers > 5000 "%(user_table, top_table, user_table, top_table, user_table) + extension
+	#print query
+	print query
+
+	cursor.execute(query)
+	# getting tweets retweeted zero topicModels
+	# analyzing topic models of these tweets
+	topicModels = cursor.fetchall()
+	#print topicModels
+	#getStatistics (topicModels, color=color, label=label)
+
+	TopT = []
+	i = 0
+	for x in topicModels:
+		TopT.append(x[1])
+	Z = []
+	for y in range(9):
+		#AVERAGE
+		#Z.append( (y, TopT.count(y)*1.0/len(TopT)))
+		#JUST NUMBER OF TWEETS IN GENERAL
+		Z.append( (y, TopT.count(y)))
+	print Z
+
+	ax = pl.subplot(111)
+	lines = ax.plot([h[0] for h in Z], [h[1] for h in Z])
+	pl.setp(lines, color='b',label="Greater than 5k followers ")
+
+	######## Any number of followers (positive)
+	query = "select Distinct Tweet_ID, TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, %s.Screename, Category, NumFollowers, NumFollowing,Tweet_Text, RetweetCount_1hour,  Tweet_ID from %s inner join %s on %s.Usr_ID = %s.Usr_ID where NumFollowers >= 0 "%(user_table, top_table, user_table, top_table, user_table) + extension
+	#print query
+	print query
+
+	cursor.execute(query)
+	# getting tweets retweeted zero topicModels
+	# analyzing topic models of these tweets
+	topicModels = cursor.fetchall()
+	#print topicModels
+	#getStatistics (topicModels, color=color, label=label)
+
+	TopT = []
+	i = 0
+	for x in topicModels:
+		TopT.append(x[1])
+	Z = []
+	for y in range(9):
+		#AVERAGE
+		#Z.append( (y, TopT.count(y)*1.0/len(TopT)))
+		#JUST NUMBER OF TWEETS IN GENERAL
+		Z.append( (y, TopT.count(y)))
+	print Z
+
+	ax = pl.subplot(111)
+	lines = ax.plot([h[0] for h in Z], [h[1] for h in Z])
+	pl.setp(lines, color='g',label="All users ")
+
+
+	pl.ylabel("Number of Zero Retweeted Tweets ")
+	pl.xlabel("Top Topic Number")
+
+
+
+	#shrink graph space to make room for legend
+	box = ax.get_position()
+	#ax.set_position([box.x0, box.y0, box.width * 0.95, box.height])
+	#ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.03))
+	pl.title("Top Topics from Zero Retweeted Tweets")
+	pl.show()
+	conn.close()
+
+
+#TopicsDistForZero("rt_tweets.sqlite", top_table = "total_topics", thres = 10000, extension = "and retweetCount_1hour = 0 Order By totalusers.Screename DESC, RetweetCount_1hour DESC")
+
+
+
+
+
+#clear any graph data
+
+######### Time Analysis #######
+def analyzeTime(db, table, extension = "", color = "b", label = "", average=False):
+	if len(extension) > 0:
+		extension = " where "+extension
+
+	conn = sqlite3.connect("rt_tweets.sqlite")
+	cursor = conn.cursor()
+	query = "select distinct Tweet_ID, CreatedAt from %s"%(table) + extension
+	cursor.execute(query)
+	rs = cursor.fetchall()
+	L = []
+	for (twe_id, created) in rs:
+		timeparse = int(created.split(" ")[1].split(":")[0])
+		L.append(timeparse)
+	result = []
+	for x in range(24):
+		result.append((x, L.count(x)) if not average else (x,L.count(x)*1.0/len(L)))
+		
+	
+	ax = pl.subplot(111)
+	lines = ax.plot([h[0] for h in result], [h[1] for h in result])
+	pl.setp(lines, color=color,label=label)
+	box = ax.get_position()
+	#ax.set_position([box.x0, box.y0, box.width * 0.95, box.height])
+	#ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+	ax.legend(loc='lower left', bbox_to_anchor=(.7, 0.03))
+
+	conn.close()
+
+pl.clf()
+
+### All Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour >= 0", color = "g", label = "All Tweets")
+### Popular Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour >= 5", color = "r", label = "Popular Tweets")
+### Zero Retweeted Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour = 0", color = "b", label = "Zero Tweets")
+pl.ylabel("Number of Tweets ")
+pl.xlabel("Hour of Day")
+#shrink graph space to make room for legend
+pl.title("Time Analysis of Tweets Grouped by Retweet Count (#)")
+pl.show()
+
+
+
+#___________________________Average___________________________#
+pl.clf()
+### All Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour >= 0", color = "g", label = "All Tweets", average = True)
+### Popular Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour >= 5", color = "r", label = "Popular Tweets", average = True)
+### Zero Retweeted Tweets
+analyzeTime("rt_tweets.sqlite", "total_topics", extension = "RetweetCount_1hour = 0", color = "b", label = "Zero Tweets", average = True)
+pl.ylabel("Percent of Tweets ")
+pl.xlabel("Hour of Day")
+#shrink graph space to make room for legend
+pl.title("Time Analysis of Tweets Grouped by Retweet Count (%) ")
+pl.show()
 
 
 
