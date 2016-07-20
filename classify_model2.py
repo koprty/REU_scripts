@@ -303,6 +303,7 @@ def getRetweetCount(twe_id):
 		except Exception as e:
 			if "429 (Too Many Requests)" in str(e):
 				index += 0
+				print "App Exceeded: index = %d"%(index)
 				pass
 			elif "404 (Not Found)" in str(e):
 				return -1
@@ -323,9 +324,8 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 	now = datetime.datetime.now()
 	timedelta = datetime.timedelta(minutes = 15)
 	mark= now - timedelta
-	conn = sqlite3.connect(db)
-	cursor = conn.cursor()
 	query = "select %s.Tweet_ID from %s INNER JOIN %s on %s.Tweet_ID = %s.Tweet_ID where TwtCreatedAt < '%s' and RetweetCount_15min is Null"%(streamer,streamer, table, table, streamer, mark)
+	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
 	cursor.execute(query)
 	ids_in_time_interval = cursor.fetchall()
@@ -334,12 +334,11 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		twe_id = twe_id[0]
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			conn = sqlite3.connect(db)
-			cursor = conn.cursor()
 			query = "update %s set RetweetCount_15min = %d where tweet_id = %d"%(table,rc, twe_id)
 			print  "RC: ", query
+			conn = sqlite3.connect(db)
+			cursor = conn.cursor()
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 			conn.close()
 	print "Updating Retweet Count - 1 hour _______________ "
@@ -359,8 +358,9 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		if len(str(rc)) > 0:
 			query = "update %s set RetweetCount_1hour = %d where tweet_id = %d"%(table,rc, twe_id)
 			print  "RC: ", query
+			conn = sqlite3.connect(db)
+			cursor = conn.cursor()
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 			conn.close()
 
@@ -379,12 +379,11 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		twe_id = twe_id[0]
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			conn = sqlite3.connect(db)
-			cursor = conn.cursor()
 			query = "update %s set RetweetCount_1day = %d where tweet_id = %d"%(table,rc, twe_id)
 			print  "RC: ", query
+			conn = sqlite3.connect(db)
+			cursor = conn.cursor()
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 			conn.close()
 	
@@ -403,12 +402,11 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		twe_id = twe_id[0]
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			conn = sqlite3.connect(db)
-			cursor = conn.cursor()
 			query = "update %s set RetweetCount_2day = %d where tweet_id = %d"%(table, rc, twe_id)
 			print  "RC: ", query
+			conn = sqlite3.connect(db)
+			cursor = conn.cursor()
 			cursor.execute(query)
-			cursor.fetchall()
 			conn.commit()
 			conn.close()
 
@@ -427,10 +425,10 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 		twe_id = twe_id[0]
 		rc = getRetweetCount ( twe_id )
 		if len(str(rc)) > 0:
-			conn = sqlite3.connect(db)
-			cursor = conn.cursor()
 			query = "update %s set RetweetCount_1week = %d where tweet_id = %d"%(rc, twe_id)
 			print "RC: ", query
+			conn = sqlite3.connect(db)
+			cursor = conn.cursor()
 			cursor.execute(query)
 			cursor.fetchall()
 			conn.commit()

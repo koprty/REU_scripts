@@ -104,8 +104,11 @@ def getStatistics (topicModels,p= plt,  color = "b", label = "", marker = "", li
 	averages = [(z, sums[z]/n) for z in range(9)]
 	print n 
 	#print "Sums: ", sums
-	print "Topic Models: ", tt
-	print "Averages: ", averages
+	
+	#print "Topic Models: ", tt
+	#print "Averages: ", averages
+	for a in averages:
+		print a[0], "\t", a[1]
 	sorted_avg = sorted(averages, key= lambda a:a[1], reverse = True)
 	sorted_top_topicmodel = sorted(tt, key= lambda t:t[1], reverse = True)
 
@@ -173,9 +176,9 @@ print "_________________  =0 - red "
 analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers" )
 
 pl.title("Average Topic Distributions among Popular and Unpopular Tweets")
-pl.show()
+#pl.show()
 pl.clf()
-
+exit()
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 100", color = 'r', extension = "and totalusers.NumFollowers > 100" )
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 500", color = 'g', extension = "and totalusers.NumFollowers > 500")
 analyzeZeroTweets ("rt_tweets.sqlite", "total_topics", "totalusers", label = "Followers > 1000", color = 'b', extension = "and totalusers.NumFollowers > 1000")
