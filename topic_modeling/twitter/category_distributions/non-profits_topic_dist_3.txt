@@ -1,0 +1,9 @@
+Topic 0:	0.333333333333
+Topic 1:	0.0
+Topic 2:	0.666666666667
+Topic 3:	0.0
+Topic 4:	0.0
+Topic 5:	0.0
+Topic 6:	0.0
+Topic 7:	0.0
+Topic 8:	0.0
