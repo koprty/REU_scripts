@@ -11,7 +11,7 @@
   * has methods to find totals and averages of favorite and retweet counts of each category, as well as methods to find the number of tweets above a certain number of favorites or retweets, to return a list of the top favorited n tweets, and to return a list of the top retweeted n tweets
 * get FollowersintoDB.py
   * 
-*getScreenname.py
+* getScreenname.py
   * 
 * getTweetsInArrayOfDictionary.py
   * precisely what the name of the file says. Short script to write tweets in an array of dictionaries
