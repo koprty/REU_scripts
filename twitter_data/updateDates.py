@@ -80,7 +80,7 @@ cursor = conn.cursor()
 #updateDates("posdab_Tweets")
 
 #updateDates("tweets9_mdab", "tweets9_streaming")
-updateStreamerDates("tweets10_streaming")
+
 '''
 
 conn = sqlite3.connect("../rt_tweets.sqlite")
@@ -98,6 +98,10 @@ updateStreamerDates("posdab_Tweets")
 print "Done"
 
 '''
+
+updateStreamerDates("total_streaming")
+conn.close()
+exit()
 
 #updateDates("posdab_Tweets")
 ### updating topic table dates... change TwtCreated to Created At in Streaming function

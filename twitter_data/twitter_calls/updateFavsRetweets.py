@@ -10,10 +10,10 @@ OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh','HPmY0P8q2
 
 
 # updates the Favorite and Retweet counts for each tweet
-def getAllTweetIds(table = "posdab_tweets"):
+def getAllTweetIds(table = "posdab_tweets", extension = ""):
 	conn = sqlite3.connect("tweets.sqlite")
 	cursor = conn.cursor()
-	query = "select Tweet_ID from %s;"%table
+	query = "select Tweet_ID from %s;"%(table) + extension
 	cursor.execute(query)
 	r = cursor.fetchall()
 	d = []
@@ -23,7 +23,7 @@ def getAllTweetIds(table = "posdab_tweets"):
 
 
 #update counts of retweet and favorites into tweet
-def UpdateCounts(id_list, table = "posdab_tweets"):
+def UpdateCounts(id_list, table = "posdab_tweets", dbname = "tweets.sqlite"):
 	index=0
 	num_checked = 0
 	rate_ex = 0
@@ -53,8 +53,8 @@ def UpdateCounts(id_list, table = "posdab_tweets"):
 				twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET) 
 				result = twitter.show_status(id=tweet_id)
 				#print result['user']['screen_name'] + " " + result['user']['description']
-				tweet['Usr_Screename'] = result['user']['screen_name']
-				tweet['Usr_Description'] = result['user']['description']
+				#tweet['Usr_Screename'] = result['user']['screen_name']
+				#tweet['Usr_Description'] = result['user']['description']
 				
 				tweet['FavoriteCount'] = int(result['favorite_count'])
 				tweet['RetweetCount'] = int(result['retweet_count'])
@@ -63,7 +63,7 @@ def UpdateCounts(id_list, table = "posdab_tweets"):
 				print int(result['retweet_count']), int(result['favorite_count']) 
 				if int(result['retweet_count']) > 0 or int(result['favorite_count']) > 0:
 					print tweet_id
-					conn = sqlite3.connect("tweets.sqlite")
+					conn = sqlite3.connect(dbname)
 					cursor = conn.cursor()
 					query = "Update %s set FavoriteCount = %d, RetweetCount = %d where Tweet_ID = '%s'" % (table,int(result['favorite_count']),int(result['retweet_count']), tweet_id)
 					print query
@@ -93,6 +93,6 @@ def UpdateCounts(id_list, table = "posdab_tweets"):
 	return j
 				
 
-alltweetids = getAllTweetIds("tweets9_posdab")
+alltweetids = getAllTweetIds("tweets9_streaming", extension = " where Tweet_ID not in (select Tweet_ID from total_topics)")
 #alltweetids = getAllTweetIds()
 UpdateCounts(alltweetids, "tweets9_posdab")
