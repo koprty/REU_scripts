@@ -199,6 +199,7 @@ def get_UTCinfo_intoStreamingDB(db= "tweets.sqlite", table = "users"):
 	return
 
 #get_UTCinfo_intoStreamingDB(db= "rt_tweets.sqlite", table = "total_streaming")
+#get_UTCinfo_intoStreamingDB(db= "rt_tweets.sqlite", table = "generaltweets_streaming")
 #exit()
 #get_userinfo_intoDB(table = "users")
 
@@ -207,6 +208,8 @@ def get_UTCinfo_intoStreamingDB(db= "tweets.sqlite", table = "users"):
 #### with Accurate locale time
 def convertUTCToLocale (datestring, utc_offset):
 	#utc_offset is in seconds. We will divide to get the hour difference
+	if utc_offset == None:
+		return datestring
 	utc_hours = utc_offset/3600
 	timedelta = datetime.timedelta(hours = utc_hours)
 	datestr = datetime.datetime.strptime(datestring, "%Y-%m-%d %H:%M:%S")
@@ -215,7 +218,7 @@ def convertUTCToLocale (datestring, utc_offset):
 
 
 ######### Time Analysis #######
-def analyzeTime_locale(db, table, extension = "", color = "b", label = "", average=False, query = None, createdAt = "CreatedAt"):
+def analyzeTime_locale(db, table , extension = "", color = "b", label = "", average=False, query = None, createdAt = "CreatedAt"):
 	if len(extension) > 0:
 		if extension[:4] != " and":
 			extension = " where "+extension
@@ -223,54 +226,128 @@ def analyzeTime_locale(db, table, extension = "", color = "b", label = "", avera
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor()
 	if query == None:
-		query = "select distinct Tweet_ID, %s, totalusers.utc_offset from %s inner join totalusers on %s.Usr_ID = totalusers.Usr_ID where utc_offset is not null"%(createdAt, table, table) + extension
+		query = "select  Tweet_ID, %s, totalusers.utc_offset from %s inner join totalusers on %s.Usr_ID = totalusers.Usr_ID where totalusers.Usr_ID = totalusers.Usr_ID "%(createdAt, table, table) + extension
 	cursor.execute(query)
+	#print query
+
 	rs = cursor.fetchall()
 	#print query
-	print len(rs)
+	print label, " : ", len(rs)
 	L = []
 	for (twe_id, created, utc) in rs:
 		created = convertUTCToLocale(created, utc)
 		#print created
 		timeparse = int(created.split(" ")[1].split(":")[0])
-		print utc, timeparse
-		
+
 		L.append(timeparse)
 	result = []
+	count = []
 	for x in range(24):
-		result.append((x, L.count(x)) if not average else (x,L.count(x)*1.0/len(L)))
-		
-	
+		count.append((x, L.count(x)))
+		result.append((x, L.count(x)) if not average else (x,L.count(x)*1.0/len(L)) )
+	c = 0
+	for y in count:
+		c += y[1]
+	#print count
+	#print result
 	ax = pl.subplot(111)
 	lines = ax.plot([h[0] for h in result], [h[1] for h in result])
 	pl.setp(lines, color=color,label=label)
 	box = ax.get_position()
 	#ax.set_position([box.x0, box.y0, box.width * 0.95, box.height])
 	#ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
-	ax.legend(loc='lower left', bbox_to_anchor=(.7, 0.03))
-
+	ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.7))
 	conn.close()
 
+	return ax
 
 
+
+
+############################################### GENERAL BY PERCENTAGE Late Fri - Early Tues ###############################################
+pl.clf()
+
+
+
+analyzeTime_locale("generaltweets.sqlite", "GENERALTWEETS_STREAMING", createdAt = "TwtCreatedAt", \
+					color = "m", label = "General Politics ", average = True,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1 and not ImpureQuery = 5 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " )
+
+'''ax =analyzeTime_locale("generaltweets.sqlite", "GENERALTWEETS_STREAMING", createdAt = "TwtCreatedAt", \
+					color = "c", label = "Popular General Politics ", average = True,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1 and RetweetCount >= 5 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " )
+'''
+analyzeTime_locale("rt_tweets.sqlite", "total_streaming", createdAt = "TwtCreatedAt", \
+					color = "r", label = "Non M-Dab ", average = True,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " )
+
+analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
+					color = "b", label = "M-Dab Tweets  ", average = True, extension = " and utc_offset is not null and not utc_offset  = -1 " )
+
+ax = analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
+					color = "g", label = "Popular M-Dab Tweets  ", average = True, extension = " and utc_offset is not null and RetweetCount_1hour >=5")
+
+
+
+ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+pl.title("Locale Time Analysis of General Tweets ")
+
+
+
+pl.show()
+print 
+print 
+exit()
+
+########### BY NUMBER #########
 pl.clf()
 analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
-					color = "b", label = "M-Dab Tweets (Locale) ", average = True, extension = " and utc_offset  = -1 " )
+					color = "b", label = "M-Dab Tweets  ", average = False, extension = " and utc_offset is not null and not utc_offset  = -1  " )
+
+ax =analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "TwtCreatedAt", \
+					color = "m", label = "Non M-Dab ", average = False,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where  not ImpureQuery = -1 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " ) 
+
+ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.2))
+pl.title("Locale Time Analysis of Tweets (#) ")
+
+#pl.show()
+################################
+
+############################################### BY PERCENTAGE ###############################################
+pl.clf()
+
+
+analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
+					color = "b", label = "M-Dab Tweets  ", average = True, extension = " and utc_offset is not null and not utc_offset  = -1 " )
+
+ax = analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
+					color = "g", label = "Popular M-Dab Tweets  ", average = True, extension = " and utc_offset is not null and RetweetCount_1hour >=5")
+
+
+analyzeTime_locale("rt_tweets.sqlite", "total_streaming", createdAt = "TwtCreatedAt", \
+					color = "r", label = "Non M-Dab ", average = True,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " )
+
+ax =analyzeTime_locale("rt_tweets.sqlite", "total_streaming", createdAt = "TwtCreatedAt", \
+					color = "m", label = "Popular Non M-Dab ", average = True,  \
+					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1 and RetweetCount >= 5 and Tweet_ID not in (select distinct Tweet_ID from total_topics) " )
+ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.2))
+pl.title("Locale Time Analysis of Tweets (#) ")
+
+ax.legend(loc='lower left', bbox_to_anchor=(.6, 0.03))
+pl.title("Locale Time Analysis of Tweets Grouped by RetweetCount(%) ")
+
+
 '''
 analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "CreatedAt", \
 					color = "g", label = "All M-Dab Tweets (Locale) ", average = True,  )
-'''
-
-analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "TwtCreatedAt", \
-					color = "m", label = "Non M-Dab Locale", average = True,  \
-					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming where not ImpureQuery = -1" ) 
-'''
 analyzeTime_locale("rt_tweets.sqlite", "total_topics", createdAt = "TwtCreatedAt", \
 					color = "r", label = "All Non M-Dab Tweets", average = True,  \
 					query = "select distinct Tweet_ID, TwtCreatedAt, ImpureQuery from total_streaming " ) 
-'''
+'''					 
 pl.show()
-
+#########################################################################################################################
 
 
 
