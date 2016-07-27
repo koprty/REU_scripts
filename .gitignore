@@ -61,5 +61,7 @@ target/
 .ipynb_checkpoints
 
 #Get rid of DS_Stores in the git repositories
-*.DS_Store
 topic_modeling/.DS_Store
+classification/.DS_Store
+*.DS_Store
+
