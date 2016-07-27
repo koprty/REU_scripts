@@ -469,12 +469,14 @@ print
 #analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers", color = 'g')
 
 pl.title("Average Topic Distributions among Popular and Baseline Tweets")
-pl.show()
+#pl.show()
 
-exit()
+
 ######################################################################################################################################
 
 ######################################### USER CATEGORY TOPIC DISTRIBUTION GRAPHS ####################################################################################
+print
+print 
 
 pl.clf()
 inner_join = "inner join totalusers on total_topics.Usr_ID = totalusers.USR_ID where"
@@ -491,7 +493,7 @@ getAll ("rt_tweets.sqlite", "total_topics",  label = "News", color = 'c', linewi
 
 pl.title("Average Topic Distributions By Category")
 #pl.show()
-
+exit()
 ###################################################################################################################################################
 
 '''
