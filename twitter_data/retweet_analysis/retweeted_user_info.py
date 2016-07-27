@@ -1,13 +1,13 @@
 import xlsxwriter
 import sqlite3
 
-workbook = xlsxwriter.Workbook("zero_retweeted_users.xlsx")
+workbook = xlsxwriter.Workbook("retweeted_users_4.xlsx")
 user_ws=workbook.add_worksheet("User percentage")
 tweet_ws=workbook.add_worksheet("Tweet percentage")
 
-conn = sqlite3.connect("../../tweets.sqlite")
+conn = sqlite3.connect("../../tweetsWithDates.sqlite")
 cursor = conn.cursor()
-query = "select Usr_ID, Tweet_ID, Tweet_Text, RetweetCount from totalmdabs where Usr_ID in (select Usr_ID from totalusers) and RetweetCount=0"
+query = "select Usr_ID, Tweet_ID, Tweet_Text, RetweetCount from totalmdabs where Usr_ID in (select Usr_ID from totalusers) and RetweetCount>4"
 cursor.execute(query)
 tweets = cursor.fetchall()
 
@@ -15,7 +15,7 @@ query = "select Usr_ID, Screename, Category, NumFollowers from totalusers"
 cursor.execute(query)
 users = cursor.fetchall()
 
-#tweets.sort(key = lambda tup: tup[3], reverse = True)
+tweets.sort(key = lambda tup: tup[3], reverse = True)
 
 tweets_w_user = []
 

@@ -5,10 +5,10 @@ categories = ['individuals', 'shops', 'commercial_growers', 'service_providers',
 
 #return list of tweets with favorite count and retweet count created by users in given category
 def retweets_favs(category):
-	conn = sqlite3.connect("tweets.sqlite")
+	conn = sqlite3.connect("../tweetsWithDates.sqlite")
 	cursor = conn.cursor()
 
-	query = "select FavoriteCount,RetweetCount,Tweet_Text,Usrname from posdab_Tweets where Usr_ID in (select Usr_ID from users where category = '%s');" % (category)
+	query = "select FavoriteCount,RetweetCount,Tweet_Text,Usrname from totalmdabs where Usr_ID in (select Usr_ID from totalusers where category = '%s');" % (category)
 	cursor.execute(query)
 	fav_rt_result = cursor.fetchall()
 	conn.close()
@@ -78,7 +78,9 @@ def highest_rt(num =1, r= []):
 for c in categories:
 	results = retweets_favs(c)
 	avg = average(results)
+	
 	tot = totals(results)
+	'''
 	once = above(1, results)
 	hfav = highest_fav(1,results)
 	hrt = highest_rt(1,results)
@@ -89,6 +91,10 @@ for c in categories:
 	print "Number of Tweets with one or more RT: " +str(once[1]) + " || Number of Tweets with one or more fav: " + str(once[0])
 	print "Most Favorited Tweet: " + str(hfav[2]) + " '" + str(hfav[1]) + "' with " + str(hfav[0]) + " favorites"
 	print "Most Retweeted Tweet: " + str(hrt[2]) + " '" + str(hrt[1]) + "' with " + str(hrt[0]) + " retweets"
+	'''
+	print c
+	print "Average RTs: " + str(avg[1])
+	print "Total Tweets: " + str(len(results)) + " || Total Retweets: " + str(tot[1])
 '''
 	avg_rts = average_rts(results)
 	avg_favs = average_favs(results)
