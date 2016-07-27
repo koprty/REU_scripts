@@ -33,26 +33,27 @@ def UpdateRetweetCountsOldDb(db, top_table, table):
 ### THESE FUNCTIONS USE THE RETWEETCOUNT FROM 1HOUR.... FROM THE OLD DATASET, THIS DOESNT CHANGE ANYTHING SINCE ALL THE RC COUNTS WILL BE THE SAME (SCRIPT TO UPDATE THEM WAS RUN THE SAME)
 
 # get greater than or equal 5 retweet counts 
-def popHighThres(db, top_table, color="b", label="Greater than or equal to %d, 'Popular'",low_thres = 5):
+def popHighThres(db, top_table, color="b", label="Greater than or equal to %d, 'Popular'",low_thres = 5, linewidth = .5, query = ""):
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor() 
-	query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, Usr_ID from %s where RetweetCount_1hour >= %d"%(top_table, low_thres)
+	if len(query) == 0:
+		query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, Usr_ID from %s where RetweetCount_1hour >= %d"%(top_table, low_thres)
 	cursor.execute(query)
 	topicModels = cursor.fetchall()
 	#label=label%(low_thres)
 	print label
-	getStatistics (topicModels, color=color,label=label )
+	getStatistics (topicModels, color=color,label=label, linewidth = linewidth )
 	conn.close()
 
 # get unpopular tweets
-def getUnpop(db, top_table, high_thres = 5, color="g",label="Lower than %d, 'Unpopular'"):
+def getUnpop(db, top_table, high_thres = 5, color="g",label="Lower than %d, 'Unpopular'", linewidth = .5):
 	conn = sqlite3.connect(db)
 	cursor = conn.cursor() 
 	query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, Usr_ID from %s where RetweetCount_1hour < %d and RetweetCount_1hour >= 0"%(top_table, high_thres)
 	cursor.execute(query)
 	topicModels = cursor.fetchall()
 	#label = label%(high_thres)
-	getStatistics (topicModels,color = color, label = label)
+	getStatistics (topicModels,color = color, label = label, linewidth = linewidth)
 	conn.close()
 #getUnpop("rt_tweets.sqlite", "total_topics")
 
@@ -135,7 +136,7 @@ def getStatistics (topicModels,p= plt,  color = "b", label = "", marker = "", li
 	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.03))
 
 	#for category legened 
-	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.55))
+	#ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.55))
 	#pl.hist(,normed=True) 
 
 #################### Lets look what percent of zero retweeted tweets have media (we will check this by looking and the corresponding streaming table) ######
@@ -395,27 +396,82 @@ def analyzeTime_locale(db, table, extension = "", color = "b", label = "", avera
 ################## POPULAR BASELINE  TWEETS##############################################################################################
 #plot line of topic distributions for all tweets retweeted more than 5 times
 print "_________________ >= 5 - blue"
-popHighThres("rt_tweets.sqlite", "total_topics", label= "Popular Tweets ( >= 5 RT )", color = 'b')
+popHighThres("rt_tweets.sqlite", "total_topics", label= "Popular Tweets ( >= 5 RT )", color = 'b', linewidth = 2)
+
+query = """select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, total_topics.Usr_ID from total_topics inner join total_streaming on total_Topics.tweet_ID = total_streaming.tweet_ID where RetweetCount_1hour >= 5 and total_topics.Tweet_ID in
+(741406893122392069 ,
+741888881985888256 ,
+739231062241513472,
+739365877020164096,
+738490299337572354 ,
+704712855535267841 
+,696417814274514944 
+,696388813464170497 
+,698893650671980544 
+,696961325566664704 ,
+740966101958426624 ,
+741002151422398464 ,
+739488450190188544 
+,696801543081889794 
+,697516275141103616 
+,696527841995923456 
+,697247241556209664 ,
+741079490260959236 
+,697143684731691009 
+,696535601667973122 ,
+742163716221767680 
+,697381501306957824 
+,699080686385373184 
+,698382348576903168 
+,740220703559979009 
+,738781603619438592 
+,696630066806177796 
+,696535915641094144 
+,697143158400876544 
+,697849556508274688 
+,699302712681168897 
+,695798517814706177
+ ,718548101355716613 
+,739886142888235008 
+,740969829755019264 
+,739665971493773312 
+,698244178262634496 
+,697088765194592258 
+,740323026068066305 
+,740887114464821249
+ ,739810339160788992) """
+query = "select TopTopic, Zero,  One, Two, Three, Four, Five, Six, Seven, Eight, total_topics.Usr_ID from total_topics inner join total_streaming on total_Topics.tweet_ID = total_streaming.tweet_ID where RetweetCount_1hour >= 5 and Media is null"
+
+
+popHighThres("rt_tweets.sqlite", "total_topics", label= "Popular Tweets w/o Photo or Video", color = 'c', linewidth = 2, query = query )
+
+
 #print "_________________ >= 1"
 #popHighThres("rt_tweets.sqlite", "total_topics", color="c",low_thres = 1)
 print 
 
-#plot line of topic distributions for all tweets retweeted less than 5 times but 0 or more
-print "_________________ < 5 - red"
-getUnpop("rt_tweets.sqlite", "total_topics", label= "Baseline Tweets ( < 5 RT )", color = 'r')
-print 
 
+'''
 #plot line of topic distributions for all tweets 
 print "_________________ ALL - cyan"
-getAll("rt_tweets.sqlite", "total_topics", color = 'c')
+getAll("rt_tweets.sqlite", "total_topics", color = 'g', linewidth = 2)
+print  
+'''
+
+#plot line of topic distributions for all tweets retweeted less than 5 times but 0 or more
+print "_________________ < 5 - red"
+ax = getUnpop("rt_tweets.sqlite", "total_topics", label= "Baseline Tweets ( < 5 RT )", color = 'r', linewidth = 2)
 print 
+
 
 #plot line of topic distributions for all tweets retweeted exactly 1 time
 #print "_________________  =0 - green "
 #analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers", color = 'g')
 
 pl.title("Average Topic Distributions among Popular and Baseline Tweets")
-#pl.show()
+pl.show()
+
+exit()
 ######################################################################################################################################
 
 ######################################### USER CATEGORY TOPIC DISTRIBUTION GRAPHS ####################################################################################

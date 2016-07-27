@@ -56,7 +56,6 @@ def updateStreamerDates(streamer, streaming = True):
 		print time_results, "sucks"
 		exit()
 	for (created, tid) in time_results:
-		
 		try:
 			#print created
 			#print datetime.strptime(created, '%Y-%m-%d %X')
