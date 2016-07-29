@@ -136,7 +136,7 @@ def getStatistics (topicModels,p= plt,  color = "b", label = "", marker = "", li
 	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.03))
 
 	#for category legened 
-	#ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.55))
+	ax.legend(loc='lower left', bbox_to_anchor=(.4, 0.55))
 	#pl.hist(,normed=True) 
 
 #################### Lets look what percent of zero retweeted tweets have media (we will check this by looking and the corresponding streaming table) ######
@@ -479,20 +479,20 @@ print
 print 
 
 pl.clf()
-inner_join = "inner join totalusers on total_topics.Usr_ID = totalusers.USR_ID where"
-getAll ("rt_tweets.sqlite", "total_topics",  label = "Individuals", color = 'r', linewidth = 1.5, extension = inner_join + " totalusers.Category = 'individuals'" )
-getAll ("rt_tweets.sqlite", "total_topics",  label = "Interest Groups", linewidth = 1.5, color = 'g', extension = inner_join + " totalusers.Category = 'interest_groups'" )
+inner_join = "inner join total_users on total_topics.Usr_ID = total_users.USR_ID where"
+getAll ("rt_tweets.sqlite", "total_topics",  label = "Individuals", color = 'r', linewidth = 1.5, extension = inner_join + " total_users.Category = 'individuals'" )
+getAll ("rt_tweets.sqlite", "total_topics",  label = "Interest Groups", linewidth = 1.5, color = 'g', extension = inner_join + " total_users.Category = 'interest_groups'" )
 
-getAll ("rt_tweets.sqlite", "total_topics",  label = "Shops ", color = 'b', linewidth = 1.5, extension = inner_join + " totalusers.Category = 'shops' or totalusers.Category = 'commercial_growers' or totalusers.Category = 'non-profits'" )
+getAll ("rt_tweets.sqlite", "total_topics",  label = "Shops ", color = 'b', linewidth = 1.5, extension = inner_join + " total_users.Category = 'shops' or total_users.Category = 'commercial_growers'" )
 #getAll ("rt_tweets.sqlite", "total_topics",  label = "Shops", color = 'b', linewidth = 1.5, extension = inner_join + " totalusers.Category = 'shops'" )
 
 #getAll ("rt_tweets.sqlite", "total_topics",  label = "Commercial Growers", linewidth = 1.5, color = 'k', extension = inner_join + " totalusers.Category = 'commercial_growers'" )
-getAll ("rt_tweets.sqlite", "total_topics",  label = "Service Providers", linewidth = 1.5, color = 'm', extension = inner_join + " totalusers.Category = 'service_providers'" )
+getAll ("rt_tweets.sqlite", "total_topics",  label = "Service Providers", linewidth = 1.5, color = 'm', extension = inner_join + " total_users.Category = 'service_providers' or total_users.Category = 'non-profits'" )
 #getAll ("rt_tweets.sqlite", "total_topics",  label = "Non-Profits", linewidth = 1.5, color = 'y', extension = inner_join + " totalusers.Category = 'non-profits'" )
-getAll ("rt_tweets.sqlite", "total_topics",  label = "News", color = 'c', linewidth = 1.5, extension = inner_join + " totalusers.Category = 'news'" )
+getAll ("rt_tweets.sqlite", "total_topics",  label = "News", color = 'c', linewidth = 1.5, extension = inner_join + " total_users.Category = 'news'" )
 
 pl.title("Average Topic Distributions By Category")
-#pl.show()
+pl.show()
 exit()
 ###################################################################################################################################################
 
