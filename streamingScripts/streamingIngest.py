@@ -15,10 +15,10 @@ import time
 
 #tweepy connection stuff
 try:
-    consumer_key = "3CsAylH4X8nkGYkXNzjoJVFgv"
-    consumer_secret = "G0f9SGjf76E984ijG57mdwcv82fsuIxuaxBC0Pl2M6MzvtUrjM"
-    access_token = "4553384003-wUZPZCzFyFh58jZaJE1gXYiFgff7c4EBAjCBWeW"
-    access_token_secret = "GMAvmUmpcvzjywwoGhdqSkievTpykZ98ofV9LUQ6sUX9e"     
+    consumer_key = ""
+    consumer_secret = ""
+    access_token = ""
+    access_token_secret = ""
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)

@@ -393,6 +393,9 @@ def analyzeTime_locale(db, table, extension = "", color = "b", label = "", avera
 	ax.legend(loc='lower left', bbox_to_anchor=(.7, 0.03))
 
 	conn.close()
+
+
+
 ################## POPULAR BASELINE  TWEETS##############################################################################################
 #plot line of topic distributions for all tweets retweeted more than 5 times
 print "_________________ >= 5 - blue"
@@ -469,9 +472,9 @@ print
 #analyzeZeroTweets("rt_tweets.sqlite", "total_topics", "totalusers", color = 'g')
 
 pl.title("Average Topic Distributions among Popular and Baseline Tweets")
-#pl.show()
+pl.show()
 
-
+exit()
 ######################################################################################################################################
 
 ######################################### USER CATEGORY TOPIC DISTRIBUTION GRAPHS ####################################################################################
@@ -493,7 +496,7 @@ getAll ("rt_tweets.sqlite", "total_topics",  label = "News", color = 'c', linewi
 
 pl.title("Average Topic Distributions By Category")
 pl.show()
-exit()
+
 ###################################################################################################################################################
 
 '''

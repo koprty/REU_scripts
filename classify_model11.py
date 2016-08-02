@@ -15,29 +15,7 @@ import string
 from twython import Twython,TwythonError
 import time
 
-APP_KEYS = ['TSZyBWKsHZRBlvqrFag7FucuX',
-'SXqFBvQ0ibQxJLzANwYYF1jcN','cNSOzpCmfS730QsIC8AC6fnVv',
-'HEGsXHtuOLUlUNkUcBWMlLqaK','OtspVKgnB2UhNJSIXhf8QYIQO',
-'7nTuFIXq6QmanfVx20OGXsL6N', 'PxNDGaWD6hUWLFpYffl8a83ZD', 
-'Du77cjeL7Q7hIrg89S62R6scu', 'zssUc5yAchM6TTPs5nRbsMxsQ']
 
-APP_SECRETS = ['NNVeYdE9AICI1a4Ytkm4PHyY9KhwLehZItP0WiZUSLaZG9H2Ml',
-'7Dz4eSTJumYpYnPWdgKitBN60OTFgREsp6OdiNY6C3ihT1OS2l','wPwcpAlVTYBWEqzYFWG6vsVi8YRzbY4XMC2Fe8DkD4DkRnIviz',
-'KeiDW2vmHIMUcUN9scHFYqYBlQg7K3LfOPinjtTA6cxbXyEve5', 'fv77emr7170r7uh4vSHLSfrnK4c8ZGmNZ88foysls3L15MRprZ',
-'wDL6lXHThz2GubZmFEogZE9ZcDDD6mJBTrSiaonjUZ6J1vGuPa', 'gwrVjhgXosdQcL5cSXXmlC8QsI29g4vs9bJj6iWmemNyeMcjQe',
-'e7cOLH4PDTf3bvgJuXg7xtLiW7M2oPimr2oP4wN8RANdXEP0gF','zealQwvvv5N0r0Olja053Wd19VK59qeyCvTA45dXtq5OLkSFkZ']
-
-OAUTH_TOKENS = ['701759705421639681-nutlNGruF7WZjq0kXZUTcKVbrnXs3vD',
-'701759705421639681-KcNn0T4hdVjVSq2NhiGagdFV5pgUNHa','258508177-BqAvmsMCK4vdfBVp5c0wIIyBB6nNrhtOWtbdM82O',
-'258508177-uQDYR2XTlrMpxfjwKYEIAaxarHkhZygl3n44Jz8k','258508177-bHYLjetyZRNsulsFtI8oIBVJsrr3DxHdqhgxWzJ4',
-'258508177-KHviBY6zYX7PjVBzKjfCbsDWuXSyBHOcfuo7HzyQ','701759705421639681-F84hDkTSfuG7KqJcqzk1rm88Izx1NUG',
-'701759705421639681-O9d1FGk2LfGZ5FdR4wwlJpWCqf914MM', '701759705421639681-xYAlZAI4x0dJhUEOe6hawOea1MbQc8o']
-
-OAUTH_TOKEN_SECRETS =['3hhidOQwxTMyc5MTDsmhaplfGcK5xVzB83hFb07OMALXh',
-'HPmY0P8q23KVYx8AKS8tuWpCOAj8TMxQ3BYD1nb7sVF5s','NWvnPLNLFrePW9dg9dYC9U0dhilZpbuI3TvkFdL8LrUgw',
-'jBItJWaPly3P8QUmCAbeix6n9JLjqEV4fNQkkrnYe4UJk', 'A7iKPr6haM4P5kbGTVzEmID4tyjm1tYCsUc8R8b61B6BR',
-'2GyQgJizM5ipjr5OVC8iYEav7DlPWMjvwLTSKqVIPAMFI','4qVZZVzlayIHuXNb69yysjKZbR2Pg1z5gd7ItSfnbjgdE', 
-'J4ma0LYo1iQexcivSzuQcYUmtDteYYAzni5bT7hz5MSk4', 'vdsE88d7ptFvmH1yEZorLwnr7JQLvGz9dlAEETUJ4kdAH']
 index = 0
 
 # preprocess an array of tweets 
@@ -302,7 +280,7 @@ def getRetweetCount(twe_id):
 			return int(result['retweet_count'])
 		except Exception as e:
 			if "429 (Too Many Requests)" in str(e):
-				index += 0
+				index += 1
 				print "App Exceeded: index = %d"%(index)
 				pass
 			elif "404 (Not Found)" in str(e):
@@ -312,7 +290,6 @@ def getRetweetCount(twe_id):
 			else:
 				print e
 
-		index +=1
 	return ''
 
 def updateRetweetCountOnIntervals (db, streamer, table ):
@@ -427,6 +404,7 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 			conn.commit()
 			conn.close()
 
+	'''
 	# a week -  RetweetCount_1week INT,
 	print "Updating Retweet Count - 1 week _______________ "
 	now = datetime.datetime.now()
@@ -454,9 +432,8 @@ def updateRetweetCountOnIntervals (db, streamer, table ):
 			cursor.fetchall()
 			conn.commit()
 			conn.close()
-################################### Functions for Getting Retweet ##################################
-
-
+        '''
+################################### Functions for Getting Followers and Followings of New Users ##################################
 
 #updates Followers and Followings for a User AND the respective counts (Followers, Following, NumFollowers, NumFollowing)
 def updateFollowerFollowings(dbpath, user_table = "users"):
@@ -615,7 +592,7 @@ def get_followers_following(usr_id):
 
 #updateRetweetCountOnIntervals("sql_db/tweetDB.sqlite", "tweets11_streaming","tweets11_topics")
 #exit()
-
+updateRetweetCountOnIntervals("sql_db/tweetDB.sqlite","tweets11_streaming", "tweets11_topics")
 #db = "tweets.sqlite"
 #table = "tweets10_streaming"
 try:
